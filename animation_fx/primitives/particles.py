@@ -24,10 +24,10 @@ def draw_spark(draw, head, tail, *, color, alpha, scale=1, radius=0,
         draw.line([(x*scale, (y-2)*scale), (x*scale, (y+2)*scale)], fill=glint, width=scale)
 
 
-def draw_burst(draw, age, *, radius=190, center=(256, 256), aspect=1, scale=2):
+def draw_burst(draw, age, *, radius=190, center=(256, 256), aspect=1, scale=2, count=None):
     if not 0 < age < 1:
         return
-    for angle, speed, brightness, offset in BURST_SEEDS:
+    for angle, speed, brightness, offset in BURST_SEEDS[:count]:
         theta = angle * math.tau
         distance = 12 + radius * age * (.35 + .65*speed)
         tail_distance = max(0, distance - (3+12*speed)*(1-age))

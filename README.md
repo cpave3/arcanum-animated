@@ -17,7 +17,7 @@ Loops last 3 seconds, except the slower 4-second miasma pool. One-shots last 2 s
 | `teleport-departure` | Spirals gather inward, swell, collapse into a flash, then scatter | 1.00 s: move/hide token |
 | `teleport-arrival` | Flash expands into rings and curling wisps | 0.40 s: show token |
 | `impact-burst` | Central flash, short traveling sparks, and an expanding shock ring | 0.23 s |
-| `ground-eruption` | Ground cracks flare, energy rises, fragments disperse | 0.83 s |
+| `ground-eruption` | Top-down branching fissures grow, glow, and vent small energy bursts | 0.83 s |
 | `casting-release` | Varied library runes assemble, power gathers, then discharges | 1.10 s |
 | `dispel` | Varied rune ward breaks into outward-moving glyph fragments | 0.67 s |
 | `portal-open` | A point grows into the existing neon rift | 2.00 s: hand off to `rift` loop |
@@ -51,18 +51,27 @@ These are artistic assignments, not official D&D color definitions. Damage palet
 python3 serve.py
 ```
 
-Open http://localhost:8000. Use `--port 8001` if needed. Restart the server after code updates. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. The viewer opens on a battle grid. The composed preview has independent rift/anchor colors and styles; every standalone preview has its own color selector. Changing one preview leaves the others unchanged. Anchor toggles, spacing, backgrounds, size, and playback speed remain shared where appropriate. Each download matches its preview’s selected color. Color is baked into the actual WebM, not applied with a browser filter. One-shots initially show a representative PNG poster; click their Replay button to play once. They stop at their final frame. Global Pause/Resume affects started animations only, while Restart / replay all explicitly restarts everything. Changing a one-shot’s color resets it to its poster without starting playback.
+Open http://localhost:8000. Use `--port 8001` if needed. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. Refresh the page after HTML or catalog changes; no server restart is needed for those changes.
 
-### Chained sequence demo
+The viewer reads `assets/catalog.json` into a searchable library with **Loops**, **One-shots**, and **Sequences** filters. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
 
-The **Sequence · open → loop → close** panel has its own row and a viewport-sized stage; Start scrolls it into view so the small opening/closing effects are not hidden below the fold. It supports both `portal-open → rift → portal-close` and `vortex-opening → vortex → vortex-closing`, in every palette.
+- Nothing plays automatically when you select an entry or change its palette. Press **Play** for a single clip or **Start** for a sequence.
+- Loops repeat; one-shots play once and hold their final frame. **Replay** plays a finished one-shot again, and **Restart** starts the selected entry from the beginning.
+- **Pause/Resume** controls the active preview. **Stop** resets a single clip to its poster. Seek is available for single clips only and pauses on the chosen frame; sequences cannot be scrubbed.
+- Palette choices are remembered independently per library entry during the current page session. Changing palette resets the preview without starting playback. Color is baked into the WebM, not applied with a browser filter.
+- Optional left and right overlays can be toggled independently and share an overlay style and palette; the right overlay is mirrored. Their WebM and PNG downloads are available inside the overlay section. They accompany the focused preview rather than running separate gallery previews.
+- Every WebM and PNG download matches its selected palette. A sequence exposes downloads for all three clips—opening, loop, and closing—plus their PNGs, and lets you copy all three asset paths.
 
-- Choose a chain and color, then press **Start**. All three clips preload before opening starts; the steady clip repeats until you stop.
-- Press **Stop** to close at the next loop boundary (up to one 3-second loop at 1×), keeping the source frames aligned. Stop during opening queues closing immediately after opening, without entering the loop. Stop while initially loading cancels the start.
-- Global speed and Pause/Resume apply to the chain. A queued close waits while paused. **Restart / replay all** restarts the chain from opening.
-- Family/color selectors are locked until the sequence finishes. The final stage is empty, ready for another Start. Media failures show a local error and allow retry.
+### Chained sequences
 
-`sequence-player.js` is a reusable event-driven controller; the `chains` mapping in `index.html` supplies opening, looping, and closing asset IDs. Inactive sequence videos stay in layout at zero opacity rather than `display: none`: Firefox can otherwise skip a rewound WebM straight to its end. They remain paused, non-interactive, and hidden from accessibility until active. Its three videos are excluded from the standalone one-shot controller, so unrelated preview changes cannot restart or interrupt a sequence. Background and asset size still apply to every stage.
+The library includes `portal-open → rift → portal-close` and `vortex-opening → vortex → vortex-closing`. Available palettes are those exported for all three clips.
+
+- Press **Start** to preload all three clips and begin opening. The steady clip repeats until you request **Close**.
+- **Close** during the loop waits for the next loop boundary (up to one 3-second loop at 1×), keeping source frames aligned. An early Close during opening queues closing immediately after opening, without entering the loop. Close during initial loading cancels the start.
+- **Pause/Resume** and playback speed apply to the sequence. A queued close waits while paused. **Restart** begins again from opening.
+- Selecting another entry or palette resets the preview. After closing, the stage is empty and ready for another Start. Media failures show an error and allow retry.
+
+`index.html`, `viewer.css`, `viewer/app.js`, and `viewer/player.js` provide the catalog-driven library and shared playback workspace. Inactive sequence videos stay in layout at zero opacity rather than `display: none`: Firefox can otherwise skip a rewound WebM straight to its end. They remain paused, non-interactive, and hidden from accessibility until active.
 
 ## Generate
 
@@ -81,6 +90,7 @@ python3 render.py --effect vortex --color all      # one effect, all colors
 python3 render.py --effect vortex-black-hole       # circular core + photon ring, all colors
 python3 render.py --color necrotic                 # all effects, ghostly green
 python3 render.py --output /tmp/my-collection      # alternate output folder
+python3 render.py --catalog-only                  # reindex existing exports; no rendering or encoding
 ```
 
 ### Export profiles
@@ -99,7 +109,7 @@ Measured on the original 210-file collection before adding miasma and vortex tra
 
 In Foundry, specify the effect's intended world/grid size rather than relying on its native pixel dimensions, so switching resolution does not change its footprint.
 
-Outputs: `assets/{effect}/{color}.webm` and matching transparent `.png` stills (representative posters for one-shots). Each export also writes `assets/{effect}/effect.json` with profile, loop status, exported size, source size, FPS, frame count, duration, cue time, and poster time. Metadata cue time is frame-based; portal opening’s final frame is at 59/30 seconds, with loop handoff after the full 2-second clip. Each effect's geometry is rendered once per frame, then mapped into the requested palettes. Encoders write to unique temporary directories; files are published only after all requested colors for that effect encode successfully. Refresh the viewer after rendering; a hard refresh may be needed if your browser cached a replaced asset.
+Outputs: `assets/{effect}/{color}.webm` and matching transparent `.png` stills (representative posters for one-shots). Each export also writes `assets/{effect}/effect.json` with profile, loop status, exported size, source size, FPS, frame count, duration, cue time, and poster time. Metadata cue time is frame-based; portal opening’s final frame is at 59/30 seconds, with loop handoff after the full 2-second clip. Each effect's geometry is rendered once per frame, then mapped into the requested palettes. Encoders write to unique temporary directories; files are published only after all requested colors for that effect encode successfully. After each successful effect export, the CLI atomically rebuilds `catalog.json` in the output folder via `animation_fx/viewer_catalog.py`. It lists registered effects, palettes, sequences, delivery metadata, and available variants with relative WebM/PNG filenames, byte sizes, and per-variant versions. Refresh the viewer after rendering; each variant’s manifest version is used in media URLs to pick up replaced files.
 
 In Sequencer, use a path such as `.file("your-upload-folder/rune-anchor/red.webm")`. Place two independent anchor effects over the rift so they can be toggled separately. The viewer mirrors the right anchor. Foundry integration itself has not been tested here.
 
@@ -115,6 +125,7 @@ Effects are recipes. Geometry, particle appearance, glyph definitions, and trans
 | Burst particle motion | `particles.py:draw_burst` | All one-shot spark releases; no copied per-effect trails |
 | Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, Casting Release, Dispel |
 | Binding brackets | `runes.py:draw_brackets` | Rune anchor |
+| Ground fractures | `cracks.py:fracture_network` / `draw_cracks` | Ground Eruption; seeded trunks, forks and cross-fractures with progressive reveal |
 | Rift styles | `rift.py:render_rift` (`tall` or `compact`) | Rift loop, vortex loop, both portal transition pairs |
 | Smoke spiral | `swirl.py:render_swirl` | Vortex, open vortex, black hole, vortex transitions |
 | Closing/opening accents | `transitions.py:transition_accents` | Both plain and swirling portals share the flash and finishing sparks |
@@ -154,16 +165,17 @@ The existing rift-centered vortex is simply a shared swirl passed as the backgro
 Other infrastructure:
 - `animation_fx/layers.py`: glow compositing and dark-shimmer material.
 - `animation_fx/palettes.py`: named colorways and shared HSV mapping.
-- `animation_fx/catalog.py`: registration and public `Effect.render(frame, color)` API.
+- `animation_fx/catalog.py`: effect registration, centralized `SEQUENCES`, and public `Effect.render(frame, color)` API.
+- `animation_fx/viewer_catalog.py`: generated viewer manifest from registries and completed exports.
 - `animation_fx/recipe.py`: callable frame recipes with size/timing metadata.
 - `animation_fx/export.py` / `profiles.py`: transparent export and VTT/high delivery settings.
 - `render.py`: collection CLI.
 
-After refining a primitive, rebuild its consumers (or run `python3 render.py` for everything). Every successful export atomically updates `assets/version.js`; the viewer uses that build version in video/poster URLs, so a page refresh picks up new renders without hand-maintained per-effect cache-busting numbers. The generator remains offline: changing Python code alone does not change already exported WebMs.
+After refining a primitive, rebuild its consumers (or run `python3 render.py` for everything). For registry or presentation changes that do not require new artwork, run `python3 render.py --catalog-only` to reindex existing exports without rendering or encoding, then refresh the page. Use `--output` or `--profile high` to reindex another output folder. The generator remains offline: changing Python code alone does not change already exported WebMs.
 
 ### Add a color
 
-Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py`, then generate with `--color your-name`. Add the same option to the `palette-options` template in `index.html`; all preview selectors use that shared list. Source-to-target hue offsets preserve color variation within the master artwork. Optional `highlight_hue` introduces a brightness-dependent second color; `saturation_scale` mutes the palette without brightening dark cores. All registered effects automatically support every palette through the CLI.
+Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py`, then generate with `--color your-name`. The generated catalog supplies palette options to the viewer; no HTML edit is needed. Source-to-target hue offsets preserve color variation within the master artwork. Optional `highlight_hue` introduces a brightness-dependent second color; `saturation_scale` mutes the palette without brightening dark cores. All registered effects automatically support every palette through the CLI.
 
 ### Add an effect
 
@@ -171,7 +183,11 @@ Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py
 2. Use deterministic particles and integer temporal harmonics for smooth loops. Keep the exterior alpha zero and glow partially transparent; do not bake a background into frames.
 3. Register it in `EFFECTS` with its master palette name. For one-shots set `loop=False`, `cue_frame`, and a visible `poster_frame`. `Effect.render` wraps loop frames but clamps one-shot frames, then maps colors; the exporter handles video, metadata, and still generation.
 4. Generate with `python3 render.py --effect your-effect --color all`.
-5. Add a viewer card/style option (or a one-shot entry in the viewer’s `oneShots` map) if the effect belongs in this viewer. The catalog and CLI do not depend on the viewer.
+5. Refresh the viewer: the generated catalog adds the library entry without per-effect HTML or JavaScript. Optional `Effect` fields `title`, `description`, `role`, `tags`, and `default_color` control presentation; omitted titles are derived from the effect ID. Use `role='anchor'` for an overlay effect.
+
+### Add a sequence
+
+Register a `Sequence` in `SEQUENCES` in `animation_fx/catalog.py`, referencing an opening one-shot, a looping effect, and a closing one-shot. Render any missing clips/palettes, or run `python3 render.py --catalog-only` if they are already exported. Refresh the viewer to see the new sequence; no per-sequence HTML or JavaScript is required.
 
 ## Tests
 
@@ -182,24 +198,33 @@ python3 -m unittest discover -s tests -v
 Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify loop handoffs and prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. FFmpeg and ffprobe must be on PATH.
 
 
-Optional browser regression check (requires Playwright CLI and a running viewer):
+Optional browser regression checks (require Playwright CLI and a running viewer; use a fresh page for each):
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_library.js)"
+```
+
+The library check covers catalog-driven browsing, search/filtering, selection, and palette/download behavior.
+
+One-shot regression check:
 
 ```sh
 playwright-cli goto http://localhost:8000
 playwright-cli eval "$(cat tests/viewer_one_shots.js)"
 ```
 
-This checks idle posters, per-card Replay, actual decoded final-frame alpha, pause/resume, color/download consistency, and one-shot composition. The viewer explicitly seeks to the final presentation frame after playback ends so dropped frames under load cannot leave an earlier afterimage on screen.
+This checks focused one-shot playback, idle posters, Replay, decoded final-frame alpha, pause/resume, palette/download consistency, and overlays. The viewer explicitly seeks to the final presentation frame after playback ends so dropped frames under load cannot leave an earlier afterimage on screen.
 
 
-Sequence-player browser regression check (fresh page):
+Sequence browser regression check (fresh page):
 
 ```sh
 playwright-cli goto http://localhost:8000
 playwright-cli eval "$(cat tests/viewer_sequences.js)"
 ```
 
-This exercises both real chains through multiple loop iterations, boundary-aligned Stop, early Stop, pause/resume, loading cancellation, and reuse after completion.
+This exercises both real chains through multiple loop iterations, boundary-aligned Close, early Close, pause/resume, loading cancellation, and reuse after completion.
 
 
 Visible-frame regression check (also run with a short or narrow viewport):

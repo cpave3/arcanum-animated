@@ -1,61 +1,24 @@
-// Run on a fresh viewer page, including at a short viewport such as 1280×540.
+// Run in Firefox and Chromium, including short/narrow viewports.
 async () => {
-  const assert = (value, message) => { if (!value) throw new Error(message); };
-  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const until = async (condition, message) => {
-    const deadline = Date.now()+12000;
-    while (!condition()) {
-      if (Date.now()>deadline) throw new Error(message);
-      await wait(25);
-    }
-  };
-  const root = document.querySelector('#sequence-demo');
-  const set = (id, value) => {
-    const element = document.getElementById(id);
-    element.value = value;
-    element.dispatchEvent(new Event('change'));
-  };
-  function visiblePixels(video) {
-    const rectangle = video.getBoundingClientRect();
-    assert(rectangle.top >= 0 && rectangle.bottom <= innerHeight && rectangle.left >= 0 && rectangle.right <= innerWidth,
-      'Sequence video is outside the viewport; transitions cannot be seen');
-    assert(!video.hidden && getComputedStyle(video).display !== 'none' && getComputedStyle(video).visibility === 'visible' && Number(getComputedStyle(video).opacity) === 1,
-      'Active transition is hidden');
-    const canvas = document.createElement('canvas');
-    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-    const context = canvas.getContext('2d');
-    context.drawImage(video, 0, 0);
-    const pixels = context.getImageData(0, 0, canvas.width, canvas.height).data;
-    let alpha = 0;
-    let signature = 0;
-    for (let i=3; i<pixels.length; i+=4) {
-      alpha += pixels[i];
-      signature = (signature + pixels[i]*(i%7919)) % 2147483647;
-    }
-    assert(alpha > 1000, 'Transition decoded to a blank frame');
-    return signature;
+  const {viewerDriver} = await import('/tests/viewer_driver.js');
+  const d = await viewerDriver();
+  d.set('speed','1');
+  function visibleSignature() {
+    const v=d.active(),rect=v.getBoundingClientRect(),style=getComputedStyle(v);
+    d.assert(rect.width>0 && rect.top>=0 && rect.bottom<=innerHeight && rect.left>=0 && rect.right<=innerWidth,'Transition is outside the viewport');
+    d.assert(style.display!=='none' && style.visibility==='visible' && Number(style.opacity)===1,'Transition is visually hidden');
+    const pixels=d.pixels();d.assert(pixels.sum>1000,'Transition has a blank decoded frame');return pixels.signature;
   }
-  async function checkMotion(stage) {
-    const video = root.querySelector(`[data-sequence-clip="${stage}"]`);
-    await until(() => root.dataset.phase === stage && video.currentTime > .45, `${stage} did not start`);
-    await wait(50);
-    const first = visiblePixels(video);
-    await until(() => video.currentTime > 1.15, `${stage} stopped advancing`);
-    await wait(50);
-    assert(root.dataset.phase === stage, `${stage} ended prematurely`);
-    assert(first !== visiblePixels(video), `${stage} is displaying a frozen frame`);
+  async function motion(phase) {
+    await d.until(()=>d.phase()===phase && d.active().currentTime>.45,`${phase} did not start`);
+    await d.wait(50);const first=visibleSignature();
+    await d.until(()=>d.active().currentTime>1.15,`${phase} stopped advancing`);
+    await d.wait(50);d.assert(d.phase()===phase && visibleSignature()!==first,`${phase} did not visibly animate`);
   }
-  set('speed', '1');
-  for (const family of ['rift', 'vortex']) {
-    window.scrollTo(0, 0);
-    set('sequence-style', family);
-    document.querySelector('#sequence-start').click();
-    await checkMotion('opening');
-    await until(() => root.dataset.phase === 'looping', 'Steady loop did not start');
-    document.querySelector('#sequence-stop').click();
-    await checkMotion('closing');
-    await until(() => root.dataset.phase === 'idle', 'Closing did not finish');
+  for(const sequence of d.catalog.sequences.filter(s=>s.colors.length)) {
+    d.select(sequence.id);d.click('primary');await motion('opening');
+    await d.until(()=>d.phase()==='looping','Steady loop missing');d.click('stop');await motion('closing');
+    await d.until(()=>d.phase()==='idle','Closing did not finish');
   }
-  return {riftOpeningVisibleAndMoving: true, riftClosingVisibleAndMoving: true,
-    vortexOpeningVisibleAndMoving: true, vortexClosingVisibleAndMoving: true};
+  return {openingFramesVisible:true,closingFramesVisible:true};
 }

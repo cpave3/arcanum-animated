@@ -23,9 +23,10 @@ node_modules/
 /.playwright/.auth/
 
 # Reproducible high-resolution exports and unfinished render workspaces
-# Keep assets/ (VTT WebMs, posters, metadata, version.js) and reference images trackable.
+# Keep assets/ (VTT WebMs, posters, metadata, catalog.json) and reference images trackable.
 /assets-high/
 .render-*/
+.catalog-*.tmp
 
 # Local environment values; retain shareable examples
 .env

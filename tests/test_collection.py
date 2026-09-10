@@ -82,6 +82,26 @@ class CollectionTests(unittest.TestCase):
             endpoints = np.frombuffer(raw, dtype=np.uint8).reshape(2, 384, 384, 4)
             self.assertTrue(np.all(endpoints[:, :, :, 3] == 0))
 
+    def test_ground_eruption_is_crack_focused_and_top_down(self):
+        from animation_fx.primitives import cracks
+        effect = EFFECTS['ground-eruption']
+        early = np.asarray(effect.render(8, 'purple'))
+        peak = np.asarray(effect.render(effect.poster_frame, 'purple'))
+        with patch.object(cracks, 'draw_cracks'):
+            accents = np.asarray(effect.render(effect.poster_frame, 'purple'))
+        self.assertGreater(peak[:, :, 3].sum(), 4*accents[:, :, 3].sum())
+        ys, xs = np.where(peak[:, :, 3] > 128)
+        self.assertGreater(np.ptp(xs), 300)
+        self.assertGreater(np.ptp(ys), 300)
+        self.assertLess(abs(np.ptp(xs)-np.ptp(ys)), 70)
+        self.assertLess(abs((xs.min()+xs.max())/2-256), 25)
+        self.assertLess(abs((ys.min()+ys.max())/2-256), 25)
+        early_y, early_x = np.where(early[:, :, 3] > 128)
+        self.assertLess(np.ptp(early_x), np.ptp(xs)*.6)
+        self.assertLess(np.ptp(early_y), np.ptp(ys)*.6)
+        self.assertTrue(np.all(np.asarray(effect.render(0, 'purple'))[:, :, 3] == 0))
+        self.assertTrue(np.all(np.asarray(effect.render(59, 'purple'))[:, :, 3] == 0))
+
     def test_miasma_is_dark_translucent_and_loops(self):
         effect = EFFECTS['miasma-pool']
         frames = [np.asarray(effect.render(f, 'purple')) for f in (0, 1, effect.frames-1)]
@@ -250,8 +270,19 @@ class CollectionTests(unittest.TestCase):
             webm = Path(directory) / 'rune-anchor/melee.webm'
             png = webm.with_suffix('.png')
             self.assertTrue(png.is_file())
-            version = (Path(directory) / 'version.js').read_text()
-            self.assertRegex(version, r'^window\.ASSET_VERSION = "\d+";\n$')
+            catalog = json.loads((Path(directory) / 'catalog.json').read_text())
+            self.assertEqual(catalog['schema'], 1)
+            entry = next(effect for effect in catalog['effects'] if effect['id'] == 'rune-anchor')
+            self.assertEqual(entry['kind'], 'loop')
+            self.assertEqual(entry['role'], 'anchor')
+            self.assertEqual({key: entry[key] for key in ('size', 'fps', 'frames', 'duration', 'cue_time')},
+                             {'size': 256, 'fps': 30, 'frames': 90, 'duration': 3, 'cue_time': None})
+            self.assertEqual(entry['variants'], {'melee': {
+                'webm': 'rune-anchor/melee.webm',
+                'poster': 'rune-anchor/melee.png',
+                'bytes': webm.stat().st_size,
+                'version': f'{webm.stat().st_mtime_ns}-{png.stat().st_mtime_ns}',
+            }})
             info = json.loads(subprocess.check_output(['ffprobe', '-v', 'error',
                               '-show_entries', 'stream=width,height:format=duration', '-of', 'json', str(webm)]))
             self.assertEqual(info['streams'][0]['width'], 256)

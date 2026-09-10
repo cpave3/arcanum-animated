@@ -45,8 +45,8 @@ class Canvas:
             self.line(points, opacity, 3)
             self.line(points, opacity*.75, 1, LIGHT)
 
-    def sparks(self, age, radius=190, center=(256, 256), aspect=1):
-        particles.draw_burst(self.draw, age, radius=radius, center=center, aspect=aspect, scale=2)
+    def sparks(self, age, radius=190, center=(256, 256), aspect=1, *, count=None):
+        particles.draw_burst(self.draw, age, radius=radius, center=center, aspect=aspect, scale=2, count=count)
 
     def rune(self, glyph, center, *, size=1, rotation=0, opacity=1, fragmentation=0):
         runes.draw_rune(self.draw, glyph, center=center, size=size, rotation=rotation,

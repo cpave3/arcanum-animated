@@ -25,6 +25,11 @@ class Effect:
     loop: bool = True
     cue_frame: int | None = None
     poster_frame: int = 0
+    title: str | None = None
+    description: str = ''
+    role: str = 'effect'
+    tags: tuple[str, ...] = ()
+    default_color: str = 'purple'
 
     @property
     def size(self):
@@ -47,25 +52,33 @@ class Effect:
 
 
 EFFECTS = {
-    'rift': Effect(rift, 'purple'),
-    'miasma-pool': Effect(miasma_pool, 'purple'),
-    'vortex': Effect(vortex, 'purple'),
-    'vortex-open': Effect(vortex_open, 'purple'),
-    'vortex-black-hole': Effect(vortex_black_hole, 'purple'),
-    'orb-anchor': Effect(orb_anchor, 'gold'),
-    'rune-anchor': Effect(rune_anchor, 'gold'),
+    'rift': Effect(rift, 'purple', description='Neon slit with an opaque dark tear.'),
+    'miasma-pool': Effect(miasma_pool, 'purple', description='Smoky ground pools with billowing vents.'),
+    'vortex': Effect(vortex, 'purple', description='Layered outward spirals with a shimmering core.'),
+    'vortex-open': Effect(vortex_open, 'purple', description='Outward spirals with a transparent center.'),
+    'vortex-black-hole': Effect(vortex_black_hole, 'purple', description='Circular dark core with a photon ring and orbiting light.'),
+    'orb-anchor': Effect(orb_anchor, 'gold', role='anchor',
+                         description='Glowing orb with lightning.', tags=('anchor',)),
+    'rune-anchor': Effect(rune_anchor, 'gold', role='anchor',
+                          description='Rune brackets with sparks.', tags=('anchor',)),
     'teleport-departure': Effect(FrameRecipe(one_shots.teleport_departure), 'purple',
-                    loop=False, cue_frame=30, poster_frame=24),
+                    loop=False, cue_frame=30, poster_frame=24,
+                    description='Power gathers inward, flashes, then scatters into sparks.'),
     'teleport-arrival': Effect(FrameRecipe(one_shots.teleport_arrival), 'purple',
-                    loop=False, cue_frame=12, poster_frame=12),
+                    loop=False, cue_frame=12, poster_frame=12,
+                    description='An arrival flash expands into rings and curling wisps.'),
     'impact-burst': Effect(FrameRecipe(one_shots.impact_burst), 'purple',
-                    loop=False, cue_frame=7, poster_frame=7),
+                    loop=False, cue_frame=7, poster_frame=7,
+                    description='A sharp flash, traveling sparks, and an expanding shock ring.'),
     'ground-eruption': Effect(FrameRecipe(one_shots.ground_eruption), 'purple',
-                    loop=False, cue_frame=25, poster_frame=25),
+                    loop=False, cue_frame=25, poster_frame=25,
+                    description='Top-down branching cracks vent energy through the floor.'),
     'casting-release': Effect(FrameRecipe(one_shots.casting_release), 'purple',
-                    loop=False, cue_frame=33, poster_frame=25),
+                    loop=False, cue_frame=33, poster_frame=25,
+                    description='Varied runes gather power, then discharge in a burst.'),
     'dispel': Effect(FrameRecipe(one_shots.dispel), 'purple',
-                    loop=False, cue_frame=20, poster_frame=24),
+                    loop=False, cue_frame=20, poster_frame=24,
+                    description='A rune ward fractures into drifting glyph fragments.'),
     'portal-open': Effect(FrameRecipe(one_shots.portal_open), 'purple',
                     loop=False, cue_frame=59, poster_frame=59),
     'vortex-opening': Effect(FrameRecipe(vortex_transitions.opening, SIZE=640), 'purple',
@@ -75,3 +88,25 @@ EFFECTS = {
     'portal-close': Effect(FrameRecipe(one_shots.portal_close), 'purple',
                     loop=False, cue_frame=0, poster_frame=0),
 }
+
+
+@dataclass(frozen=True)
+class Sequence:
+    title: str
+    opening: str
+    looping: str
+    closing: str
+    description: str = 'Open, sustain the loop, then close at a loop boundary.'
+    tags: tuple[str, ...] = ()
+    default_color: str = 'purple'
+
+
+SEQUENCES = {
+    'rift-sequence': Sequence('Rift sequence', 'portal-open', 'rift', 'portal-close',
+                              tags=('portal',)),
+    'vortex-sequence': Sequence('Vortex sequence', 'vortex-opening', 'vortex',
+                                'vortex-closing', tags=('vortex',)),
+}
+
+# Palette geometry stays in palettes.py; viewer grouping is presentation only.
+ORIGINAL_COLORS = frozenset(('purple', 'gold', 'red', 'orange'))

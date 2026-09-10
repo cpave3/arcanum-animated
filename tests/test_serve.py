@@ -25,7 +25,9 @@ class ViewerServerTests(unittest.TestCase):
 
     def test_page_and_full_video_from_another_working_directory(self):
         with urlopen(self.url) as response:
-            self.assertIn(b'id="rift-style"', response.read())
+            page = response.read()
+            self.assertIn(b'id="library-list"', page)
+            self.assertIn(b'id="workspace"', page)
         with urlopen(self.url + self.path) as response:
             self.assertEqual(response.status, 200)
             self.assertEqual(response.headers['Accept-Ranges'], 'bytes')

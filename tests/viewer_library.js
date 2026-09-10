@@ -1,0 +1,50 @@
+async () => {
+  const {viewerDriver} = await import('/tests/viewer_driver.js');
+  const d = await viewerDriver();
+  const total = d.catalog.effects.length+d.catalog.sequences.length;
+  d.assert(document.querySelectorAll('.library-item').length === total, 'Library does not reflect the catalog');
+  d.assert([...document.querySelectorAll('video')].every(v=>v.paused), 'Browsing must not autoplay videos');
+  d.assert(document.querySelectorAll('video').length === 5, 'Only stage and overlay video slots should exist');
+  for (const kind of ['loop','one-shot','sequence']) {
+    document.querySelector(`[data-kind="${kind}"]`).click();
+    const expected = [...d.catalog.effects,...d.catalog.sequences].filter(e=>e.kind===kind).length;
+    d.assert(document.querySelectorAll('.library-item').length===expected, `Wrong ${kind} filter`);
+  }
+  document.querySelector('[data-kind="all"]').click();
+  d.set('search', 'cracks', 'input');
+  d.assert(document.querySelector('[data-entry="ground-eruption"]'), 'Descriptions should be searchable');
+  d.set('search', 'nonexistent-effect-xyz', 'input');
+  d.assert(!d.$('empty-library').hidden && !document.querySelector('.library-item'), 'Missing empty-search feedback');
+  d.select('rift'); d.set('palette', 'necrotic');
+  d.select('impact-burst'); d.set('palette', 'fire');
+  d.select('rift');
+  d.assert(d.$('palette').value==='necrotic', 'Per-entry palette was not remembered');
+  d.assert(new URL(d.$('downloads').querySelector('[data-download="webm"]').href).pathname.endsWith('/rift/necrotic.webm'), 'Download does not match palette');
+  d.assert(d.$('path-field').value==='assets/rift/necrotic.webm', 'Copy path should omit cache query');
+  d.set('background','custom'); d.set('background-color','#e0c090','input');
+  d.assert(getComputedStyle(d.$('stage')).backgroundColor==='rgb(224, 192, 144)', 'Custom background not applied');
+  d.set('background','grid'); d.set('size','70','input');
+  d.assert(d.$('scene').style.getPropertyValue('--size')==='70%', 'Size control not applied');
+  d.$('overlay-left').click();
+  await d.until(()=>document.querySelector('[data-overlay-side="left"]').dataset.active==='true', 'Overlay did not appear');
+  d.assert(document.querySelector('[data-overlay-side="right"]').dataset.active==='false', 'Overlay toggles are not independent');
+  d.set('overlay-palette','psychic');
+  await d.until(()=>document.querySelector('[data-overlay-side="left"]').currentSrc.includes('/psychic.webm'), 'Overlay palette did not change');
+  d.assert(d.$('palette').value==='necrotic', 'Overlay color changed the base effect');
+  d.click('primary');
+  await d.until(()=>d.phase()==='looping' && !d.active().paused, 'Loop did not play');
+  await d.until(()=>!document.querySelector('[data-overlay-side="left"]').paused, 'Overlay did not follow transport');
+  d.click('pause');
+  d.assert(document.querySelector('[data-overlay-side="left"]').paused, 'Overlay ignored pause');
+  d.click('stop'); d.$('overlay-left').click();
+  d.set('seek', '.7', 'input');
+  await d.until(()=>d.active()?.paused && !d.active().seeking && Math.abs(d.active().currentTime-.7)<.06, 'Scrub did not select a paused frame');
+  d.click('pause');
+  d.assert(d.active().loop, 'Scrubbing an idle loop must preserve looping on resume');
+  d.click('stop');
+  d.select('rift-sequence');
+  d.assert(d.$('downloads').querySelectorAll('[data-download="webm"]').length===3, 'Sequence must expose all three clip downloads');
+  d.assert(d.$('seek').disabled, 'Sequence scrubbing should be disabled');
+  d.assert(document.querySelectorAll('video').length===5, 'Switching entries leaked media elements');
+  return {catalogDriven:true,filters:true,search:true,colorMemory:true,downloads:true,background:true,overlays:true,scrubbing:true};
+}

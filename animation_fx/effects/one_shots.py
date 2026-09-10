@@ -1,14 +1,16 @@
 """Finite effects assembled from shared drawing and transition primitives."""
 import math
 
-from animation_fx.primitives import runes, transitions
+from animation_fx.primitives import cracks, runes, transitions
 from animation_fx.primitives.canvas import Canvas, LIGHT, point
-from animation_fx.primitives.particles import BURST_SEEDS as SEEDS
+from animation_fx.primitives.geometry import compose
 from animation_fx.primitives.timing import progress, smooth
 
 SIZE = 512
 FPS = 30
 FRAMES = 60
+GROUND_CRACKS = cracks.fracture_network()
+GROUND_VENTS = tuple(path.points[3] for path in GROUND_CRACKS if path.start_distance == 0)[::2]
 
 
 def teleport_departure(frame):
@@ -53,24 +55,19 @@ def impact_burst(frame):
 
 def ground_eruption(frame):
     t = progress(frame)
-    canvas = Canvas()
-    center = (256, 340)
-    charge = smooth(t/.3)
-    fade = 1-smooth((t-.55)/.45)
-    canvas.ring(145*charge, fade*.8, 2, center, .32)
-    for index, (angle, speed, brightness, offset) in enumerate(SEEDS[:18]):
-        theta = angle*math.tau
-        crack = [point(r*charge, theta + .10*math.sin(i*7+index), center, .35)
-                 for i, r in enumerate((5, 22, 48, 72, 115, 150))]
-        canvas.line(crack, charge*fade)
-        q = smooth((t-.25-offset*.10)/.3)
-        x = 256 + (angle-.5)*230
-        height = (90+140*speed)*q
-        canvas.line([(x, 340), (x+12*math.sin(index), 340-height*.6), (x+20*(brightness-.5), 340-height)],
-                    q*fade, 3, LIGHT)
-    canvas.flash(38, math.exp(-((t-.42)/.10)**2), center)
-    canvas.sparks(max(0, (t-.35)/.65), 180, (256, 260), .8)
-    return canvas.finish(smooth(t/.06)*(1-smooth((t-.85)/.15)))
+    growth = smooth(t/.36)
+    fade = 1-smooth((t-.68)/.32)
+    pulse = math.exp(-((t-.42)/.12)**2)
+    surface = Canvas()
+    cracks.draw_cracks(surface.draw, GROUND_CRACKS, growth, energy=.25+.75*pulse,
+                       phase=math.tau*2*t, opacity=fade)
+    accents = Canvas()
+    for index, center in enumerate(GROUND_VENTS):
+        age = (t-.32-index*.018)/.55
+        accents.flash(18, pulse*.7, center)
+        accents.sparks(age, radius=42, center=center, count=10)
+    reveal = smooth(t/.05)
+    return compose(surface.finish(reveal), accents.finish(.45*fade*reveal))
 
 
 def casting_release(frame):

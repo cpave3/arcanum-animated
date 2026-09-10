@@ -4,7 +4,6 @@ from pathlib import Path
 import json
 import subprocess
 import tempfile
-import time
 
 from animation_fx.catalog import Effect
 from animation_fx.palettes import PALETTES, colorize
@@ -61,5 +60,3 @@ def export_effect(effect: Effect, colors: list[str], directory: Path,
             for suffix in ('png', 'webm'):
                 (work / f'{color}.{suffix}').replace(directory / f'{color}.{suffix}')
         (work / 'effect.json').replace(directory / 'effect.json')
-        (work / 'version.js').write_text(f'window.ASSET_VERSION = "{time.time_ns()}";\n')
-        (work / 'version.js').replace(directory.parent / 'version.js')

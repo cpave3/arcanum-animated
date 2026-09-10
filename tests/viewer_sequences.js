@@ -1,84 +1,44 @@
-// Playwright CLI eval function; run on a fresh viewer page served by serve.py.
 async () => {
-  const assert = (value, message) => { if (!value) throw new Error(message); };
-  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
-  const until = async (condition, message) => {
-    const deadline = Date.now() + 12000;
-    while (!condition()) {
-      if (Date.now() > deadline) throw new Error(message);
-      await wait(25);
-    }
-  };
-  const set = (id, value) => {
-    const element = document.getElementById(id);
-    element.value = value;
-    element.dispatchEvent(new Event('change'));
-  };
-  const root = document.querySelector('#sequence-demo');
-  const phase = () => root.dataset.phase;
-  const clip = stage => root.querySelector(`[data-sequence-clip="${stage}"]`);
-  const start = () => document.querySelector('#sequence-start').click();
-  const stop = () => document.querySelector('#sequence-stop').click();
-  assert(phase() === 'idle', 'Sequence should initially be idle');
-  assert([...root.querySelectorAll('video')].every(v => v.paused && v.hidden && Number(getComputedStyle(v).opacity) === 0), 'Idle sequence should be visually empty');
-  set('speed', '2');
-
-  for (const [chain, color, opening, loop, closing] of [
-    ['rift', 'necrotic', 'portal-open', 'rift', 'portal-close'],
-    ['vortex', 'psychic', 'vortex-opening', 'vortex', 'vortex-closing'],
-  ]) {
-    set('sequence-style', chain);
-    set('sequence-color', color);
-    start();
-    await until(() => phase() === 'opening', `${chain} did not open`);
-    assert(document.querySelector('#sequence-style').disabled, 'Configuration should be locked while running');
-    assert(new URL(clip('opening').src).pathname.endsWith(`/${opening}/${color}.webm`), 'Wrong opening asset');
-    await until(() => phase() === 'looping', `${chain} did not enter its loop`);
-    const steady = clip('looping');
-    assert(steady.loop && !steady.hidden, 'Steady phase must loop visibly');
-    assert(new URL(steady.src).pathname.endsWith(`/${loop}/${color}.webm`), 'Wrong loop asset');
-    let last = steady.currentTime;
-    let wrapped = false;
-    const onTime = () => { if (steady.currentTime < last) wrapped = true; last = steady.currentTime; };
-    steady.addEventListener('timeupdate', onTime);
-    await until(() => wrapped, `${chain} did not sustain across a loop boundary`);
-    steady.removeEventListener('timeupdate', onTime);
-    stop();
-    assert(!steady.loop, 'Stop must finish this iteration rather than loop again');
-    await until(() => phase() === 'closing', `${chain} did not close`);
-    assert(!clip('closing').hidden && steady.hidden, 'Closing must replace the loop');
-    assert(new URL(clip('closing').src).pathname.endsWith(`/${closing}/${color}.webm`), 'Wrong closing asset');
-    await until(() => phase() === 'idle', `${chain} did not finish`);
-    assert([...root.querySelectorAll('video')].every(v => v.hidden && v.paused), 'Closing must leave an empty stage');
-    assert(!document.querySelector('#sequence-start').disabled, 'Start must be reusable');
+  const {viewerDriver} = await import('/tests/viewer_driver.js');
+  const d = await viewerDriver();
+  d.set('speed','2');
+  for (const sequence of d.catalog.sequences.filter(s=>s.colors.length)) {
+    d.select(sequence.id); d.set('palette','necrotic');
+    d.assert(d.phase()==='idle' && !d.active() && d.$('poster').hidden, 'Sequence must start empty');
+    d.assert(d.$('phase-strip').children.length===3, 'Sequence phases are missing');
+    d.click('primary');
+    await d.until(()=>d.phase()==='opening' && d.active().currentTime>0, 'Opening failed');
+    d.assert(new URL(d.active().src).pathname.endsWith(`/${sequence.steps[0].effect}/necrotic.webm`), 'Wrong opening clip');
+    await d.until(()=>d.phase()==='looping', 'Sequence failed to enter loop');
+    const loop=d.active(); let last=loop.currentTime,wrapped=false;
+    const observe=()=>{if(loop.currentTime<last)wrapped=true;last=loop.currentTime;};
+    loop.addEventListener('timeupdate',observe);
+    await d.until(()=>wrapped,'Steady clip did not repeat');
+    loop.removeEventListener('timeupdate',observe);
+    d.click('stop');
+    d.assert(!loop.loop,'Close must exit at the next loop boundary');
+    await d.until(()=>d.phase()==='closing','Closing failed');
+    d.assert(new URL(d.active().src).pathname.endsWith(`/${sequence.steps[2].effect}/necrotic.webm`),'Wrong closing clip');
+    await d.until(()=>d.phase()==='idle','Closing did not finish');
+    d.assert(!d.active(),'Completed sequence must leave the stage empty');
   }
-
-  const phases = [];
-  const observer = new MutationObserver(() => phases.push(phase()));
-  observer.observe(root, { attributes: true, attributeFilter: ['data-phase'] });
-  start();
-  await until(() => phase() === 'opening' && !clip('opening').paused, 'Early-stop test did not open');
-  document.querySelector('#play').click();
-  const held = clip('opening').currentTime;
-  await wait(150);
-  assert(clip('opening').paused && Math.abs(held-clip('opening').currentTime) < .03, 'Global Pause must pause the sequence');
-  stop();
-  assert(root.querySelector('[data-sequence-status]').textContent.includes('close queued'), 'Early Stop should queue closing');
-  document.querySelector('#play').click();
-  await until(() => phase() === 'closing', 'Queued close did not run after opening');
-  await until(() => phase() === 'idle', 'Queued close did not finish');
-  observer.disconnect();
-  assert(!phases.includes('looping'), 'Early Stop should skip the steady loop');
-
-  start();
-  stop();
-  await wait(150);
-  assert(phase() === 'idle', 'Stop during loading must cancel stale work');
-  start();
-  await until(() => phase() === 'opening', 'Restart after cancellation failed');
-  stop();
-  await until(() => phase() === 'idle', 'Restarted sequence failed to close');
-  assert(document.querySelector('#status').hidden, 'Other preview playback regressed');
-  return { riftChain: true, vortexChain: true, sustainedLoop: true, boundaryStop: true,
-    earlyStop: true, pauseResume: true, cancellation: true, restart: true };
+  d.select('vortex-sequence');
+  const seen=[]; const observer=new MutationObserver(()=>seen.push(d.phase()));
+  observer.observe(d.$('stage'),{attributes:true,attributeFilter:['data-phase']});
+  d.click('primary');
+  await d.until(()=>d.phase()==='opening' && !d.active().paused,'Early-stop opening failed');
+  d.click('pause'); const held=d.active().currentTime;
+  d.click('stop');
+  await d.wait(100);
+  d.assert(d.active().paused && Math.abs(d.active().currentTime-held)<.03,'Queued close ignored pause');
+  d.click('pause');
+  await d.until(()=>d.phase()==='closing','Queued close failed');
+  await d.until(()=>d.phase()==='idle','Queued close did not finish');
+  observer.disconnect(); d.assert(!seen.includes('looping'),'Early close should skip looping');
+  d.click('primary');d.click('stop'); await d.wait(100);
+  d.assert(d.phase()==='idle','Loading cancellation leaked a stale transition');
+  d.click('primary'); await d.until(()=>d.phase()==='opening','Restart failed');
+  d.select('rift'); await d.wait(100);
+  d.assert(d.phase()==='idle' && !d.active(),'Selection change did not cancel the old sequence');
+  return {sequences:true,sustainedLoops:true,boundaryClose:true,earlyClose:true,pauseResume:true,cancellation:true};
 }
