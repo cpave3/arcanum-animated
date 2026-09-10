@@ -1,0 +1,44 @@
+# Python bytecode, environments, and tool caches
+__pycache__/
+*.py[cod]
+/.venv/
+/venv/
+/env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+/htmlcov/
+/coverage.xml
+
+# Local JavaScript dependencies and browser automation output
+node_modules/
+/.playwright-cli/
+/playwright-report/
+/test-results/
+/blob-report/
+/output/playwright/
+/playwright/.auth/
+/.playwright/.auth/
+
+# Reproducible high-resolution exports and unfinished render workspaces
+# Keep assets/ (VTT WebMs, posters, metadata, version.js) and reference images trackable.
+/assets-high/
+.render-*/
+
+# Local environment values; retain shareable examples
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.template
+
+# Logs and editor/OS temporary files
+*.log
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

@@ -30,6 +30,15 @@
     .anchor.right { left: calc(50% + var(--spacing, 6%)); transform: translate(-50%, -50%) scaleX(-1); }
     .anchor[hidden] { display: none; }
     .anchor-controls { display: flex; flex-wrap: wrap; gap: 16px; margin: 12px 0; }
+    #sequence-demo { grid-column: 1 / -1; }
+    #sequence-demo h2, #sequence-demo [data-sequence-status] { text-align: center; }
+    #sequence-demo .anchor-controls { justify-content: center; }
+    .sequence-stage { width: min(100%, 48vh, 480px); margin-inline: auto; }
+    .sequence-stage video { grid-area: 1 / 1; min-width: 0; min-height: 0; }
+    /* Firefox can skip a rewound WebM when it was decoded under display:none. */
+    .sequence-stage video[hidden] { display: block; opacity: 0; pointer-events: none; }
+    button:disabled { opacity: .5; cursor: default; }
+    [data-sequence-status] { display: block; margin: 12px 0; color: #d3adff; }
     a { color: #d3adff; }
     .meta { display: flex; justify-content: space-between; gap: 12px; margin: 10px 0; font-size: 14px; }
     #status { color: #ffc0c0; }
@@ -39,7 +48,7 @@
 <body>
 <main>
   <h1>Rift asset viewer</h1>
-  <p>The background below is behind the actual WebM videos. It should show through outside the rift and beneath the translucent purple energy; the black tear stays opaque.</p>
+  <p>The background below is behind the actual WebM videos. It should show through outside the rift and beneath the translucent energy; the black tear stays opaque.</p>
   <div class="toolbar">
     <label>Background
       <select id="background">
@@ -48,7 +57,7 @@
         <option value="#000000">Black</option>
         <option value="#343434">Dark gray</option>
         <option value="#c4ae87">Parchment</option>
-        <option value="grid">Battle grid</option>
+        <option value="grid" selected>Battle grid</option>
         <option value="custom">Custom color</option>
       </select>
     </label>
@@ -56,54 +65,137 @@
     <label>Asset size <input id="size" type="range" min="30" max="100" value="90"><output id="size-value">90%</output></label>
     <label>Speed <select id="speed"><option value="0.25">¼×</option><option value="0.5">½×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
     <button id="play" type="button">Pause</button>
-    <button id="restart" type="button">Restart</button>
+    <button id="restart" type="button">Restart / replay all</button>
   </div>
   <p id="status" role="status" hidden></p>
   <div class="assets">
+    <article id="sequence-demo" data-phase="idle">
+      <h2>Sequence · open → loop → close</h2>
+      <div class="anchor-controls">
+        <label>Chain <select id="sequence-style" data-sequence-style><option value="rift">Rift</option><option value="vortex" selected>Vortex</option></select></label>
+        <label>Color <select id="sequence-color" data-sequence-color data-palette data-default="purple"></select></label>
+        <button id="sequence-start" data-sequence-start type="button">Start</button>
+        <button id="sequence-stop" data-sequence-stop type="button" disabled>Stop</button>
+      </div>
+      <output data-sequence-status aria-live="polite">Idle</output>
+      <div class="stage grid sequence-stage">
+        <video data-sequence-clip="opening" muted playsinline hidden aria-label="Sequence opening"></video>
+        <video data-sequence-clip="looping" muted playsinline hidden aria-label="Sequence steady loop"></video>
+        <video data-sequence-clip="closing" muted playsinline hidden aria-label="Sequence closing"></video>
+      </div>
+      <p>Start opens and sustains the effect. Stop closes at the next loop boundary. During opening, Stop queues closing immediately after opening finishes.</p>
+    </article>
     <article>
-      <h2>Composed · rift + independent anchors</h2>
-      <div class="stage checker">
+      <h2>Composed · effect + independent anchors</h2>
+      <div class="stage grid">
         <div class="composition">
-          <video class="rift" src="purple-rift-outward.webm?v=3" autoplay loop muted playsinline aria-label="Composed rift"></video>
-          <video id="anchor-left" data-variant="orb" data-side="left" class="anchor left" hidden src="golden-anchor.webm?v=2" autoplay loop muted playsinline aria-label="Left golden anchor"></video>
-          <video id="anchor-right" data-variant="orb" data-side="right" class="anchor right" hidden src="golden-anchor.webm?v=2" autoplay loop muted playsinline aria-label="Right golden anchor"></video>
-          <video data-variant="rune" data-side="left" class="anchor left" src="golden-rune-anchor.webm" autoplay loop muted playsinline aria-label="Left rune anchor"></video>
-          <video data-variant="rune" data-side="right" class="anchor right" src="golden-rune-anchor.webm" autoplay loop muted playsinline aria-label="Right rune anchor"></video>
+          <video class="rift" src="assets/vortex/purple.webm" loop muted playsinline aria-label="Composed effect"></video>
+          <video id="anchor-left" data-side="left" class="anchor left" src="assets/rune-anchor/radiant.webm" loop muted playsinline aria-label="Left anchor"></video>
+          <video id="anchor-right" data-side="right" class="anchor right" src="assets/rune-anchor/radiant.webm" loop muted playsinline aria-label="Right anchor"></video>
         </div>
       </div>
       <div class="anchor-controls">
-        <label>Anchor style <select id="anchor-style"><option value="rune">Runes + brackets</option><option value="orb">Orb + lightning</option></select></label>
+        <label>Effect style <select id="rift-style"><option value="rift">Neon slit</option><option value="vortex" selected>Vortex + rift</option><option value="vortex-open">Vortex · open</option><option value="vortex-black-hole">Vortex · black hole</option><option value="miasma-pool">Miasma · ground pools</option></select></label>
+        <label>Effect color <select id="rift-color" data-palette data-default="purple"></select></label>
+        <label>Anchor style <select id="anchor-style"><option value="rune-anchor">Runes + brackets</option><option value="orb-anchor">Orb + lightning</option></select></label>
+        <label>Anchor color <select id="anchor-color" data-palette data-default="radiant"></select></label>
         <label><input id="toggle-left" type="checkbox" checked>Left anchor</label>
         <label><input id="toggle-right" type="checkbox" checked>Right anchor</label>
         <label>Spacing <input id="spacing" type="range" min="4" max="35" value="6"><output id="spacing-value">6%</output></label>
       </div>
+      <button id="replay-composition" type="button">Replay composition</button>
       <p>Rift and anchors are separate videos, not baked together. Reuse the anchor asset twice in Foundry; the right preview is mirrored.</p>
     </article>
     <article>
-      <h2>Golden rune anchor · brackets + sparks</h2>
-      <div class="stage checker"><video src="golden-rune-anchor.webm" autoplay loop muted playsinline aria-label="Standalone rune anchor"></video></div>
-      <div class="meta"><span>320 × 320 · 3 seconds</span><a href="golden-rune-anchor.webm" download>Download rune WebM</a></div>
+      <h2>Rune anchor · brackets + sparks</h2>
+      <label class="anchor-controls">Color <select id="preview-rune-anchor-color" data-palette data-default="radiant"></select></label>
+      <div class="stage grid"><video data-effect="rune-anchor" src="assets/rune-anchor/radiant.webm" loop muted playsinline aria-label="Standalone rune anchor"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/rune-anchor/radiant.webm" download>Download rune WebM</a></div>
     </article>
     <article>
-      <h2>Golden anchor · glowing orb + lightning</h2>
-      <div class="stage checker"><video src="golden-anchor.webm?v=2" autoplay loop muted playsinline aria-label="Standalone golden anchor"></video></div>
-      <div class="meta"><span>320 × 320 · 3 seconds</span><a href="golden-anchor.webm" download>Download anchor WebM</a></div>
+      <h2>Orb anchor · glowing orb + lightning</h2>
+      <label class="anchor-controls">Color <select id="preview-orb-anchor-color" data-palette data-default="radiant"></select></label>
+      <div class="stage grid"><video data-effect="orb-anchor" src="assets/orb-anchor/radiant.webm" loop muted playsinline aria-label="Standalone orb anchor"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/orb-anchor/radiant.webm" download>Download anchor WebM</a></div>
     </article>
     <article>
-      <h2>Original · neon slit</h2>
-      <div class="stage checker"><video src="purple-rift.webm?v=2" autoplay loop muted playsinline aria-label="Original neon rift"></video></div>
-      <div class="meta"><span>512 × 512 · 3 seconds</span><a href="purple-rift.webm" download>Download WebM</a></div>
+      <h2>Rift · neon slit</h2>
+      <label class="anchor-controls">Color <select id="preview-rift-color" data-palette data-default="purple"></select></label>
+      <div class="stage grid"><video data-effect="rift" src="assets/rift/purple.webm" loop muted playsinline aria-label="Original neon rift"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/rift/purple.webm" download>Download WebM</a></div>
     </article>
     <article>
-      <h2>Outward · layered spirals + shimmering core</h2>
-      <div class="stage checker"><video src="purple-rift-outward.webm?v=3" autoplay loop muted playsinline aria-label="Outward spiral rift"></video></div>
-      <div class="meta"><span>640 × 640 · 3 seconds</span><a href="purple-rift-outward.webm" download>Download WebM</a></div>
+      <h2>Vortex · layered spirals + shimmering core</h2>
+      <label class="anchor-controls">Color <select id="preview-vortex-color" data-palette data-default="purple"></select></label>
+      <div class="stage grid"><video data-effect="vortex" src="assets/vortex/purple.webm" loop muted playsinline aria-label="Outward spiral rift"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/vortex/purple.webm" download>Download WebM</a></div>
+    </article>
+    <article>
+      <h2>Vortex · open center</h2>
+      <label class="anchor-controls">Color <select id="preview-vortex-open-color" data-palette data-default="purple"></select></label>
+      <div class="stage grid"><video data-effect="vortex-open" src="assets/vortex-open/purple.webm" loop muted playsinline aria-label="Vortex · open center"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/vortex-open/purple.webm" download>Download WebM</a></div>
+      <p>Outward spirals only; the center is transparent.</p>
+    </article>
+    <article>
+      <h2>Vortex · black hole + photon ring</h2>
+      <label class="anchor-controls">Color <select id="preview-vortex-black-hole-color" data-palette data-default="purple"></select></label>
+      <div class="stage grid"><video data-effect="vortex-black-hole" src="assets/vortex-black-hole/purple.webm" loop muted playsinline aria-label="Vortex · black hole + photon ring"></video></div>
+      <div class="meta"><span>3 seconds · loop</span><a href="assets/vortex-black-hole/purple.webm" download>Download WebM</a></div>
+      <p>Perfectly circular dark core with a bright photon ring and orbiting light.</p>
+    </article>
+    <article>
+      <h2>Miasma · smoky ground pools</h2>
+      <label class="anchor-controls">Color <select id="preview-miasma-pool-color" data-palette data-default="necrotic"></select></label>
+      <div class="stage grid"><video data-effect="miasma-pool" src="assets/miasma-pool/necrotic.webm" loop muted playsinline aria-label="Top-down smoky miasma pools"></video></div>
+      <div class="meta"><span>4 seconds · loop</span><a href="assets/miasma-pool/necrotic.webm" download>Download WebM</a></div>
+      <p>Dark, irregular floor pools with billowing smoke from several vents; no portal or hard rim.</p>
     </article>
   </div>
-  <p>Use Chrome or Firefox for transparent WebM playback. The JPG preview is not transparent. No blend modes or color filters are applied here.</p>
+  <p>One-shots show transparent PNG posters until Replay, then hold their last frame. Most end transparent; portal-open and vortex-opening hold their completed effect for a loop handoff. Their closing clips start from that effect. Color changes reset one-shots to their poster. Replay while paused waits for Resume.</p>
+  <p>Use Chrome or Firefox for transparent WebM playback. No blend modes or color filters are applied here.</p>
 </main>
+<template id="palette-options"><optgroup label="Damage types"><option value="acid">Acid</option><option value="cold">Cold</option><option value="fire">Fire</option><option value="force">Force</option><option value="lightning">Lightning</option><option value="melee">Melee</option><option value="necrotic">Necrotic</option><option value="poison">Poison</option><option value="psychic">Psychic</option><option value="radiant">Radiant</option><option value="thunder">Thunder</option></optgroup><optgroup label="Original colors"><option value="purple">Purple</option><option value="gold">Gold</option><option value="red">Red</option><option value="orange">Orange</option></optgroup></template>
+<script src="assets/version.js"></script>
+<script src="sequence-player.js"></script>
 <script>
-  const videos = [...document.querySelectorAll('video')];
+  function assetUrl(effect, color, extension = 'webm') {
+    return `assets/${effect}/${color}.${extension}?v=${window.ASSET_VERSION}`;
+  }
+  const oneShots = new Map([
+    ['teleport-departure', 'Teleport · departure'],
+    ['teleport-arrival', 'Teleport · arrival'],
+    ['impact-burst', 'Impact · burst'],
+    ['ground-eruption', 'Ground · eruption'],
+    ['casting-release', 'Casting · release'],
+    ['dispel', 'Dispel'],
+    ['portal-open', 'Portal · open'],
+    ['portal-close', 'Portal · close'],
+    ['vortex-opening', 'Vortex · opening'],
+    ['vortex-closing', 'Vortex · closing'],
+  ]);
+  for (const [effect, title] of oneShots) {
+    const option = document.createElement('option');
+    option.value = effect;
+    option.textContent = `${title} · one-shot`;
+    document.querySelector('#rift-style').append(option);
+    const article = document.createElement('article');
+    article.innerHTML = `
+      <h2>${title}</h2>
+      <div class="anchor-controls">
+        <label>Color <select id="preview-${effect}-color" data-palette data-default="purple"></select></label>
+        <button type="button" data-replay="${effect}" aria-label="Replay ${title}">Replay</button>
+      </div>
+      <div class="stage grid"><video data-effect="${effect}" src="${assetUrl(effect, 'purple')}" poster="${assetUrl(effect, 'purple', 'png')}" preload="none" muted playsinline aria-label="${title}"></video></div>
+      <div class="meta"><span>2 seconds · one-shot</span><a href="${assetUrl(effect, 'purple')}" download>Download WebM</a></div>
+      <div class="meta"><a data-poster-download href="${assetUrl(effect, 'purple', 'png')}" download>Download transparent PNG poster</a></div>`;
+    document.querySelector('.assets').append(article);
+  }
+  for (const select of document.querySelectorAll("select[data-palette]")) {
+    select.append(document.querySelector("#palette-options").content.cloneNode(true));
+    select.value = select.dataset.default;
+  }
+  const videos = [...document.querySelectorAll('video:not([data-sequence-clip])')];
   const stages = [...document.querySelectorAll('.stage')];
   const background = document.querySelector('#background');
   const color = document.querySelector('#color');
@@ -111,13 +203,10 @@
   const status = document.querySelector('#status');
 
   function updateAnchors() {
-    const variant = document.querySelector('#anchor-style').value;
     for (const anchor of document.querySelectorAll('.anchor')) {
-      anchor.hidden = anchor.dataset.variant !== variant ||
-        !document.querySelector(`#toggle-${anchor.dataset.side}`).checked;
+      anchor.hidden = !document.querySelector(`#toggle-${anchor.dataset.side}`).checked;
     }
   }
-  document.querySelector('#anchor-style').addEventListener('change', updateAnchors);
   for (const side of ['left', 'right']) {
     document.querySelector(`#toggle-${side}`).addEventListener('change', updateAnchors);
   }
@@ -136,6 +225,7 @@
       stage.style.setProperty('--backdrop', value === 'custom' ? color.value : value.startsWith('#') ? value : '#343434');
     }
   }
+  updateBackground();
   background.addEventListener('change', updateBackground);
   color.addEventListener('input', () => { background.value = 'custom'; updateBackground(); });
   document.querySelector('#size').addEventListener('input', event => {
@@ -143,36 +233,144 @@
     document.documentElement.style.setProperty('--size', size);
     document.querySelector('#size-value').value = size;
   });
-  document.querySelector('#speed').addEventListener('change', event => {
-    videos.forEach(video => { video.playbackRate = Number(event.target.value); });
+  const speed = document.querySelector('#speed');
+  let playing = true;
+  const sequence = new SequencedPlayer(document.querySelector('#sequence-demo'), {
+    assetUrl,
+    chains: {
+      rift: { opening: 'portal-open', looping: 'rift', closing: 'portal-close' },
+      vortex: { opening: 'vortex-opening', looping: 'vortex', closing: 'vortex-closing' },
+    },
   });
-  async function start() {
-    try {
-      await Promise.all(videos.map(video => video.play()));
-      play.textContent = 'Pause';
-      status.hidden = true;
-    } catch (error) {
-      videos.forEach(video => video.pause());
-      play.textContent = 'Play';
-      status.textContent = `Playback could not start: ${error.message}. Try Play or open this page in Chrome or Firefox.`;
+  const playback = new Map(videos.map(video => [video, {
+    phase: oneShots.has(video.dataset.effect) ? 'idle' : 'active',
+    revision: 0,
+    pending: null,
+  }]));
+
+  function invalidate(video) {
+    const state = playback.get(video);
+    state.revision++;
+    state.pending = null;
+    video.pause();
+  }
+
+  function applyVideoPlayback(video) {
+    const state = playback.get(video);
+    video.defaultPlaybackRate = Number(speed.value);
+    video.playbackRate = Number(speed.value);
+    // The ended event can still be queued when another control is used.
+    if (!video.loop && video.ended) state.phase = 'ended';
+    if (!playing || state.phase !== 'active') {
+      invalidate(video);
+      return;
+    }
+    if (state.pending !== null || !video.paused) return;
+    const revision = ++state.revision;
+    state.pending = revision;
+    video.play().then(() => {
+      if (state.revision === revision) state.pending = null;
+    }).catch(error => {
+      if (state.revision !== revision) return;
+      state.pending = null;
+      // A failed start is local to this card, not a reason to stop other effects.
+      state.phase = 'failed';
+      video.pause();
+      status.textContent = `Could not play ${video.getAttribute('src')}: ${error.message}. Try Replay (or Restart / replay all) in Chrome or Firefox.`;
       status.hidden = false;
+    });
+  }
+
+  function applyPlayback() {
+    play.textContent = playing ? 'Pause' : 'Resume';
+    videos.forEach(applyVideoPlayback);
+    sequence.setRate(Number(speed.value));
+    sequence.setPaused(!playing);
+  }
+
+  function replayVideos(selection) {
+    status.hidden = true;
+    for (const video of selection) {
+      invalidate(video);
+      playback.get(video).phase = 'active';
+      if (video.error) video.load();
+      video.currentTime = 0;
+      applyVideoPlayback(video);
     }
   }
+
+  function setSource(video, effect, color) {
+    const src = assetUrl(effect, color);
+    const oneShot = oneShots.has(effect);
+    video.loop = !oneShot;
+    if (oneShot) video.poster = assetUrl(effect, color, 'png');
+    else video.removeAttribute('poster');
+    if (video.getAttribute('src') === src) return;
+    invalidate(video);
+    playback.get(video).phase = oneShot ? 'idle' : 'active';
+    video.preload = oneShot ? 'none' : 'auto';
+    video.src = src;
+    video.load();
+  }
+
+  function updateSources() {
+    status.hidden = true;
+    const riftStyle = document.querySelector('#rift-style').value;
+    const anchorStyle = document.querySelector('#anchor-style').value;
+    const riftColor = document.querySelector('#rift-color').value;
+    const anchorColor = document.querySelector('#anchor-color').value;
+    setSource(document.querySelector('.composition > .rift'), riftStyle, riftColor);
+    for (const anchor of document.querySelectorAll('.composition > .anchor')) {
+      setSource(anchor, anchorStyle, anchorColor);
+    }
+    for (const video of document.querySelectorAll('video[data-effect]')) {
+      setSource(video, video.dataset.effect, video.closest('article').querySelector('select[data-palette]').value);
+      video.closest('article').querySelector('a[download]').href = video.getAttribute('src');
+      const posterLink = video.closest('article').querySelector('[data-poster-download]');
+      if (posterLink) posterLink.href = video.getAttribute('poster');
+    }
+    applyPlayback();
+  }
+  for (const select of document.querySelectorAll('select[data-palette], #rift-style, #anchor-style')) {
+    if (!select.closest('#sequence-demo')) select.addEventListener('change', updateSources);
+  }
+  speed.addEventListener('change', applyPlayback);
   play.addEventListener('click', () => {
-    if (videos.some(video => !video.paused)) {
-      videos.forEach(video => video.pause());
-      play.textContent = 'Play';
-    } else { start(); }
+    playing = !playing;
+    status.hidden = true;
+    applyPlayback();
+  });
+  for (const button of document.querySelectorAll('[data-replay]')) {
+    button.addEventListener('click', () => replayVideos([button.closest('article').querySelector('video')]));
+  }
+  document.querySelector('#replay-composition').addEventListener('click', () => {
+    replayVideos(document.querySelectorAll('.composition > video'));
   });
   document.querySelector('#restart').addEventListener('click', () => {
-    videos.forEach(video => { video.currentTime = 0; });
-    start();
+    playing = true;
+    replayVideos(videos);
+    applyPlayback();
+    sequence.restart();
   });
+  videos.forEach(video => video.addEventListener('loadedmetadata', () => {
+    if (!video.dataset.effect) return;
+    const label = video.closest('article').querySelector('.meta span');
+    label.textContent = `${video.videoWidth} × ${video.videoHeight} · ${video.duration.toFixed(1)} seconds · ${video.loop ? 'loop' : 'one-shot'}`;
+  }));
+  videos.forEach(video => video.addEventListener('ended', () => {
+    if (!video.loop && video.ended) {
+      invalidate(video);
+      playback.get(video).phase = 'ended';
+      // Under load, playback can end after dropping the final presentation frame.
+      // Seek back into that frame so the held image is the actual encoded endpoint.
+      video.currentTime = Math.max(0, video.duration - 1 / 60);
+    }
+  }));
   videos.forEach(video => video.addEventListener('error', () => {
-    status.textContent = `Could not load ${video.getAttribute('src')}. Keep the WebM files beside this page and use a browser with VP9 WebM support.`;
+    status.textContent = `Could not load ${video.getAttribute('src')}. Keep the collection WebMs under assets/{effect}/{color}.webm and use a browser with VP9 WebM support.`;
     status.hidden = false;
   }));
-  start();
+  updateSources();
 </script>
 </body>
 </html>
