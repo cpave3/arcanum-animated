@@ -25,3 +25,15 @@ def compose(*layers):
 def centered_grid(size, unit):
     y, x = np.mgrid[:size, :size].astype(np.float32)
     return (x-size/2)/unit, (y-size/2)/unit
+
+
+def fade_horizontal_edges(image, fraction=.10):
+    """Feather cropped beams after bloom so even their glow reaches zero at the border."""
+    x = np.arange(image.width, dtype=float)
+    distance = np.minimum(x, image.width-1-x)
+    fade = np.clip(distance/(image.width*fraction), 0, 1)
+    fade = fade*fade*(3-2*fade)
+    result = image.copy()
+    alpha = np.asarray(image.getchannel('A'), dtype=float)*fade[None, :]
+    result.putalpha(Image.fromarray(np.rint(alpha).astype(np.uint8)))
+    return result

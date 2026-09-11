@@ -10,10 +10,12 @@ from animation_fx.primitives.timing import smooth
 
 SIZE = 640
 FPS = 30
-FRAMES = 90
-WINDUP_FRAMES = 5
-BLAST_FRAME = 24
-POSTER_FRAME = 48
+RUNE_STAGGER = 4
+RUNE_ARRIVAL = 8
+ASSEMBLED_FRAME = (len(runes.GLYPHS)-1)*RUNE_STAGGER + RUNE_ARRIVAL
+BLAST_FRAME = ASSEMBLED_FRAME + 18
+POSTER_FRAME = BLAST_FRAME + 24
+FRAMES = BLAST_FRAME + 66
 # Start, lifetime, reach (logical units), strength, angular offset.
 ECHOES = ((BLAST_FRAME, 43, 226, 1, 0), (BLAST_FRAME+7, 43, 213, .85, .19),
           (BLAST_FRAME+15, 42, 198, .72, .38))
@@ -46,21 +48,22 @@ def radiant_echo(frame, start, lifetime, reach, strength, rotation):
 
 def sacred_accents(frame):
     ink = Canvas(size=SIZE)
-    formation = smooth(frame/WINDUP_FRAMES)
-    charge_frames = max(0, min(frame, BLAST_FRAME)-WINDUP_FRAMES)
+    formation = smooth(frame/ASSEMBLED_FRAME)
+    charge_frames = max(0, min(frame, BLAST_FRAME)-ASSEMBLED_FRAME)
     # Preserve angular velocity as the inward spiral becomes an accelerating charge.
-    spin = .22*min(frame, WINDUP_FRAMES) + .22*charge_frames + .011*charge_frames**2
+    spin = .16*min(frame, ASSEMBLED_FRAME) + .16*charge_frames + .014*charge_frames**2
     gather = formation*(1-smooth((frame-BLAST_FRAME)/15))
     flight = min(1, max(0, (frame-BLAST_FRAME)/42))
-    glyph_alpha = formation if frame < BLAST_FRAME else (1-flight)**1.3
     for index, glyph in enumerate(runes.GLYPHS):
+        arrival = smooth((frame-index*RUNE_STAGGER)/RUNE_ARRIVAL)
+        glyph_alpha = arrival if frame < BLAST_FRAME else (1-flight)**1.3
         angle = index*math.tau/len(runes.GLYPHS) + spin
-        radius = 108-53*formation if frame < BLAST_FRAME else 55+165*(1-(1-flight)**1.6)
+        radius = 108-53*arrival if frame < BLAST_FRAME else 55+165*(1-(1-flight)**1.6)
         ink.rune(glyph, point(radius, angle), size=.72, rotation=angle+math.pi/2,
                  opacity=glyph_alpha)
-        ink.ring(92-20*formation, opacity=gather*.8, width=1,
+        ink.ring(92-20*arrival, opacity=gather*arrival*.8, width=1,
                  angle=angle-.22, arc=.44)
-        ink.ring(105-20*formation, opacity=gather*.4, width=1,
+        ink.ring(105-20*arrival, opacity=gather*arrival*.4, width=1,
                  angle=angle-.15, arc=.30)
     flash_age = frame-BLAST_FRAME
     if flash_age >= 0:
@@ -96,6 +99,6 @@ def render(frame):
         return Image.new('RGBA', (SIZE, SIZE))
     image = geometry.compose(*(radiant_echo(frame, *echo) for echo in ECHOES),
                              sacred_accents(frame))
-    fade = 1-smooth((frame-76)/12)
+    fade = 1-smooth((frame-(FRAMES-14))/12)
     image.putalpha(image.getchannel('A').point(lambda alpha: round(alpha*fade)))
     return image

@@ -149,6 +149,54 @@ class ViewerCatalogTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'invalid loop kind'):
             self.build()
 
+    def test_paired_entries_use_exported_local_clock_and_themed_palettes(self):
+        for count in (1, 2, 3):
+            pairing = {'effects': ['ray-hit'], 'event': 'Release',
+                       'times': [(12+10*i)/60 for i in range(count)], 'direction': 'right'}
+            self.export(f'ray-cast-{count}', ('fire', 'eldritch'), fps=60,
+                        frames=36+10*(count-1), duration=(36+10*(count-1))/60,
+                        cue_time=12/60, pairing=pairing)
+        hit_pairing = {'effects': ['ray-cast-1', 'ray-cast-2', 'ray-cast-3'],
+                       'event': 'Impact', 'times': [4/60], 'direction': 'from-left'}
+        self.export('ray-hit', ('fire', 'eldritch'), fps=60, frames=42,
+                    duration=42/60, cue_time=4/60, pairing=hit_pairing)
+        catalog = self.build()
+        entries = {entry['id']: entry for entry in catalog['effects']}
+        for name in ('ray-cast-1', 'ray-cast-2', 'ray-cast-3', 'ray-hit'):
+            exported = json.loads((self.output / name / 'effect.json').read_text())
+            self.assertEqual(entries[name]['pairing'], exported['pairing'])
+            self.assertNotEqual(entries[name]['pairing']['times'], EFFECTS[name].pairing['times'])
+            self.assertEqual(set(entries[name]['variants']), {'fire', 'eldritch'})
+            for partner in entries[name]['pairing']['effects']:
+                self.assertIn('eldritch', entries[partner]['variants'])
+        palettes = {palette['id']: palette for palette in catalog['palettes']}
+        self.assertEqual(len(palettes), 17)
+        for name in ('divine', 'eldritch'):
+            self.assertEqual(palettes[name]['group'], 'Themed colors')
+            self.assertEqual(palettes[name]['label'], name.title())
+
+    def test_invalid_pairing_metadata_fails_without_replacing_catalog(self):
+        pairing = {'effects': ['ray-hit'], 'event': 'Release',
+                   'times': [.4], 'direction': 'right'}
+        self.export('ray-cast-1', pairing=pairing)
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        invalid = [None, {}, *({**pairing, 'times': times} for times in
+                   ([], [-.1], [2], [float('nan')], [float('inf')], [True], [.7, .4], [.4, .4])),
+                   {**pairing, 'effects': []}, {**pairing, 'effects': ['missing']},
+                   {**pairing, 'effects': ['ray-cast-1']},
+                   {**pairing, 'direction': 'left'}]
+        for value in invalid:
+            with self.subTest(pairing=value):
+                self.export('ray-cast-1', pairing=value)
+                with self.assertRaises(ValueError):
+                    self.build()
+                self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+        self.export('ray-cast-1')
+        with self.assertRaisesRegex(ValueError, 'missing pairing metadata'):
+            self.build()
+        self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
     def test_cli_catalog_only_uses_exports_without_rendering(self):
         self.export('rift')
         before = (self.output / 'rift/purple.webm').stat().st_mtime_ns
@@ -165,9 +213,10 @@ class ViewerCatalogTests(unittest.TestCase):
     def test_cli_refreshes_after_each_successful_export(self):
         calls = []
 
-        def export(effect, colors, directory, profile):
+        def export(effect, colors, directory, profile, *, progress=None):
             calls.append(('export', directory.name))
-            self.export(directory.name, colors)
+            pairing = {'pairing': effect.pairing} if effect.pairing is not None else {}
+            self.export(directory.name, colors, **pairing)
 
         def build(output):
             calls.append(('catalog', output))

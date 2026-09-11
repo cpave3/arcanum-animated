@@ -5,7 +5,7 @@ from functools import lru_cache
 import numpy as np
 from PIL import Image
 
-from animation_fx.primitives import combustion, cracks, particles
+from animation_fx.primitives import combustion, cracks, gas, particles
 from animation_fx.primitives.canvas import Canvas, LIGHT
 from animation_fx.primitives.geometry import centered_grid, compose
 from animation_fx.primitives.timing import smooth
@@ -78,44 +78,44 @@ def projectile(frame):
     return attenuate(compose(tail, ball, core.finish()), smooth(t/.15))
 
 
+# Delay, outward destination, final radius. The central ignition triggers unequal pockets.
+GAS_BURSTS = ((0, (0, 0), .40), (.08, (.32, -.06), .27),
+              (.14, (-.28, .16), .30), (.20, (.08, .34), .28),
+              (.26, (-.13, -.34), .29), (.33, (.32, .26), .23),
+              (.40, (-.34, -.20), .25))
+
+
 def explosion(frame):
-    """Standalone transparent blast layer, timed from detonation, without ground or bolt."""
+    """Independent gas pockets inflate, push outward, ignite in succession, and cool."""
     age = frame/FPS
-    opacity = 1-smooth((age-.65)/1.35)
-    smoke_opacity = smooth(age/.3)*(1-smooth((age-1)/1.8))
-    if opacity <= 0 and smoke_opacity <= 0:
-        return Image.new('RGBA', (SIZE, SIZE))
-    radius = .10+.59*(1-math.exp(-age*5))
-    blast = combustion.flame_cloud(X, Y, radius, age*4, opacity)
-    # Slower, offset inner billows overtake the first shell rather than scaling as one disk.
-    inner_age = max(0, age-.10)
-    inner_opacity = smooth(inner_age/.12)*(1-smooth((inner_age-.35)/.95))
-    inner_radius = .07+.43*(1-math.exp(-inner_age*4))
-    inner = combustion.flame_cloud(X+.05, Y-.035, inner_radius, -age*5+2,
-                                   inner_opacity, roughness=.8, core_heat=.22, detail=1.5)
-    core_opacity = smooth(age/.035)*(1-smooth((age-.12)/.48))
-    core = combustion.flame_cloud(X, Y, .06+.23*(1-math.exp(-age*9)), age*7+4,
-                                  core_opacity, roughness=.4, core_heat=.6, detail=2)
+    clouds = []
+    for index, (delay, destination, extent) in enumerate(GAS_BURSTS):
+        local_age = age-delay
+        if not 0 < local_age < 1.95:
+            continue
+        expansion = 1-math.exp(-local_age*10)
+        transport = .25+.75*(1-math.exp(-local_age*4))
+        center = tuple(axis*transport for axis in destination)
+        clouds.append(gas.billow(SIZE, center, .045+(extent-.045)*expansion,
+                                 local_age, seed=index))
     detail = Canvas(size=SIZE)
-    shock_age = age/.85
+    shock_age = age/.65
     if 0 < shock_age < 1:
-        radius_units = 15+215*shock_age**.65
-        for i in range(3):
-            detail.ring(radius_units-i*3, (1-shock_age)**2*(.7-i*.16), 2)
-    detail.flash(67, math.exp(-((age-.08)/.10)**2))
+        detail.ring(15+215*shock_age**.6, (1-shock_age)**2*.65, 2)
+    detail.flash(67, math.exp(-((age-.06)/.085)**2))
     detail.sparks(age/1.8, radius=218, count=96)
-    smoke = combustion.smoke_cloud(X, Y, .12+.56*(1-math.exp(-age*2)), age*1.6, smoke_opacity)
-    return compose(smoke, blast, inner, core, detail.finish())
+    return compose(*clouds, detail.finish())
 
 
-def impact(frame):
+def impact(frame, *, projectile_layer=None, explosion_layer=None):
     """Compose independent bolt, explosion and ground components on one timeline."""
     if frame < IMPACT_FRAME:
-        return projectile(frame)
+        return (projectile_layer or projectile)(frame)
     age = (frame-IMPACT_FRAME)/FPS
     settle = (OPEN_FRAMES-1-IMPACT_FRAME)/FPS
     phase = math.tau*(age-settle)/4
-    return compose(ground(phase, smooth(age/.5)), explosion(frame-IMPACT_FRAME))
+    return compose(ground(phase, smooth(age/.5)),
+                   (explosion_layer or explosion)(frame-IMPACT_FRAME))
 
 
 def opening(frame):
@@ -133,7 +133,7 @@ def closing(frame):
                      1-smooth((t-.2)/.8))
 
 
-def one_shot(frame):
+def one_shot(frame, *, projectile_layer=None, explosion_layer=None):
     if frame < OPEN_FRAMES:
-        return impact(frame)
+        return impact(frame, projectile_layer=projectile_layer, explosion_layer=explosion_layer)
     return closing(frame-(OPEN_FRAMES-1))

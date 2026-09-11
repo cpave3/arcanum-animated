@@ -31,6 +31,14 @@ PALETTES = {
     'psychic': Palette(320, highlight_hue=335),
     'radiant': Palette(42),
     'thunder': Palette(245, highlight_hue=265),
+    'eldritch': Palette(285, gradient=(
+        (0.0, (.32, .01, 1.0)),
+        (.20, (.32, .01, 1.0)),
+        (.45, (.70, .02, 1.0)),
+        (.65, (1.0, .02, .65)),
+        (.85, (1.0, .01, .12)),
+        (1.0, (1.0, .02, .03)),
+    )),
     'divine': Palette(42, gradient=(
         (0.0, (.12, .30, 1.0)),
         (.22, (.12, .30, 1.0)),

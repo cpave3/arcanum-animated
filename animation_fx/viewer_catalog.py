@@ -16,7 +16,8 @@ def _metadata(effect, directory, has_variants):
             raise ValueError(f'{path}: missing delivery metadata for exported variants')
         return {'loop': effect.loop, 'duration': effect.frames / effect.fps,
                 'fps': effect.fps, 'frames': effect.frames, 'size': effect.size,
-                'cue_time': None if effect.cue_frame is None else effect.cue_frame / effect.fps}
+                'cue_time': None if effect.cue_frame is None else effect.cue_frame / effect.fps,
+                **({'pairing': effect.pairing} if effect.pairing is not None else {})}
     try:
         data = json.loads(path.read_text())
         if not isinstance(data, dict) or type(data.get('loop')) is not bool:
@@ -29,6 +30,26 @@ def _metadata(effect, directory, has_variants):
                 raise ValueError(f'{key} must be an integer')
         if not math.isclose(data['duration'], data['frames'] / data['fps'], rel_tol=1e-6):
             raise ValueError('duration must match frames / fps')
+        pairing = data.get('pairing')
+        if effect.pairing is not None and pairing is None:
+            raise ValueError('paired effect is missing pairing metadata; render it again')
+        if pairing is not None:
+            if not isinstance(pairing, dict):
+                raise ValueError('pairing must be an object')
+            partners, times = pairing.get('effects'), pairing.get('times')
+            if (not isinstance(partners, list) or not partners
+                    or any(not isinstance(item, str) or not item for item in partners)
+                    or len(set(partners)) != len(partners)):
+                raise ValueError('pairing effects must be distinct effect IDs')
+            if (not isinstance(times, list) or not times
+                    or any(type(t) not in (int, float) or not math.isfinite(t)
+                           or not 0 <= t < data['duration'] for t in times)
+                    or any(a >= b for a, b in zip(times, times[1:]))):
+                raise ValueError('pairing times must increase within the clip duration')
+            if not isinstance(pairing.get('event'), str) or not pairing['event']:
+                raise ValueError('pairing event must be a label')
+            if pairing.get('direction') not in ('right', 'from-left'):
+                raise ValueError('invalid pairing direction')
         cue = data['cue_time']
         if cue is not None and (type(cue) not in (int, float) or not math.isfinite(cue)
                                 or not 0 <= cue <= data['duration']):
@@ -75,8 +96,14 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
                              else effect.default_color,
             **{key: metadata[key] for key in ('duration', 'fps', 'frames', 'size', 'cue_time')},
             'variants': variants,
+            **({'pairing': metadata['pairing']} if 'pairing' in metadata else {}),
         })
     by_id = {effect['id']: effect for effect in effects}
+    for entry in effects:
+        if 'pairing' in entry:
+            for partner in entry['pairing']['effects']:
+                if partner not in by_id or partner == entry['id']:
+                    raise ValueError(f"{entry['id']}: unknown or self-referencing paired effect {partner!r}")
     sequences = []
     for name, sequence in SEQUENCES.items():
         steps = []

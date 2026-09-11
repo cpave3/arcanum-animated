@@ -253,6 +253,22 @@ async function initialize() {
       button.setAttribute('aria-label', palette.label); button.setAttribute('aria-pressed', String(palette.id === selectedColor));
       button.addEventListener('click', () => setColor(palette.id)); $('palette-swatches').append(button);
     }
+    $('pairing').hidden = !selected.pairing;
+    $('paired-effects').replaceChildren();
+    if (selected.pairing) {
+      const pair = selected.pairing;
+      $('pairing-cues').textContent = `${pair.event}: ${pair.times.map(seconds).join(', ')} · Beam ${pair.direction.replace('-', ' ')}`;
+      for (const id of pair.effects) {
+        const partner = effects.get(id);
+        const button = element('button', '', `Pair with ${partner.title}`); button.type = 'button';
+        button.dataset.pairedEffect = id;
+        button.addEventListener('click', () => {
+          if (colors(partner).includes(selectedColor)) preferences.set(partner.id, selectedColor);
+          selectEntry(partner, true);
+        });
+        $('paired-effects').append(button);
+      }
+    }
     updateDownloads();
     player.load(selectedColor ? specFor(selected, selectedColor) : null);
     updateCurrentMark();

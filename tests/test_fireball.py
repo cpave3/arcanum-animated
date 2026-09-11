@@ -78,17 +78,29 @@ class FireballTests(unittest.TestCase):
         self.assertGreater(image[radius < 7, :3].mean(),
                            image[(radius > 27) & (radius < 32), :3].mean()+20)
 
-    def test_explosion_inner_billows_and_core_contribute_separate_layers(self):
-        from animation_fx.primitives import combustion
-        original = combustion.flame_cloud
-        complete = np.asarray(EFFECTS['fireball'].render(26, 'fire'))
-        for omitted in (.22, .6):
-            def without_layer(*args, **kwargs):
-                if kwargs.get('core_heat') == omitted:
+    def test_gas_pockets_ignite_in_succession_expand_and_move_outward(self):
+        from animation_fx.primitives import gas
+        original = gas.billow
+        samples = {}
+        for frame in (16, 20, 26, 32):
+            with patch.object(gas, 'billow', wraps=original) as spy:
+                image = np.asarray(EFFECTS['fireball'].render(frame, 'fire'))
+            self.assertGreater(image[..., 3].sum(), 0)
+            samples[frame] = {call.kwargs['seed']: call.args for call in spy.call_args_list}
+        self.assertEqual(set(samples[16]), {0})
+        self.assertGreater(len(samples[26]), len(samples[20]))
+        self.assertGreater(len(samples[32]), len(samples[26]))
+        early, late = samples[20][1], samples[32][1]
+        self.assertGreater(late[2], early[2])
+        self.assertGreater(np.linalg.norm(late[1]), np.linalg.norm(early[1]))
+        complete = np.asarray(EFFECTS['fireball'].render(32, 'fire'))
+        for omitted in (1, 4, 6):
+            def without_pocket(*args, **kwargs):
+                if kwargs['seed'] == omitted:
                     return Image.new('RGBA', (640, 640))
                 return original(*args, **kwargs)
-            with patch.object(combustion, 'flame_cloud', side_effect=without_layer):
-                changed = np.asarray(EFFECTS['fireball'].render(26, 'fire'))
+            with patch.object(gas, 'billow', side_effect=without_pocket):
+                changed = np.asarray(EFFECTS['fireball'].render(32, 'fire'))
             self.assertGreater(np.abs(complete.astype(float)-changed).mean(), .1)
 
     def test_blast_is_broad_centered_and_top_down_without_other_layers(self):

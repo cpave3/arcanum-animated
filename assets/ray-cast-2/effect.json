@@ -1,0 +1,22 @@
+{
+  "loop": false,
+  "fps": 30,
+  "frames": 46,
+  "duration": 1.5333333333333334,
+  "size": 384,
+  "source_size": 640,
+  "profile": "vtt",
+  "cue_time": 0.4,
+  "poster_time": 0.5333333333333333,
+  "pairing": {
+    "effects": [
+      "ray-hit"
+    ],
+    "event": "Release",
+    "times": [
+      0.4,
+      0.7333333333333333
+    ],
+    "direction": "right"
+  }
+}

@@ -1,10 +1,11 @@
 """Register effects here; each master renderer returns a straight-alpha RGBA frame."""
 from dataclasses import dataclass
+from functools import partial
 from typing import Protocol
 
 from PIL import Image
 
-from animation_fx.effects import fireball, miasma_pool, one_shots, turn_undead, vortex_transitions
+from animation_fx.effects import fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
 from animation_fx.effects import orb_anchor, rift, rune_anchor, vortex, vortex_black_hole, vortex_open
 from animation_fx.palettes import PALETTES, colorize
 from animation_fx.recipe import FrameRecipe
@@ -30,6 +31,18 @@ class Effect:
     role: str = 'effect'
     tags: tuple[str, ...] = ()
     default_color: str = 'purple'
+    paired_effects: tuple[str, ...] = ()
+    event_frames: tuple[int, ...] = ()
+    event_label: str | None = None
+    direction: str | None = None
+
+    @property
+    def pairing(self):
+        if not self.paired_effects:
+            return None
+        return {'effects': list(self.paired_effects), 'event': self.event_label,
+                'times': [frame/self.fps for frame in self.event_frames],
+                'direction': self.direction}
 
     @property
     def size(self):
@@ -61,6 +74,11 @@ EFFECTS = {
                        'purple', loop=False, cue_frame=fireball.IMPACT_FRAME, poster_frame=34, default_color='fire',
                        description='A side-on bolt detonates in a top-down blast, leaving fissures and embers that fade.',
                        tags=('projectile', 'explosion', 'scorch')),
+    'fireball-stylized': Effect(fireball_stylized, 'purple', loop=False,
+                                cue_frame=fireball.IMPACT_FRAME, poster_frame=26, default_color='fire',
+                                title='Fireball · Stylized',
+                                description='Abstract rounded flame lobes, bold hot-color bands, and flying cinders; the original scorch finish.',
+                                tags=('projectile', 'explosion', 'stylized', 'scorch')),
     'fireball-opening': Effect(FrameRecipe(fireball.opening, SIZE=640, FRAMES=fireball.OPEN_FRAMES),
                                'purple', loop=False, cue_frame=fireball.IMPACT_FRAME, poster_frame=34, default_color='fire',
                                description='The same fireball impact settles into persistent burning ground.'),
@@ -108,6 +126,29 @@ EFFECTS = {
 }
 
 
+for count in (1, 2, 3):
+    EFFECTS[f'ray-cast-{count}'] = Effect(
+        FrameRecipe(partial(paired_rays.caster, count=count), SIZE=paired_rays.SIZE,
+                    FPS=paired_rays.FPS, FRAMES=paired_rays.caster_frames(count)),
+        'purple', loop=False, cue_frame=paired_rays.CHARGE_FRAMES,
+        poster_frame=paired_rays.CHARGE_FRAMES+paired_rays.HIT_FRAME,
+        title=f'Ray caster · {count} beam' + ('s' if count > 1 else ''), default_color='fire',
+        description=f'A short charge and {count} rapid rightward beam burst' + ('s.' if count > 1 else '.'),
+        tags=('paired', 'caster', 'beam', 'scorching-ray', 'eldritch-blast'),
+        paired_effects=('ray-hit',), event_frames=paired_rays.release_frames(count),
+        event_label='Release', direction='right')
+
+EFFECTS['ray-hit'] = Effect(
+    FrameRecipe(paired_rays.target, SIZE=paired_rays.SIZE, FPS=paired_rays.FPS,
+                FRAMES=paired_rays.HIT_FRAMES),
+    'purple', loop=False, cue_frame=paired_rays.HIT_FRAME, poster_frame=paired_rays.HIT_FRAME+2,
+    title='Ray target · Impact', default_color='fire',
+    description='A matching beam enters from the left and strikes the target at the canvas center.',
+    tags=('paired', 'target', 'beam', 'scorching-ray', 'eldritch-blast'),
+    paired_effects=tuple(f'ray-cast-{count}' for count in (1, 2, 3)),
+    event_frames=(paired_rays.HIT_FRAME,), event_label='Impact', direction='from-left')
+
+
 @dataclass(frozen=True)
 class Sequence:
     title: str
@@ -133,4 +174,4 @@ SEQUENCES = {
 # Palette geometry stays in palettes.py; viewer grouping is presentation only.
 ORIGINAL_COLORS = frozenset(('purple', 'gold', 'red', 'orange'))
 
-THEMED_COLORS = frozenset(('divine',))
+THEMED_COLORS = frozenset(('divine', 'eldritch'))
