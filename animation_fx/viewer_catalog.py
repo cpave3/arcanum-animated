@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 import tempfile
 
-from animation_fx.catalog import EFFECTS, ORIGINAL_COLORS, SEQUENCES
+from animation_fx.catalog import EFFECTS, ORIGINAL_COLORS, SEQUENCES, THEMED_COLORS
 from animation_fx.palettes import PALETTES
 
 
@@ -101,7 +101,8 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
     for name, palette in PALETTES.items():
         rgb = colorsys.hsv_to_rgb(palette.hue / 360, palette.saturation_scale, 1)
         palettes.append({'id': name, 'label': name.title(),
-                         'group': 'Original colors' if name in ORIGINAL_COLORS else 'Damage types',
+                         'group': 'Original colors' if name in ORIGINAL_COLORS else
+                                  'Themed colors' if name in THEMED_COLORS else 'Damage types',
                          'swatch': '#' + ''.join(f'{round(channel * 255):02x}' for channel in rgb)})
     catalog = {'schema': 1, 'palettes': palettes, 'effects': effects, 'sequences': sequences}
     output_dir.mkdir(parents=True, exist_ok=True)

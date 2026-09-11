@@ -35,7 +35,11 @@ def export_effect(effect: Effect, colors: list[str], directory: Path,
                            '-r', str(effect.fps), '-i', '-', '-an', '-c:v', 'libvpx-vp9',
                            '-pix_fmt', 'yuva420p', '-b:v', '0', '-crf', str(profile.crf),
                            '-deadline', 'good', '-cpu-used', str(profile.cpu_used), '-threads', '2',
-                           '-auto-alt-ref', '0', str(work / f'{color}.webm')]
+                           '-auto-alt-ref', '0']
+                if not effect.loop:
+                    # Reset alpha prediction so a fully clear endpoint cannot retain quantized residue.
+                    command.extend(['-force_key_frames', f'expr:eq(n,{effect.frames-1})'])
+                command.append(str(work / f'{color}.webm'))
                 encoders[color] = stack.enter_context(subprocess.Popen(command, stdin=subprocess.PIPE))
             for frame in range(effect.frames):
                 master = effect.master(frame)

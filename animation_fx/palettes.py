@@ -1,4 +1,4 @@
-"""Hue-based colorways preserve brightness and alpha, with optional saturation scaling."""
+"""Hue shifts and brightness-indexed gradients preserve HSV value and alpha."""
 from dataclasses import dataclass
 
 import numpy as np
@@ -10,6 +10,9 @@ class Palette:
     hue: float  # Degrees on the HSV color wheel.
     highlight_hue: float | None = None
     saturation_scale: float = 1.0
+    # Ordered (HSV value, RGB tint) stops in [0, 1], with nonzero tints.
+    # Overrides hue/saturation mapping; hue still supplies the viewer swatch.
+    gradient: tuple[tuple[float, tuple[float, float, float]], ...] | None = None
 
 
 PALETTES = {
@@ -28,16 +31,36 @@ PALETTES = {
     'psychic': Palette(320, highlight_hue=335),
     'radiant': Palette(42),
     'thunder': Palette(245, highlight_hue=265),
+    'divine': Palette(42, gradient=(
+        (0.0, (.12, .30, 1.0)),
+        (.22, (.12, .30, 1.0)),
+        (.50, (1.0, .72, .18)),
+        (.72, (1.0, .82, .35)),
+        (.93, (.82, .92, 1.0)),
+        (1.0, (.95, .98, 1.0)),
+    )),
 }
 
 
 def colorize(image: Image.Image, source: Palette, target: Palette) -> Image.Image:
-    """Shift a master palette without turning dark cores into bright color fills."""
+    """Recolor a master without lifting dark cores or changing alpha.
+
+    Gradients interpolate RGB tints by input HSV value, then normalize the tint
+    to that same value. Source hue and saturation do not affect gradient output.
+    Equal palettes return an independent, byte-identical copy.
+    """
     if source == target:
         return image.copy()
     pixels = np.asarray(image).copy()
     rgb = pixels[:, :, :3].astype(np.float32) / 255
     high, low = rgb.max(axis=2), rgb.min(axis=2)
+    if target.gradient is not None:
+        positions, tints = zip(*target.gradient)
+        tint = np.stack([np.interp(high, positions, channel)
+                         for channel in zip(*tints)], axis=-1)
+        tint *= (high / tint.max(axis=2))[:, :, None]
+        pixels[:, :, :3] = np.rint(tint * 255).astype(np.uint8)
+        return Image.fromarray(pixels)
     chroma = high - low
     denominator = np.where(chroma == 0, 1, chroma)
     r, g, b = np.moveaxis(rgb, -1, 0)

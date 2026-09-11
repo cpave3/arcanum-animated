@@ -9,7 +9,7 @@ from unittest.mock import patch
 import numpy as np
 from PIL import Image
 
-from animation_fx.catalog import EFFECTS
+from animation_fx.catalog import EFFECTS, SEQUENCES
 from animation_fx.palettes import PALETTES
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -40,7 +40,9 @@ class CollectionTests(unittest.TestCase):
                         self.assertTrue(np.all(center[:, :, 3] == 255))
                         self.assertLess(center[:, :, :3].max(), 90)
 
-    def test_one_shots_start_end_and_portal_handoff(self):
+    def test_one_shots_start_end_and_sequence_handoffs(self):
+        openings = {sequence.opening for sequence in SEQUENCES.values()}
+        closings = {sequence.closing for sequence in SEQUENCES.values()}
         for name, effect in EFFECTS.items():
             if effect.loop:
                 continue
@@ -49,15 +51,18 @@ class CollectionTests(unittest.TestCase):
                 last = np.asarray(effect.render(effect.frames-1, 'purple'))
                 peak = np.asarray(effect.render(effect.poster_frame, 'purple'))
                 self.assertGreater(peak[:, :, 3].max(), 100)
-                if name not in ('portal-close', 'vortex-closing'):
+                if name not in closings:
                     self.assertTrue(np.all(first[:, :, 3] == 0))
-                if name not in ('portal-open', 'vortex-opening'):
+                if name not in openings:
                     self.assertTrue(np.all(last[:, :, 3] == 0))
                 np.testing.assert_array_equal(last, np.asarray(effect.render(effect.frames, 'purple')))
-        for color in PALETTES:
-            steady = np.asarray(EFFECTS['rift'].render(0, color))
-            np.testing.assert_array_equal(steady, np.asarray(EFFECTS['portal-open'].render(59, color)))
-            np.testing.assert_array_equal(steady, np.asarray(EFFECTS['portal-close'].render(0, color)))
+        for name, sequence in SEQUENCES.items():
+            opening = EFFECTS[sequence.opening]
+            for color in PALETTES:
+                with self.subTest(sequence=name, color=color):
+                    steady = np.asarray(EFFECTS[sequence.looping].render(0, color))
+                    np.testing.assert_array_equal(steady, np.asarray(opening.render(opening.frames-1, color)))
+                    np.testing.assert_array_equal(steady, np.asarray(EFFECTS[sequence.closing].render(0, color)))
         departure = np.asarray(EFFECTS['teleport-departure'].render(24, 'purple'))
         reversed_arrival = np.asarray(EFFECTS['teleport-arrival'].render(59-24, 'purple'))
         self.assertFalse(np.array_equal(departure, reversed_arrival))

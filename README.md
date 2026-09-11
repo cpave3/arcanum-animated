@@ -1,7 +1,8 @@
 # Animation collection
 
-Transparent WebM effects for Foundry/Sequencer: seven loops and ten one-shots, each available in 11 damage palettes (the three physical types share `melee`) plus the four original colorways:
+Transparent WebM effects for Foundry/Sequencer: eight loops and fourteen one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and the thematic `divine` palette:
 
+- `fireball-embers`: scorched fissures, pulsing hot coals, and drifting sparks (384×384 VTT, 30 fps, 4-second loop).
 - `miasma-pool`: irregular dark floor pools with slow billowing smoke from multiple vents (384×384 VTT, 24 fps, 4-second loop).
 - `rift`: neon tear with a dark shimmering interior (384×384 VTT, 24 fps).
 - `vortex`: tear with layered outward spirals (384×384 VTT, 30 fps).
@@ -10,10 +11,14 @@ Transparent WebM effects for Foundry/Sequencer: seven loops and ten one-shots, e
 - `orb-anchor`: glowing orb, lightning, and sparks (256×256 VTT, 30 fps).
 - `rune-anchor`: vertical runes, side brackets, and sparks (256×256 VTT, 30 fps).
 
-Loops last 3 seconds, except the slower 4-second miasma pool. One-shots last 2 seconds (384×384 VTT, 30 fps).
+Loops last 3 seconds, except the 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Turn Undead (3 seconds) and the fireball clips below.
 
 | One-shot ID | Motion | Cue time at 1× |
 | --- | --- | --- |
+| `turn-undead` | Fast-forming glyphs orbit the caster, then fly outward intact with searing radiant echoes (90 frames, 3 s) | 0.80 s: release |
+| `fireball` | Left-to-center bolt, top-down blast, then scorched ground cools to empty (209 frames, ≈6.97 s) | 0.47 s: impact |
+| `fireball-opening` | Same impact settles into burning ground (120 frames, 4 s) | 0.47 s: impact; handoff at 4 s |
+| `fireball-closing` | Burning ground cools and scorch fades (90 frames, 3 s) | 0.00 s: replace `fireball-embers` loop |
 | `teleport-departure` | Spirals gather inward, swell, collapse into a flash, then scatter | 1.00 s: move/hide token |
 | `teleport-arrival` | Flash expands into rings and curling wisps | 0.40 s: show token |
 | `impact-burst` | Central flash, short traveling sparks, and an expanding shock ring | 0.23 s |
@@ -25,9 +30,11 @@ Loops last 3 seconds, except the slower 4-second miasma pool. One-shots last 2 s
 | `vortex-opening` | Rift opens, then swirl emerges outward from it | 2.00 s: hand off to `vortex` loop |
 | `vortex-closing` | Swirl is sucked inward, rift seals, shared closing sparks scatter | 0.00 s: replace `vortex` loop |
 
-One-shots do not wrap frames. All finish fully transparent **except `portal-open` and `vortex-opening`**. Their final source frames match `rift` and `vortex` frame 0, respectively, for geometrically aligned handoffs. `portal-close` and `vortex-closing` start on those matching source frames; switch from the loop at its cycle boundary. Lossy WebM compression can introduce small pixel differences between clips. Arrival and departure are independently animated, not reversed copies. Cue times refer to the effect starting, and scale with playback speed. These assets do not move tokens automatically.
+One-shots do not wrap frames. All finish fully transparent **except sequence openings: `portal-open`, `vortex-opening`, and `fireball-opening`**. Their final source frames exactly match `rift`, `vortex`, and `fireball-embers` frame 0, respectively, in every palette. The corresponding closing clips start on those same frames; switch from the loop at its cycle boundary. Lossy WebM compression can introduce small pixel differences between clips. Arrival and departure are independently animated, not reversed copies. Cue times refer to the effect starting, and scale with playback speed. These assets do not move tokens automatically.
 
 Original colors: `purple`, `gold`, `red`, `orange`.
+
+Thematic palette: `divine` combines blue shadows, warm gold, and icy white highlights. It is the default for Turn Undead, not a twelfth damage type.
 
 | Damage palette | Look |
 | --- | --- |
@@ -43,7 +50,7 @@ Original colors: `purple`, `gold`, `red`, `orange`.
 | `radiant` | Gold (same palette as `gold`) |
 | `thunder` | Indigo / violet |
 
-These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. There are currently 255 WebMs and matching PNGs.
+These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 352 WebMs and matching PNGs (22 effects × 16 palettes/colorways).
 
 ## Preview
 
@@ -64,10 +71,10 @@ The viewer reads `assets/catalog.json` into a searchable library with **Loops**,
 
 ### Chained sequences
 
-The library includes `portal-open → rift → portal-close` and `vortex-opening → vortex → vortex-closing`. Available palettes are those exported for all three clips.
+The library includes `portal-open → rift → portal-close`, `vortex-opening → vortex → vortex-closing`, and `fireball-opening → fireball-embers → fireball-closing`. Available palettes are those exported for all three clips.
 
 - Press **Start** to preload all three clips and begin opening. The steady clip repeats until you request **Close**.
-- **Close** during the loop waits for the next loop boundary (up to one 3-second loop at 1×), keeping source frames aligned. An early Close during opening queues closing immediately after opening, without entering the loop. Close during initial loading cancels the start.
+- **Close** during the loop waits for the next loop boundary (up to one loop at 1×: 3 seconds for portals, 4 seconds for fireball), keeping source frames aligned. An early Close during opening queues closing immediately after opening, without entering the loop. Close during initial loading cancels the start.
 - **Pause/Resume** and playback speed apply to the sequence. A queued close waits while paused. **Restart** begins again from opening.
 - Selecting another entry or palette resets the preview. After closing, the stage is empty and ready for another Start. Media failures show an error and allow retry.
 
@@ -81,10 +88,15 @@ Python 3.10+, Pillow, NumPy, and an FFmpeg build with `libvpx-vp9` are required.
 python3 -m pip install -r requirements.txt
 python3 render.py                                  # entire collection, VTT profile
 python3 render.py --profile high                    # native-resolution exports in assets-high/
-python3 render.py --effect one-shots               # all ten one-shots, all palettes
+python3 render.py --effect one-shots               # all fourteen one-shots, all palettes
 python3 render.py --effect teleport-arrival --color necrotic
 python3 render.py --effect rune-anchor --color red # one asset
 python3 render.py --effect miasma-pool --color necrotic
+python3 render.py --effect turn-undead --color divine # sacred caster-centered release
+python3 render.py --effect fireball --color fire    # finite impact and cooling
+python3 render.py --effect fireball-opening --color all
+python3 render.py --effect fireball-embers --color all
+python3 render.py --effect fireball-closing --color all
 python3 render.py --effect vortex-opening --color all
 python3 render.py --effect vortex --color all      # one effect, all colors
 python3 render.py --effect vortex-black-hole       # circular core + photon ring, all colors
@@ -121,14 +133,15 @@ Effects are recipes. Geometry, particle appearance, glyph definitions, and trans
 
 | Primitive | Where to refine it | Existing consumers |
 | --- | --- | --- |
-| Spark head/trail/glint | `animation_fx/primitives/particles.py:draw_spark` | Teleports, impacts, casting, dispel, portal/vortex transitions, both anchors, all vortex loops |
+| Spark head/trail/glint | `animation_fx/primitives/particles.py:draw_spark` | Teleports, impacts, casting, dispel, portal/vortex transitions, both anchors, all vortex loops, fireball, Turn Undead |
 | Burst particle motion | `particles.py:draw_burst` | All one-shot spark releases; no copied per-effect trails |
-| Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, Casting Release, Dispel |
+| Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, Casting Release, Dispel, Turn Undead |
 | Binding brackets | `runes.py:draw_brackets` | Rune anchor |
-| Ground fractures | `cracks.py:fracture_network` / `draw_cracks` | Ground Eruption; seeded trunks, forks and cross-fractures with progressive reveal |
+| Ground fractures | `cracks.py:fracture_network` / `draw_cracks` | Ground Eruption and fireball ground; seeded trunks, forks and cross-fractures with progressive reveal |
 | Rift styles | `rift.py:render_rift` (`tall` or `compact`) | Rift loop, vortex loop, both portal transition pairs |
 | Smoke spiral | `swirl.py:render_swirl` | Vortex, open vortex, black hole, vortex transitions |
 | Closing/opening accents | `transitions.py:transition_accents` | Both plain and swirling portals share the flash and finishing sparks |
+| Turbulent combustion | `combustion.py:turbulence` / `energy_field` / `flame_cloud` | Fireball projectile, explosion, and hot coals; Turn Undead radiant shells |
 | Placement/compositing | `geometry.py:scale_layer` / `compose` | Transition recipes; usable by new effects |
 | Timeline utilities | `timing.py:progress` / `smooth` | Finite effect recipes |
 
@@ -162,9 +175,19 @@ from animation_fx.recipe import FrameRecipe
 
 The existing rift-centered vortex is simply a shared swirl passed as the background to `render_rift(frame, 'compact', background=render_swirl(frame))`. Both portal pairs use `render_transition(...)`; enabling `with_swirl=True` adds the swirl stages without duplicating closing accents.
 
+### Turn Undead composition
+
+`animation_fx/effects/turn_undead.py` renders a 640×640, 30 fps, 3-second one-shot centered on the caster. Glyphs spiral inward as they form in 5 frames (≈0.17 s), then accelerate through more than a full orbit at a fixed radius releasing a central flash at frame 24 (0.80 s). The intact glyphs launch radially along their release directions and fade in flight, without fragmentation. Three independently timed radiant echoes start at frames 24, 31, and 39 through one parameterized `radiant_echo` renderer. Thin luminous shells and fluted coronas use shared turbulence and energy fields, not flame clouds. Canvas flashes, rings, rays, intact flying runes, and traveling sparks dissolve to full transparency, with no projectile or scorch. The poster is frame 48 (1.60 s), when all three echoes are visible. The purple master supports all 16 palettes; `divine` is the catalog default. Place the canvas center on the caster.
+
+### Fireball components and orientation
+
+`animation_fx/effects/fireball.py` composes three independent transparent layers: `projectile(frame)` for the fast, round bolt with an incandescent core, `explosion(frame)` for the layered blast with separately timed shell, inner billows, hot core, smoke, and sparks (frame relative to detonation), and `ground(phase, growth, energy)` for scorch, fractures, coals, and sparks. Shared combustion primitives provide turbulent flame fields; ground reuses the fracture and spark painters. The projectile travels horizontally **from the left edge toward the canvas center**, not upward. At frame 14 (≈0.47 s) it becomes a broad, centered, top-down explosion. Place the canvas center at the intended impact point; `fire` is the default palette for all four clips and the sequence.
+
+The finite `fireball` and `fireball-opening` use the same impact timeline. Opening frame 119, embers frame 0, and closing frame 0 are pixel-identical before encoding in every palette. Embers repeat over 120 frames. The finite shot continues with closing frame 1 after opening frame 119, avoiding a duplicated handoff frame: 120 + 90 − 1 = 209 frames. Its first and last frames are fully transparent, as are the opening’s first frame and closing’s last frame. Ground can remain visible without reaching fully opaque alpha.
+
 Other infrastructure:
 - `animation_fx/layers.py`: glow compositing and dark-shimmer material.
-- `animation_fx/palettes.py`: named colorways and shared HSV mapping.
+- `animation_fx/palettes.py`: named colorways, shared HSV mapping, and optional brightness-indexed gradients (used by Divine), preserving alpha and brightness.
 - `animation_fx/catalog.py`: effect registration, centralized `SEQUENCES`, and public `Effect.render(frame, color)` API.
 - `animation_fx/viewer_catalog.py`: generated viewer manifest from registries and completed exports.
 - `animation_fx/recipe.py`: callable frame recipes with size/timing metadata.
@@ -175,7 +198,7 @@ After refining a primitive, rebuild its consumers (or run `python3 render.py` fo
 
 ### Add a color
 
-Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py`, then generate with `--color your-name`. The generated catalog supplies palette options to the viewer; no HTML edit is needed. Source-to-target hue offsets preserve color variation within the master artwork. Optional `highlight_hue` introduces a brightness-dependent second color; `saturation_scale` mutes the palette without brightening dark cores. All registered effects automatically support every palette through the CLI.
+Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py`, then generate with `--color your-name`. The generated catalog supplies palette options to the viewer; no HTML edit is needed. Source-to-target hue offsets preserve color variation within the master artwork. Optional `highlight_hue` introduces a brightness-dependent second color; `saturation_scale` mutes the palette without brightening dark cores. For multi-tone palettes such as Divine, `gradient` supplies brightness-indexed RGB tint stops while preserving source brightness and alpha. The viewer’s themed grouping is declared in `THEMED_COLORS` alongside the original-color grouping in the catalog. All registered effects automatically support every palette through the CLI.
 
 ### Add an effect
 
@@ -195,7 +218,7 @@ Register a `Sequence` in `SEQUENCES` in `animation_fx/catalog.py`, referencing a
 python3 -m unittest discover -s tests -v
 ```
 
-Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify loop handoffs and prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. FFmpeg and ffprobe must be on PATH.
+Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify exact sequence handoffs in every palette, fireball’s left-to-center travel, centered top-down blast, finite endpoints, smooth ember seam, and shared impact/cooling timeline. Fireball component mocks wrap or remove the actual layer functions through `Effect.render`, verifying both calls and visible contributions. Turn Undead tests exercise `Effect.render` for transparent clamped endpoints, centered outward motion, independently timed visible echoes, cue/poster strength, all-palette alpha preservation, and shared-painter contributions. Tests prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. FFmpeg and ffprobe must be on PATH.
 
 
 Optional browser regression checks (require Playwright CLI and a running viewer; use a fresh page for each):
@@ -224,8 +247,22 @@ playwright-cli goto http://localhost:8000
 playwright-cli eval "$(cat tests/viewer_sequences.js)"
 ```
 
-This exercises both real chains through multiple loop iterations, boundary-aligned Close, early Close, pause/resume, loading cancellation, and reuse after completion.
+This exercises the catalog’s real chains through multiple loop iterations, boundary-aligned Close, early Close, pause/resume, loading cancellation, and reuse after completion.
 
+
+Fireball browser check (visible bolt, expanding blast, transparent finish, and the sustained ember sequence):
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_fireball.js)"
+```
+
+Turn Undead browser check (Divine default, outward-moving decoded light, clean ending, all palette downloads):
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_turn_undead.js)"
+```
 
 Visible-frame regression check (also run with a short or narrow viewport):
 

@@ -90,9 +90,583 @@
       "label": "Thunder",
       "group": "Damage types",
       "swatch": "#1500ff"
+    },
+    {
+      "id": "divine",
+      "label": "Divine",
+      "group": "Themed colors",
+      "swatch": "#ffb200"
     }
   ],
   "effects": [
+    {
+      "id": "turn-undead",
+      "title": "Turn Undead",
+      "description": "A sacred seal releases searing caster-centered light and rapid radiant echoes.",
+      "kind": "one-shot",
+      "role": "effect",
+      "tags": [
+        "sacred",
+        "explosion",
+        "radial"
+      ],
+      "default_color": "divine",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 384,
+      "cue_time": 0.8,
+      "variants": {
+        "purple": {
+          "webm": "turn-undead/purple.webm",
+          "poster": "turn-undead/purple.png",
+          "bytes": 483647,
+          "version": "1789093022298773623-1789093001053404978"
+        },
+        "gold": {
+          "webm": "turn-undead/gold.webm",
+          "poster": "turn-undead/gold.png",
+          "bytes": 585777,
+          "version": "1789093022922784451-1789093001072405308"
+        },
+        "red": {
+          "webm": "turn-undead/red.webm",
+          "poster": "turn-undead/red.png",
+          "bytes": 542064,
+          "version": "1789093023547795295-1789093001093405672"
+        },
+        "orange": {
+          "webm": "turn-undead/orange.webm",
+          "poster": "turn-undead/orange.png",
+          "bytes": 560556,
+          "version": "1789093024179806262-1789093001111405984"
+        },
+        "acid": {
+          "webm": "turn-undead/acid.webm",
+          "poster": "turn-undead/acid.png",
+          "bytes": 668156,
+          "version": "1789093024818817350-1789093001129406297"
+        },
+        "cold": {
+          "webm": "turn-undead/cold.webm",
+          "poster": "turn-undead/cold.png",
+          "bytes": 646839,
+          "version": "1789093025442828178-1789093001148406626"
+        },
+        "fire": {
+          "webm": "turn-undead/fire.webm",
+          "poster": "turn-undead/fire.png",
+          "bytes": 611808,
+          "version": "1789093026074839145-1789093001169406991"
+        },
+        "force": {
+          "webm": "turn-undead/force.webm",
+          "poster": "turn-undead/force.png",
+          "bytes": 542064,
+          "version": "1789093026700850007-1789093001190407355"
+        },
+        "lightning": {
+          "webm": "turn-undead/lightning.webm",
+          "poster": "turn-undead/lightning.png",
+          "bytes": 629597,
+          "version": "1789093027324860835-1789093001209407685"
+        },
+        "melee": {
+          "webm": "turn-undead/melee.webm",
+          "poster": "turn-undead/melee.png",
+          "bytes": 601372,
+          "version": "1789093027880870482-1789093001228408014"
+        },
+        "necrotic": {
+          "webm": "turn-undead/necrotic.webm",
+          "poster": "turn-undead/necrotic.png",
+          "bytes": 611796,
+          "version": "1789093028525881675-1789093001248709211"
+        },
+        "poison": {
+          "webm": "turn-undead/poison.webm",
+          "poster": "turn-undead/poison.png",
+          "bytes": 603427,
+          "version": "1789093029162892728-1789093001267408691"
+        },
+        "psychic": {
+          "webm": "turn-undead/psychic.webm",
+          "poster": "turn-undead/psychic.png",
+          "bytes": 556799,
+          "version": "1789093029784903521-1789093001285409004"
+        },
+        "radiant": {
+          "webm": "turn-undead/radiant.webm",
+          "poster": "turn-undead/radiant.png",
+          "bytes": 585777,
+          "version": "1789093030420914557-1789093001304409333"
+        },
+        "thunder": {
+          "webm": "turn-undead/thunder.webm",
+          "poster": "turn-undead/thunder.png",
+          "bytes": 496866,
+          "version": "1789093031048925454-1789093001324409680"
+        },
+        "divine": {
+          "webm": "turn-undead/divine.webm",
+          "poster": "turn-undead/divine.png",
+          "bytes": 660329,
+          "version": "1789093031659936056-1789093001348410097"
+        }
+      }
+    },
+    {
+      "id": "fireball",
+      "title": "Fireball",
+      "description": "A side-on bolt detonates in a top-down blast, leaving fissures and embers that fade.",
+      "kind": "one-shot",
+      "role": "effect",
+      "tags": [
+        "projectile",
+        "explosion",
+        "scorch"
+      ],
+      "default_color": "fire",
+      "duration": 6.966666666666667,
+      "fps": 30,
+      "frames": 209,
+      "size": 384,
+      "cue_time": 0.4666666666666667,
+      "variants": {
+        "purple": {
+          "webm": "fireball/purple.webm",
+          "poster": "fireball/purple.png",
+          "bytes": 371440,
+          "version": "1789091739401834099-1789091644460214921"
+        },
+        "gold": {
+          "webm": "fireball/gold.webm",
+          "poster": "fireball/gold.png",
+          "bytes": 427787,
+          "version": "1789091739624837902-1789091644482215297"
+        },
+        "red": {
+          "webm": "fireball/red.webm",
+          "poster": "fireball/red.png",
+          "bytes": 376445,
+          "version": "1789091739843841637-1789091644506215706"
+        },
+        "orange": {
+          "webm": "fireball/orange.webm",
+          "poster": "fireball/orange.png",
+          "bytes": 406722,
+          "version": "1789091740066845440-1789091644528216081"
+        },
+        "acid": {
+          "webm": "fireball/acid.webm",
+          "poster": "fireball/acid.png",
+          "bytes": 455014,
+          "version": "1789091740322849806-1789091644550216457"
+        },
+        "cold": {
+          "webm": "fireball/cold.webm",
+          "poster": "fireball/cold.png",
+          "bytes": 436807,
+          "version": "1789091740572854070-1789091644572216831"
+        },
+        "fire": {
+          "webm": "fireball/fire.webm",
+          "poster": "fireball/fire.png",
+          "bytes": 438800,
+          "version": "1789091740790857788-1789091644595217224"
+        },
+        "force": {
+          "webm": "fireball/force.webm",
+          "poster": "fireball/force.png",
+          "bytes": 376445,
+          "version": "1789091741015861625-1789091644619217633"
+        },
+        "lightning": {
+          "webm": "fireball/lightning.webm",
+          "poster": "fireball/lightning.png",
+          "bytes": 435313,
+          "version": "1789091741268865940-1789091644641218008"
+        },
+        "melee": {
+          "webm": "fireball/melee.webm",
+          "poster": "fireball/melee.png",
+          "bytes": 442142,
+          "version": "1789091741508870033-1789091644664218400"
+        },
+        "necrotic": {
+          "webm": "fireball/necrotic.webm",
+          "poster": "fireball/necrotic.png",
+          "bytes": 429563,
+          "version": "1789091741741874007-1789091644686218776"
+        },
+        "poison": {
+          "webm": "fireball/poison.webm",
+          "poster": "fireball/poison.png",
+          "bytes": 426735,
+          "version": "1789091741994878322-1789091644709219168"
+        },
+        "psychic": {
+          "webm": "fireball/psychic.webm",
+          "poster": "fireball/psychic.png",
+          "bytes": 375901,
+          "version": "1789091742207881955-1789091644732219560"
+        },
+        "radiant": {
+          "webm": "fireball/radiant.webm",
+          "poster": "fireball/radiant.png",
+          "bytes": 427787,
+          "version": "1789091742430885758-1789091644755219953"
+        },
+        "thunder": {
+          "webm": "fireball/thunder.webm",
+          "poster": "fireball/thunder.png",
+          "bytes": 373192,
+          "version": "1789091742660889680-1789091644777220328"
+        },
+        "divine": {
+          "webm": "fireball/divine.webm",
+          "poster": "fireball/divine.png",
+          "bytes": 519496,
+          "version": "1789092464917207367-1789092395906030419"
+        }
+      }
+    },
+    {
+      "id": "fireball-opening",
+      "title": "Fireball Opening",
+      "description": "The same fireball impact settles into persistent burning ground.",
+      "kind": "one-shot",
+      "role": "effect",
+      "tags": [],
+      "default_color": "fire",
+      "duration": 4.0,
+      "fps": 30,
+      "frames": 120,
+      "size": 384,
+      "cue_time": 0.4666666666666667,
+      "variants": {
+        "purple": {
+          "webm": "fireball-opening/purple.webm",
+          "poster": "fireball-opening/purple.png",
+          "bytes": 315545,
+          "version": "1789091489750576433-1789091423074439308"
+        },
+        "gold": {
+          "webm": "fireball-opening/gold.webm",
+          "poster": "fireball-opening/gold.png",
+          "bytes": 358227,
+          "version": "1789091490031581226-1789091423095439666"
+        },
+        "red": {
+          "webm": "fireball-opening/red.webm",
+          "poster": "fireball-opening/red.png",
+          "bytes": 316607,
+          "version": "1789091490322586189-1789091423118440059"
+        },
+        "orange": {
+          "webm": "fireball-opening/orange.webm",
+          "poster": "fireball-opening/orange.png",
+          "bytes": 341309,
+          "version": "1789091490605591015-1789091423140440434"
+        },
+        "acid": {
+          "webm": "fireball-opening/acid.webm",
+          "poster": "fireball-opening/acid.png",
+          "bytes": 375462,
+          "version": "1789091490875595620-1789091423162440809"
+        },
+        "cold": {
+          "webm": "fireball-opening/cold.webm",
+          "poster": "fireball-opening/cold.png",
+          "bytes": 359042,
+          "version": "1789091491145600225-1789091423184441184"
+        },
+        "fire": {
+          "webm": "fireball-opening/fire.webm",
+          "poster": "fireball-opening/fire.png",
+          "bytes": 370735,
+          "version": "1789091491433605137-1789091423206441559"
+        },
+        "force": {
+          "webm": "fireball-opening/force.webm",
+          "poster": "fireball-opening/force.png",
+          "bytes": 316607,
+          "version": "1789091491723610083-1789091423229441952"
+        },
+        "lightning": {
+          "webm": "fireball-opening/lightning.webm",
+          "poster": "fireball-opening/lightning.png",
+          "bytes": 357200,
+          "version": "1789091492004614875-1789091423252442344"
+        },
+        "melee": {
+          "webm": "fireball-opening/melee.webm",
+          "poster": "fireball-opening/melee.png",
+          "bytes": 360714,
+          "version": "1789091492269619394-1789091423274442719"
+        },
+        "necrotic": {
+          "webm": "fireball-opening/necrotic.webm",
+          "poster": "fireball-opening/necrotic.png",
+          "bytes": 358712,
+          "version": "1789091492549624170-1789091423296443094"
+        },
+        "poison": {
+          "webm": "fireball-opening/poison.webm",
+          "poster": "fireball-opening/poison.png",
+          "bytes": 352387,
+          "version": "1789091492832628996-1789091423318443470"
+        },
+        "psychic": {
+          "webm": "fireball-opening/psychic.webm",
+          "poster": "fireball-opening/psychic.png",
+          "bytes": 316302,
+          "version": "1789091493124633976-1789091423341443862"
+        },
+        "radiant": {
+          "webm": "fireball-opening/radiant.webm",
+          "poster": "fireball-opening/radiant.png",
+          "bytes": 358227,
+          "version": "1789091493399638666-1789091423362444220"
+        },
+        "thunder": {
+          "webm": "fireball-opening/thunder.webm",
+          "poster": "fireball-opening/thunder.png",
+          "bytes": 315358,
+          "version": "1789091493686643561-1789091423385444612"
+        },
+        "divine": {
+          "webm": "fireball-opening/divine.webm",
+          "poster": "fireball-opening/divine.png",
+          "bytes": 460714,
+          "version": "1789092547506615888-1789092496638748363"
+        }
+      }
+    },
+    {
+      "id": "fireball-embers",
+      "title": "Fireball Embers",
+      "description": "Scorched fissures breathe with hot coals and drifting embers.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [],
+      "default_color": "fire",
+      "duration": 4.0,
+      "fps": 30,
+      "frames": 120,
+      "size": 384,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "fireball-embers/purple.webm",
+          "poster": "fireball-embers/purple.png",
+          "bytes": 75678,
+          "version": "1789091102504049776-1789091060371350106"
+        },
+        "gold": {
+          "webm": "fireball-embers/gold.webm",
+          "poster": "fireball-embers/gold.png",
+          "bytes": 85287,
+          "version": "1789091102778054326-1789091060390350422"
+        },
+        "red": {
+          "webm": "fireball-embers/red.webm",
+          "poster": "fireball-embers/red.png",
+          "bytes": 77508,
+          "version": "1789091103054058910-1789091060411350771"
+        },
+        "orange": {
+          "webm": "fireball-embers/orange.webm",
+          "poster": "fireball-embers/orange.png",
+          "bytes": 82147,
+          "version": "1789091103336063593-1789091060430351086"
+        },
+        "acid": {
+          "webm": "fireball-embers/acid.webm",
+          "poster": "fireball-embers/acid.png",
+          "bytes": 87335,
+          "version": "1789091103607068093-1789091060449351402"
+        },
+        "cold": {
+          "webm": "fireball-embers/cold.webm",
+          "poster": "fireball-embers/cold.png",
+          "bytes": 83001,
+          "version": "1789091103870072461-1789091060469351734"
+        },
+        "fire": {
+          "webm": "fireball-embers/fire.webm",
+          "poster": "fireball-embers/fire.png",
+          "bytes": 85516,
+          "version": "1789091104140076944-1789091060489352066"
+        },
+        "force": {
+          "webm": "fireball-embers/force.webm",
+          "poster": "fireball-embers/force.png",
+          "bytes": 77508,
+          "version": "1789091104406081362-1789091060509352398"
+        },
+        "lightning": {
+          "webm": "fireball-embers/lightning.webm",
+          "poster": "fireball-embers/lightning.png",
+          "bytes": 81981,
+          "version": "1789091104665085663-1789091060529352730"
+        },
+        "melee": {
+          "webm": "fireball-embers/melee.webm",
+          "poster": "fireball-embers/melee.png",
+          "bytes": 84611,
+          "version": "1789091104914089798-1789091060548353046"
+        },
+        "necrotic": {
+          "webm": "fireball-embers/necrotic.webm",
+          "poster": "fireball-embers/necrotic.png",
+          "bytes": 84354,
+          "version": "1789091105178094182-1789091060568353378"
+        },
+        "poison": {
+          "webm": "fireball-embers/poison.webm",
+          "poster": "fireball-embers/poison.png",
+          "bytes": 83579,
+          "version": "1789091105446098632-1789091060589353726"
+        },
+        "psychic": {
+          "webm": "fireball-embers/psychic.webm",
+          "poster": "fireball-embers/psychic.png",
+          "bytes": 77093,
+          "version": "1789091105710103016-1789091060609354059"
+        },
+        "radiant": {
+          "webm": "fireball-embers/radiant.webm",
+          "poster": "fireball-embers/radiant.png",
+          "bytes": 85287,
+          "version": "1789091105978107467-1789091060628354374"
+        },
+        "thunder": {
+          "webm": "fireball-embers/thunder.webm",
+          "poster": "fireball-embers/thunder.png",
+          "bytes": 75004,
+          "version": "1789091106245111901-1789091060649354723"
+        },
+        "divine": {
+          "webm": "fireball-embers/divine.webm",
+          "poster": "fireball-embers/divine.png",
+          "bytes": 97895,
+          "version": "1789092569893997693-1789092547727619657"
+        }
+      }
+    },
+    {
+      "id": "fireball-closing",
+      "title": "Fireball Closing",
+      "description": "Burning ground cools and its scorch marks disappear.",
+      "kind": "one-shot",
+      "role": "effect",
+      "tags": [],
+      "default_color": "fire",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 384,
+      "cue_time": 0.0,
+      "variants": {
+        "purple": {
+          "webm": "fireball-closing/purple.webm",
+          "poster": "fireball-closing/purple.png",
+          "bytes": 56203,
+          "version": "1789091774491432533-1789091743128897662"
+        },
+        "gold": {
+          "webm": "fireball-closing/gold.webm",
+          "poster": "fireball-closing/gold.png",
+          "bytes": 69533,
+          "version": "1789091774724436506-1789091743146897969"
+        },
+        "red": {
+          "webm": "fireball-closing/red.webm",
+          "poster": "fireball-closing/red.png",
+          "bytes": 59687,
+          "version": "1789091774935440105-1789091743166898310"
+        },
+        "orange": {
+          "webm": "fireball-closing/orange.webm",
+          "poster": "fireball-closing/orange.png",
+          "bytes": 65423,
+          "version": "1789091775154443840-1789091743184898617"
+        },
+        "acid": {
+          "webm": "fireball-closing/acid.webm",
+          "poster": "fireball-closing/acid.png",
+          "bytes": 78687,
+          "version": "1789091775399448019-1789091743205898975"
+        },
+        "cold": {
+          "webm": "fireball-closing/cold.webm",
+          "poster": "fireball-closing/cold.png",
+          "bytes": 77187,
+          "version": "1789091775649452282-1789091743224899299"
+        },
+        "fire": {
+          "webm": "fireball-closing/fire.webm",
+          "poster": "fireball-closing/fire.png",
+          "bytes": 67743,
+          "version": "1789091775866455983-1789091743243899623"
+        },
+        "force": {
+          "webm": "fireball-closing/force.webm",
+          "poster": "fireball-closing/force.png",
+          "bytes": 59687,
+          "version": "1789091776086459735-1789091743264899981"
+        },
+        "lightning": {
+          "webm": "fireball-closing/lightning.webm",
+          "poster": "fireball-closing/lightning.png",
+          "bytes": 77445,
+          "version": "1789091776337464016-1789091743283900305"
+        },
+        "melee": {
+          "webm": "fireball-closing/melee.webm",
+          "poster": "fireball-closing/melee.png",
+          "bytes": 81048,
+          "version": "1789091776575468075-1789091743302900629"
+        },
+        "necrotic": {
+          "webm": "fireball-closing/necrotic.webm",
+          "poster": "fireball-closing/necrotic.png",
+          "bytes": 70357,
+          "version": "1789091776806472014-1789091743322900971"
+        },
+        "poison": {
+          "webm": "fireball-closing/poison.webm",
+          "poster": "fireball-closing/poison.png",
+          "bytes": 73736,
+          "version": "1789091777048476142-1789091743343901329"
+        },
+        "psychic": {
+          "webm": "fireball-closing/psychic.webm",
+          "poster": "fireball-closing/psychic.png",
+          "bytes": 59218,
+          "version": "1789091777256479689-1789091743362901653"
+        },
+        "radiant": {
+          "webm": "fireball-closing/radiant.webm",
+          "poster": "fireball-closing/radiant.png",
+          "bytes": 69533,
+          "version": "1789091777475483424-1789091743381901977"
+        },
+        "thunder": {
+          "webm": "fireball-closing/thunder.webm",
+          "poster": "fireball-closing/thunder.png",
+          "bytes": 57759,
+          "version": "1789091777693487142-1789091743401902318"
+        },
+        "divine": {
+          "webm": "fireball-closing/divine.webm",
+          "poster": "fireball-closing/divine.png",
+          "bytes": 75161,
+          "version": "1789092586812286225-1789092570123001598"
+        }
+      }
+    },
     {
       "id": "rift",
       "title": "Rift",
@@ -196,6 +770,12 @@
           "poster": "rift/thunder.png",
           "bytes": 52176,
           "version": "1789041868849373193-1789041843910964826"
+        },
+        "divine": {
+          "webm": "rift/divine.webm",
+          "poster": "rift/divine.png",
+          "bytes": 51004,
+          "version": "1789092592521383590-1789092586926288169"
         }
       }
     },
@@ -302,6 +882,12 @@
           "poster": "miasma-pool/thunder.png",
           "bytes": 159693,
           "version": "1789047098486089884-1789047070943573349"
+        },
+        "divine": {
+          "webm": "miasma-pool/divine.webm",
+          "poster": "miasma-pool/divine.png",
+          "bytes": 307807,
+          "version": "1789092596345448808-1789092592596384870"
         }
       }
     },
@@ -408,6 +994,12 @@
           "poster": "vortex/thunder.png",
           "bytes": 586433,
           "version": "1789041914097114121-1789041869318380873"
+        },
+        "divine": {
+          "webm": "vortex/divine.webm",
+          "poster": "vortex/divine.png",
+          "bytes": 725463,
+          "version": "1789092602995562222-1789092596446450530"
         }
       }
     },
@@ -514,6 +1106,12 @@
           "poster": "vortex-open/thunder.png",
           "bytes": 582007,
           "version": "1789041958368842346-1789041914617122636"
+        },
+        "divine": {
+          "webm": "vortex-open/divine.webm",
+          "poster": "vortex-open/divine.png",
+          "bytes": 709211,
+          "version": "1789092608249651828-1789092603075563586"
         }
       }
     },
@@ -620,6 +1218,12 @@
           "poster": "vortex-black-hole/thunder.png",
           "bytes": 582202,
           "version": "1789042003340584185-1789041958858850429"
+        },
+        "divine": {
+          "webm": "vortex-black-hole/divine.webm",
+          "poster": "vortex-black-hole/divine.png",
+          "bytes": 710644,
+          "version": "1789092613600743087-1789092608339653362"
         }
       }
     },
@@ -728,6 +1332,12 @@
           "poster": "orb-anchor/thunder.png",
           "bytes": 408604,
           "version": "1789042023357914384-1789042003594588375"
+        },
+        "divine": {
+          "webm": "orb-anchor/divine.webm",
+          "poster": "orb-anchor/divine.png",
+          "bytes": 577105,
+          "version": "1789092617451808765-1789092613673744332"
         }
       }
     },
@@ -836,6 +1446,12 @@
           "poster": "rune-anchor/thunder.png",
           "bytes": 232717,
           "version": "1789042040334194418-1789042023629918871"
+        },
+        "divine": {
+          "webm": "rune-anchor/divine.webm",
+          "poster": "rune-anchor/divine.png",
+          "bytes": 290366,
+          "version": "1789092620937868218-1789092617519809925"
         }
       }
     },
@@ -942,6 +1558,12 @@
           "poster": "teleport-departure/thunder.png",
           "bytes": 149372,
           "version": "1789042063943583869-1789042048043321585"
+        },
+        "divine": {
+          "webm": "teleport-departure/divine.webm",
+          "poster": "teleport-departure/divine.png",
+          "bytes": 193664,
+          "version": "1789092626890969745-1789092623336909133"
         }
       }
     },
@@ -1048,6 +1670,12 @@
           "poster": "teleport-arrival/thunder.png",
           "bytes": 231586,
           "version": "1789042095757108653-1789042067789647312"
+        },
+        "divine": {
+          "webm": "teleport-arrival/divine.webm",
+          "poster": "teleport-arrival/divine.png",
+          "bytes": 311655,
+          "version": "1789092633487082238-1789092628134990961"
         }
       }
     },
@@ -1154,6 +1782,12 @@
           "poster": "impact-burst/thunder.png",
           "bytes": 104652,
           "version": "1789047407913892942-1789047390266561980"
+        },
+        "divine": {
+          "webm": "impact-burst/divine.webm",
+          "poster": "impact-burst/divine.png",
+          "bytes": 126900,
+          "version": "1789092639408183219-1789092634276095694"
         }
       }
     },
@@ -1260,6 +1894,12 @@
           "poster": "ground-eruption/thunder.png",
           "bytes": 72838,
           "version": "1789052797502491161-1789052781267229450"
+        },
+        "divine": {
+          "webm": "ground-eruption/divine.webm",
+          "poster": "ground-eruption/divine.png",
+          "bytes": 101519,
+          "version": "1789092649942362874-1789092643888259625"
         }
       }
     },
@@ -1366,6 +2006,12 @@
           "poster": "casting-release/thunder.png",
           "bytes": 217493,
           "version": "1789048418156620333-1789048400782327066"
+        },
+        "divine": {
+          "webm": "casting-release/divine.webm",
+          "poster": "casting-release/divine.png",
+          "bytes": 299456,
+          "version": "1789092656203469654-1789092652438405442"
         }
       }
     },
@@ -1472,6 +2118,12 @@
           "poster": "dispel/thunder.png",
           "bytes": 131797,
           "version": "1789048440113990959-1789048424885733916"
+        },
+        "divine": {
+          "webm": "dispel/divine.webm",
+          "poster": "dispel/divine.png",
+          "bytes": 157918,
+          "version": "1789092662229572426-1789092658574510090"
         }
       }
     },
@@ -1578,6 +2230,12 @@
           "poster": "portal-open/thunder.png",
           "bytes": 106971,
           "version": "1789048511139189817-1789048506264107529"
+        },
+        "divine": {
+          "webm": "portal-open/divine.webm",
+          "poster": "portal-open/divine.png",
+          "bytes": 121570,
+          "version": "1789092668334676545-1789092667991213169"
         }
       }
     },
@@ -1684,6 +2342,12 @@
           "poster": "vortex-opening/thunder.png",
           "bytes": 194062,
           "version": "1789048470458503155-1789048459100311436"
+        },
+        "divine": {
+          "webm": "vortex-opening/divine.webm",
+          "poster": "vortex-opening/divine.png",
+          "bytes": 260899,
+          "version": "1789092677526833313-1789092676692819089"
         }
       }
     },
@@ -1790,6 +2454,12 @@
           "poster": "vortex-closing/thunder.png",
           "bytes": 151100,
           "version": "1789048491133852141-1789048471021512658"
+        },
+        "divine": {
+          "webm": "vortex-closing/divine.webm",
+          "poster": "vortex-closing/divine.png",
+          "bytes": 186330,
+          "version": "1789092685993977715-1789092677589834387"
         }
       }
     },
@@ -1896,11 +2566,61 @@
           "poster": "portal-close/thunder.png",
           "bytes": 67741,
           "version": "1789048528025474846-1789048511585197345"
+        },
+        "divine": {
+          "webm": "portal-close/divine.webm",
+          "poster": "portal-close/divine.png",
+          "bytes": 67789,
+          "version": "1789092691820077076-1789092686047978636"
         }
       }
     }
   ],
   "sequences": [
+    {
+      "id": "fireball-sequence",
+      "title": "Fireball sequence",
+      "description": "Incoming bolt, explosive impact, sustained burning ground, then fade.",
+      "kind": "sequence",
+      "tags": [
+        "projectile",
+        "explosion",
+        "scorch"
+      ],
+      "default_color": "fire",
+      "steps": [
+        {
+          "phase": "opening",
+          "effect": "fireball-opening"
+        },
+        {
+          "phase": "looping",
+          "effect": "fireball-embers"
+        },
+        {
+          "phase": "closing",
+          "effect": "fireball-closing"
+        }
+      ],
+      "colors": [
+        "purple",
+        "gold",
+        "red",
+        "orange",
+        "acid",
+        "cold",
+        "fire",
+        "force",
+        "lightning",
+        "melee",
+        "necrotic",
+        "poison",
+        "psychic",
+        "radiant",
+        "thunder",
+        "divine"
+      ]
+    },
     {
       "id": "rift-sequence",
       "title": "Rift sequence",
@@ -1939,7 +2659,8 @@
         "poison",
         "psychic",
         "radiant",
-        "thunder"
+        "thunder",
+        "divine"
       ]
     },
     {
@@ -1980,7 +2701,8 @@
         "poison",
         "psychic",
         "radiant",
-        "thunder"
+        "thunder",
+        "divine"
       ]
     }
   ]

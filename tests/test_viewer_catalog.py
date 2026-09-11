@@ -82,7 +82,7 @@ class ViewerCatalogTests(unittest.TestCase):
         self.export('rune-anchor', ('radiant',))
         catalog = self.build()
         sequences = {s['id']: s for s in catalog['sequences']}
-        self.assertEqual(set(sequences), {'rift-sequence', 'vortex-sequence'})
+        self.assertEqual(set(sequences), set(SEQUENCES))
         self.assertEqual(sequences['rift-sequence']['colors'], ['purple'])
         self.assertEqual(sequences['vortex-sequence']['colors'], [])
         self.assertEqual(sequences['rift-sequence']['steps'], [
@@ -91,6 +91,32 @@ class ViewerCatalogTests(unittest.TestCase):
             {'phase': 'closing', 'effect': 'portal-close'}])
         anchor = next(e for e in catalog['effects'] if e['id'] == 'rune-anchor')
         self.assertEqual(anchor['default_color'], 'radiant')
+
+    def test_fireball_entries_and_sequence_reach_viewer_catalog(self):
+        catalog = self.build()
+        entries = {entry['id']: entry for entry in catalog['effects']}
+        for name, frames, kind, cue in [
+                ('fireball', 209, 'one-shot', 14/30),
+                ('fireball-opening', 120, 'one-shot', 14/30),
+                ('fireball-embers', 120, 'loop', None),
+                ('fireball-closing', 90, 'one-shot', 0)]:
+            with self.subTest(effect=name):
+                entry = entries[name]
+                self.assertEqual([entry[key] for key in
+                                  ('frames', 'fps', 'size', 'kind', 'cue_time', 'default_color')],
+                                 [frames, 30, 640, kind, cue, 'fire'])
+                self.assertEqual(entry['duration'], frames/30)
+                self.assertTrue(entry['description'])
+        for name in ('fireball-opening', 'fireball-embers', 'fireball-closing'):
+            self.export(name, ('fire', 'cold'))
+        sequence = next(s for s in self.build()['sequences'] if s['id'] == 'fireball-sequence')
+        self.assertEqual(sequence['default_color'], 'fire')
+        self.assertEqual(set(sequence['colors']), {'fire', 'cold'})
+        self.assertEqual(sequence['tags'], ['projectile', 'explosion', 'scorch'])
+        self.assertEqual(sequence['steps'], [
+            {'phase': 'opening', 'effect': 'fireball-opening'},
+            {'phase': 'looping', 'effect': 'fireball-embers'},
+            {'phase': 'closing', 'effect': 'fireball-closing'}])
 
     def test_unknown_sequence_reference_and_wrong_loop_kind_fail_atomically(self):
         self.build()

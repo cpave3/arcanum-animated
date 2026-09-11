@@ -4,7 +4,7 @@ from typing import Protocol
 
 from PIL import Image
 
-from animation_fx.effects import miasma_pool, one_shots, vortex_transitions
+from animation_fx.effects import fireball, miasma_pool, one_shots, turn_undead, vortex_transitions
 from animation_fx.effects import orb_anchor, rift, rune_anchor, vortex, vortex_black_hole, vortex_open
 from animation_fx.palettes import PALETTES, colorize
 from animation_fx.recipe import FrameRecipe
@@ -52,6 +52,24 @@ class Effect:
 
 
 EFFECTS = {
+    'turn-undead': Effect(turn_undead, 'purple', loop=False,
+                          cue_frame=turn_undead.BLAST_FRAME, poster_frame=turn_undead.POSTER_FRAME,
+                          default_color='divine', title='Turn Undead',
+                          description='A sacred seal releases searing caster-centered light and rapid radiant echoes.',
+                          tags=('sacred', 'explosion', 'radial')),
+    'fireball': Effect(FrameRecipe(fireball.one_shot, SIZE=640, FRAMES=fireball.SHOT_FRAMES),
+                       'purple', loop=False, cue_frame=fireball.IMPACT_FRAME, poster_frame=34, default_color='fire',
+                       description='A side-on bolt detonates in a top-down blast, leaving fissures and embers that fade.',
+                       tags=('projectile', 'explosion', 'scorch')),
+    'fireball-opening': Effect(FrameRecipe(fireball.opening, SIZE=640, FRAMES=fireball.OPEN_FRAMES),
+                               'purple', loop=False, cue_frame=fireball.IMPACT_FRAME, poster_frame=34, default_color='fire',
+                               description='The same fireball impact settles into persistent burning ground.'),
+    'fireball-embers': Effect(FrameRecipe(fireball.embers, SIZE=640, FRAMES=fireball.LOOP_FRAMES),
+                              'purple', default_color='fire',
+                              description='Scorched fissures breathe with hot coals and drifting embers.'),
+    'fireball-closing': Effect(FrameRecipe(fireball.closing, SIZE=640, FRAMES=fireball.CLOSE_FRAMES),
+                               'purple', loop=False, cue_frame=0, poster_frame=0, default_color='fire',
+                               description='Burning ground cools and its scorch marks disappear.'),
     'rift': Effect(rift, 'purple', description='Neon slit with an opaque dark tear.'),
     'miasma-pool': Effect(miasma_pool, 'purple', description='Smoky ground pools with billowing vents.'),
     'vortex': Effect(vortex, 'purple', description='Layered outward spirals with a shimmering core.'),
@@ -102,6 +120,10 @@ class Sequence:
 
 
 SEQUENCES = {
+    'fireball-sequence': Sequence('Fireball sequence', 'fireball-opening', 'fireball-embers',
+                                  'fireball-closing', default_color='fire',
+                                  description='Incoming bolt, explosive impact, sustained burning ground, then fade.',
+                                  tags=('projectile', 'explosion', 'scorch')),
     'rift-sequence': Sequence('Rift sequence', 'portal-open', 'rift', 'portal-close',
                               tags=('portal',)),
     'vortex-sequence': Sequence('Vortex sequence', 'vortex-opening', 'vortex',
@@ -110,3 +132,5 @@ SEQUENCES = {
 
 # Palette geometry stays in palettes.py; viewer grouping is presentation only.
 ORIGINAL_COLORS = frozenset(('purple', 'gold', 'red', 'orange'))
+
+THEMED_COLORS = frozenset(('divine',))

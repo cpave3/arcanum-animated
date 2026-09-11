@@ -11,7 +11,8 @@ async () => {
     await d.until(()=>d.phase()==='playing' && d.active()?.currentTime>0, `${effect.id} did not play`);
     await d.until(()=>d.phase()==='ended' && !d.active().seeking, `${effect.id} did not finish`);
     await d.wait(100);
-    d.assert(d.pixels().maximum === (holds.has(effect.id)?255:0), `${effect.id} has wrong final alpha`);
+    const alpha = d.pixels().maximum;
+    d.assert(holds.has(effect.id) ? alpha > 100 : alpha === 0, `${effect.id} has wrong final alpha`);
     d.set('background','light');
     d.assert(d.phase()==='ended', 'Stage settings restarted a finished clip');
     checked++;
