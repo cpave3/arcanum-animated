@@ -1,0 +1,11 @@
+{
+  "loop": true,
+  "fps": 30,
+  "frames": 90,
+  "duration": 3.0,
+  "size": 256,
+  "source_size": 320,
+  "profile": "vtt",
+  "cue_time": null,
+  "poster_time": 0.0
+}

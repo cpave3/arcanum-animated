@@ -6,7 +6,7 @@ from typing import Protocol
 from PIL import Image
 
 from animation_fx.effects import fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
-from animation_fx.effects import orb_anchor, rift, rune_anchor, vortex, vortex_black_hole, vortex_open
+from animation_fx.effects import orb_anchor, rift, rift_edge_anchor, rune_anchor, vortex, vortex_black_hole, vortex_open
 from animation_fx.palettes import PALETTES, colorize
 from animation_fx.recipe import FrameRecipe
 
@@ -17,6 +17,15 @@ class FrameRenderer(Protocol):
     FRAMES: int
 
     def render(self, frame: int) -> Image.Image: ...
+
+
+@dataclass(frozen=True)
+class AnchorMount:
+    effect: str
+    size: float
+    spacing: float
+    left: str
+    right: str
 
 
 @dataclass(frozen=True)
@@ -35,6 +44,8 @@ class Effect:
     event_frames: tuple[int, ...] = ()
     event_label: str | None = None
     direction: str | None = None
+    mount: AnchorMount | None = None
+    anchor_side: str | None = None
 
     @property
     def pairing(self):
@@ -135,6 +146,18 @@ EFFECTS = {
     'portal-close': Effect(FrameRecipe(one_shots.portal_close), 'purple',
                     loop=False, cue_frame=0, poster_frame=0),
 }
+
+
+edge_mount = AnchorMount('vortex', rift_edge_anchor.MOUNT_SIZE, rift_edge_anchor.MOUNT_SPACING,
+                         'rift-edge-anchor-left', 'rift-edge-anchor-right')
+for side in ('left', 'right'):
+    EFFECTS[f'rift-edge-anchor-{side}'] = Effect(
+        FrameRecipe(partial(rift_edge_anchor.render, side=side), SIZE=rift_edge_anchor.SIZE,
+                    FPS=rift_edge_anchor.FPS, FRAMES=rift_edge_anchor.FRAMES),
+        'gold', role='anchor', default_color='radiant', anchor_side=side,
+        title=f'Rift edge · {side.title()} force brace',
+        description=f'A native {side}-hand brace with three rune-powered stationary orbs and three small contact lights following its own bank.',
+        tags=('anchor', 'rift', 'brace', 'runes', 'sparks', side), mount=edge_mount)
 
 
 for count in (1, 2, 3):

@@ -159,46 +159,65 @@ async function initialize() {
   }
 
   overlays = [...document.querySelectorAll('[data-overlay-side]')].map(video => {
-    const layer = { side: video.dataset.overlaySide, enabled: false, player: null };
+    const layer = { side: video.dataset.overlaySide, video, enabled: false, player: null };
     layer.player = new PreviewPlayer([video], { onChange: state => {
-      if (state.error) notice(`Overlay: ${state.error}`);
+      if (state.error) notice(`${layer.side} overlay: ${state.error}`);
       if (layer.enabled && state.active >= 0 && state.paused !== overlaysPaused()) layer.player.setPaused(overlaysPaused());
     }});
     return layer;
   });
 
-  function configureOverlays() {
-    const effect = effects.get($('overlay-style').value);
-    const color = $('overlay-palette').value;
-    $('overlay-downloads').replaceChildren();
-    if (effect?.variants[color]) $('overlay-downloads').append(downloadRow(effect, color));
-    for (const layer of overlays) {
-      const enabled = $(`overlay-${layer.side}`).checked && !!effect?.variants[color];
-      const url = enabled ? assetURL(effect.variants[color], 'webm') : null;
-      if (url === layer.url && enabled === layer.enabled) continue;
-      layer.enabled = enabled;
-      layer.url = url;
-      layer.player.load(enabled ? specFor(effect, color) : null);
-      layer.player.setRate(Number($('speed').value));
-      if (enabled) layer.player.start();
-    }
+  function configureOverlay(layer) {
+    const { side, video } = layer;
+    const effect = effects.get($(`overlay-${side}-style`).value);
+    const color = $(`overlay-${side}-palette`).value;
+    video.dataset.mirrored = String($(`overlay-${side}-mirror`).checked);
+    const downloads = $(`overlay-${side}-downloads`);
+    downloads.replaceChildren();
+    if (effect?.variants[color]) downloads.append(downloadRow(effect, color, `${side} · ${effect.id} · ${color}`));
+    const enabled = $(`overlay-${side}`).checked && !!effect?.variants[color];
+    const url = enabled ? assetURL(effect.variants[color], 'webm') : null;
+    if (url === layer.url && enabled === layer.enabled) return;
+    layer.enabled = enabled;
+    layer.url = url;
+    layer.player.load(enabled ? specFor(effect, color) : null);
+    layer.player.setRate(Number($('speed').value));
+    if (enabled) layer.player.start();
   }
 
   const anchors = catalog.effects.filter(effect => effect.role === 'anchor' && effect.kind === 'loop');
-  for (const effect of anchors) $('overlay-style').append(new Option(effect.title, effect.id));
-  function updateOverlayPalette() {
-    const effect = effects.get($('overlay-style').value);
-    const available = effect ? colors(effect) : [];
-    const old = $('overlay-palette').value;
-    fillPalettes($('overlay-palette'), available, available.includes(old) ? old : effect && colorFor(effect));
-    configureOverlays();
+  function applyOverlayMount(effect) {
+    if (!effect?.mount) return;
+    for (const name of ['size', 'spacing']) {
+      $(`overlay-${name}`).value = effect.mount[name];
+      $('scene').style.setProperty(`--overlay-${name}`, `${$(`overlay-${name}`).value}%`);
+    }
   }
-  $('overlay-style').disabled = anchors.length === 0;
-  $('overlay-left').disabled = $('overlay-right').disabled = anchors.length === 0;
-  $('overlay-style').addEventListener('change', updateOverlayPalette);
-  $('overlay-palette').addEventListener('change', configureOverlays);
-  for (const side of ['left', 'right']) $(`overlay-${side}`).addEventListener('change', configureOverlays);
-  updateOverlayPalette();
+
+  function updateOverlayStyle(layer, color = null) {
+    const { side } = layer;
+    const effect = effects.get($(`overlay-${side}-style`).value);
+    const available = effect ? colors(effect) : [];
+    const palette = $(`overlay-${side}-palette`);
+    const preferred = color || palette.value;
+    fillPalettes(palette, available, available.includes(preferred) ? preferred : effect && colorFor(effect));
+    $(`overlay-${side}-mirror`).checked = (effect?.anchor_side || 'left') !== side;
+    configureOverlay(layer);
+  }
+  for (const layer of overlays) {
+    const { side } = layer;
+    const style = $(`overlay-${side}-style`);
+    for (const effect of anchors) style.append(new Option(effect.title, effect.id));
+    style.disabled = $(`overlay-${side}`).disabled = anchors.length === 0;
+    style.addEventListener('change', () => {
+      applyOverlayMount(effects.get(style.value));
+      updateOverlayStyle(layer);
+    });
+    for (const id of [`overlay-${side}-palette`, `overlay-${side}-mirror`, `overlay-${side}`]) {
+      $(id).addEventListener('change', () => configureOverlay(layer));
+    }
+    updateOverlayStyle(layer);
+  }
 
   function updateCurrentMark() {
     for (const button of $('library-list').querySelectorAll('button')) {
@@ -316,6 +335,13 @@ async function initialize() {
       });
       $('composed-effects').append(button);
     }
+    const mountTarget = selected.mount && entries.find(item => item.id === selected.mount.effect);
+    $('preview-mount').hidden = !mountTarget;
+    const mountReady = selectedColor && mountTarget && colors(mountTarget).length > 0 &&
+      ['left', 'right'].every(side => colors(effects.get(selected.mount[side])).includes(selectedColor));
+    $('preview-mount').disabled = !mountReady;
+    $('preview-mount').title = mountReady ? '' : 'Requires both anchor files in the selected palette.';
+    $('preview-mount').textContent = mountTarget ? `Preview with ${mountTarget.title}` : '';
     updateDownloads();
     const nextPlayer = selected.kind === 'journey' ? journeyPlayer : selected.kind === 'composition' ? compositionPlayer : clipPlayer;
     if (player !== nextPlayer) player.load(null);
@@ -378,6 +404,19 @@ async function initialize() {
       apply(Number($(id).value));
     });
   }
+
+  $('preview-mount').addEventListener('click', () => {
+    const anchor = selected;
+    const color = selectedColor;
+    selectEntry(entries.find(item => item.id === anchor.mount.effect), true);
+    applyOverlayMount(anchor);
+    for (const layer of overlays) {
+      $(`overlay-${layer.side}-style`).value = anchor.mount[layer.side];
+      $(`overlay-${layer.side}`).checked = true;
+      updateOverlayStyle(layer, color);
+    }
+    $('overlay-controls').open = true;
+  });
 
   $('palette').addEventListener('change', () => setColor($('palette').value));
   $('search').addEventListener('input', renderLibrary);

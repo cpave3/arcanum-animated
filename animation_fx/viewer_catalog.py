@@ -1,4 +1,5 @@
 """Build the viewer manifest from registered effects and completed delivery exports."""
+from dataclasses import asdict
 import colorsys
 import json
 import math
@@ -87,6 +88,17 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
             raise ValueError(f'{name}: invalid role {effect.role!r}')
         if effect.default_color not in PALETTES:
             raise ValueError(f'{name}: unknown default color {effect.default_color!r}')
+        if effect.anchor_side is not None and (effect.role != 'anchor' or effect.anchor_side not in ('left', 'right')):
+            raise ValueError(f'{name}: invalid anchor side')
+        if effect.mount is not None:
+            targets = set(EFFECTS) | set(SEQUENCES) | set(COMPOSITIONS) | set(JOURNEYS)
+            if effect.role != 'anchor' or effect.mount.effect not in targets or effect.mount.effect == name:
+                raise ValueError(f'{name}: invalid anchor preview target')
+            if any(partner not in EFFECTS or EFFECTS[partner].role != 'anchor'
+                   or not EFFECTS[partner].loop for partner in (effect.mount.left, effect.mount.right)):
+                raise ValueError(f'{name}: mount partners must be registered looping anchors')
+            if (not 15 <= effect.mount.size <= 70 or not 4 <= effect.mount.spacing <= 35):
+                raise ValueError(f'{name}: anchor mount is outside the viewer placement range')
         effects.append({
             'id': name, 'title': effect.title or name.replace('-', ' ').title(),
             'description': effect.description,
@@ -96,10 +108,14 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
                              else effect.default_color,
             **{key: metadata[key] for key in ('duration', 'fps', 'frames', 'size', 'cue_time')},
             'variants': variants,
+            **({'mount': asdict(effect.mount)} if effect.mount is not None else {}),
+            **({'anchor_side': effect.anchor_side} if effect.anchor_side is not None else {}),
             **({'pairing': metadata['pairing']} if 'pairing' in metadata else {}),
         })
     by_id = {effect['id']: effect for effect in effects}
     for entry in effects:
+        if 'mount' in entry and any(by_id[entry['mount'][side]]['kind'] != 'loop' for side in ('left', 'right')):
+            raise ValueError(f"{entry['id']}: mount partners must be exported as looping anchors")
         if 'pairing' in entry:
             for partner in entry['pairing']['effects']:
                 if partner not in by_id or partner == entry['id']:

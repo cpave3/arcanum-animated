@@ -1,11 +1,10 @@
 """Render one reusable golden spark anchor. Requires Pillow, NumPy, and ffmpeg."""
 import math
 
-import numpy as np
 from PIL import Image, ImageDraw
 
 from animation_fx.layers import bloom
-from animation_fx.primitives import particles
+from animation_fx.primitives import orbs, particles
 
 SIZE = 320
 SCALE = 2
@@ -45,15 +44,6 @@ def render(frame):
         line(branch, (255, 205, 73, int(210 * flicker)))
     particles.draw_anchor_sparks(sparks, time, SCALE)
     image = bloom(sparks, [6 * SCALE, 2 * SCALE])
-    yy, xx = np.mgrid[:SIZE*SCALE, :SIZE*SCALE].astype(np.float32)
-    radius = np.sqrt((xx / SCALE - 160) ** 2 + (yy / SCALE - 160) ** 2)
-    orb_radius = 23 + 2 * math.sin(2 * phase)
-    core = np.clip(1 - (radius / orb_radius) ** 2, 0, 1)
-    halo = np.exp(-(radius / (orb_radius * 1.8)) ** 2)
-    orb = np.zeros((SIZE*SCALE, SIZE*SCALE, 4), dtype=np.uint8)
-    orb[:, :, 0] = 255
-    orb[:, :, 1] = (165 + 90 * np.sqrt(core)).astype(np.uint8)
-    orb[:, :, 2] = (20 + 210 * core).astype(np.uint8)
-    orb[:, :, 3] = (255 * np.clip(core * 2 + halo * .65, 0, 1)).astype(np.uint8)
-    image = Image.alpha_composite(image, Image.fromarray(orb))
+    image = Image.alpha_composite(image, orbs.orb_layer(
+        SIZE, (160, 160), 23+2*math.sin(2*phase), scale=SCALE))
     return image.resize((SIZE, SIZE), Image.Resampling.LANCZOS)

@@ -92,9 +92,10 @@ h3 { font-size: 12px; font-weight: 650; }
 /* Keep inactive decoders in the render tree: display:none can stall Firefox WebM playback. */
 .scene > video, .scene > video[hidden] { display: block !important; opacity: 0; }
 .scene > video[data-active="true"] { opacity: 1; }
-.scene > video[data-overlay-side] { inset: auto; top: 50%; width: var(--overlay-size, 32%); height: var(--overlay-size, 32%); z-index: 2; }
-.scene > video[data-overlay-side="left"] { left: calc(50% - var(--overlay-spacing, 6%)); transform: translate(-50%, -50%); }
-.scene > video[data-overlay-side="right"] { left: calc(50% + var(--overlay-spacing, 6%)); transform: translate(-50%, -50%) scaleX(-1); }
+.scene > video[data-overlay-side] { inset: auto; top: 50%; width: var(--overlay-size, 32%); height: var(--overlay-size, 32%); z-index: 2; transform: translate(-50%, -50%); }
+.scene > video[data-overlay-side="left"] { left: calc(50% - var(--overlay-spacing, 6%)); }
+.scene > video[data-overlay-side="right"] { left: calc(50% + var(--overlay-spacing, 6%)); }
+.scene > video[data-overlay-side][data-mirrored="true"] { transform: translate(-50%, -50%) scaleX(-1); }
 .transport { width: 100%; max-width: 680px; margin: 18px auto 0; }
 .transport-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
 .transport-buttons button { min-width: 65px; font-size: 12px; }
@@ -126,11 +127,16 @@ button.primary:hover:not(:disabled) { background: #cbb8f7; }
 summary { cursor: pointer; font-size: 12px; font-weight: 650; }
 summary .label-hint { float: right; }
 .section-note { color: var(--muted); font-size: 11px; line-height: 1.65; margin: 14px 0; }
+.overlay-side { min-width: 0; margin: 16px 0; padding: 0; border: 0; }
+.overlay-side legend { font-size: 12px; font-weight: 650; }
+.overlay-side > label { display: block; margin-bottom: 7px; color: #b6b9c4; font-size: 11px; }
+.overlay-side > select { margin-bottom: 14px; }
 .checkbox-row { display: flex; gap: 24px; margin: 16px 0; }
 .checkbox-row label { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .downloads { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .downloads:empty { display: none; }
 .downloads a { display: inline-flex; align-items: center; padding: 8px 10px; border: 1px solid #94d7db30; border-radius: 6px; text-decoration: none; font-size: 11px; }
+#preview-mount { margin-bottom: 16px; }
 .path-row { display: flex; flex-wrap: wrap; gap: 7px; }
 #path-field { font-family: ui-monospace, monospace; font-size: 10px; color: var(--muted); background: #141519; }
 #copy-path { font-size: 11px; min-height: 30px; }

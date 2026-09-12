@@ -57,8 +57,8 @@
                 <video data-main-slot="0" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
                 <video data-main-slot="1" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
                 <video data-main-slot="2" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
-                <video data-overlay-side="left" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
-                <video data-overlay-side="right" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
+                <video data-overlay-side="left" data-mirrored="false" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
+                <video data-overlay-side="right" data-mirrored="true" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
               </div>
             </div>
           </div>
@@ -110,19 +110,30 @@
             <input id="burn-duration" type="number" min="0" step="any" value="0" required>
             <p class="section-note">Burn time counts only the loop, then Close waits for its boundary. Pause and speed affect both clocks. Flight timing is preview-only, not Foundry movement speed. The first flash follows arrival by one blank frame (1/30s).</p>
           </section>
-          <details class="settings-section overlays">
+          <details id="overlay-controls" class="settings-section overlays">
             <summary>Overlays <span class="label-hint">Optional</span></summary>
-            <p class="section-note">Layer independent accents over the effect. The right side is mirrored.</p>
-            <div class="checkbox-row"><label for="overlay-left"><input id="overlay-left" type="checkbox"> Left</label><label for="overlay-right"><input id="overlay-right" type="checkbox"> Right</label></div>
-            <label for="overlay-style">Overlay style</label><select id="overlay-style"></select>
-            <label for="overlay-palette">Overlay palette</label><select id="overlay-palette"></select>
-            <div id="overlay-downloads" class="downloads" aria-label="Overlay downloads"></div>
-            <label for="overlay-spacing">Spacing <span class="label-hint">4–35%</span></label><input id="overlay-spacing" type="range" min="4" max="35" value="6">
+            <p class="section-note">Choose each side independently. Mirror defaults to face inward; override it as needed.</p>
+            <fieldset class="overlay-side">
+              <legend>Left overlay</legend>
+              <div class="checkbox-row"><label for="overlay-left"><input id="overlay-left" type="checkbox"> Enable</label><label for="overlay-left-mirror"><input id="overlay-left-mirror" type="checkbox"> Mirror</label></div>
+              <label for="overlay-left-style">Left style</label><select id="overlay-left-style"></select>
+              <label for="overlay-left-palette">Left palette</label><select id="overlay-left-palette"></select>
+              <div id="overlay-left-downloads" class="downloads" aria-label="Left overlay downloads"></div>
+            </fieldset>
+            <fieldset class="overlay-side">
+              <legend>Right overlay</legend>
+              <div class="checkbox-row"><label for="overlay-right"><input id="overlay-right" type="checkbox"> Enable</label><label for="overlay-right-mirror"><input id="overlay-right-mirror" type="checkbox" checked> Mirror</label></div>
+              <label for="overlay-right-style">Right style</label><select id="overlay-right-style"></select>
+              <label for="overlay-right-palette">Right palette</label><select id="overlay-right-palette"></select>
+              <div id="overlay-right-downloads" class="downloads" aria-label="Right overlay downloads"></div>
+            </fieldset>
+            <label for="overlay-spacing">Spacing <span class="label-hint">4–35%</span></label><input id="overlay-spacing" type="range" min="4" max="35" step="0.25" value="6">
             <label for="overlay-size">Overlay size <span class="label-hint">15–70%</span></label><input id="overlay-size" type="range" min="15" max="70" value="32">
           </details>
           <section class="settings-section export-section" aria-labelledby="downloads-heading">
             <h3 id="downloads-heading">Use this effect</h3>
             <div id="downloads" class="downloads" aria-label="Asset downloads"></div>
+            <button id="preview-mount" type="button" hidden></button>
             <label for="path-field">Asset path</label>
             <div class="path-row"><input id="path-field" type="text" readonly placeholder="Select an effect"><button id="copy-path" type="button" disabled>Copy path</button></div>
             <div id="composed-effects" class="downloads" aria-label="Composed previews"></div>

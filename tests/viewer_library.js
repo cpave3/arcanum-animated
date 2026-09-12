@@ -29,9 +29,12 @@ async () => {
   d.$('overlay-left').click();
   await d.until(()=>document.querySelector('[data-overlay-side="left"]').dataset.active==='true', 'Overlay did not appear');
   d.assert(document.querySelector('[data-overlay-side="right"]').dataset.active==='false', 'Overlay toggles are not independent');
-  d.set('overlay-palette','psychic');
+  const rightPalette = d.$('overlay-right-palette').value;
+  d.set('overlay-left-palette','psychic');
   await d.until(()=>document.querySelector('[data-overlay-side="left"]').currentSrc.includes('/psychic.webm'), 'Overlay palette did not change');
   d.assert(d.$('palette').value==='necrotic', 'Overlay color changed the base effect');
+  d.assert(d.$('overlay-right-palette').value === rightPalette, 'Left color changed the right palette');
+  d.assert(new URL(d.$('overlay-left-downloads').querySelector('[data-download="webm"]').href).pathname.endsWith('/orb-anchor/psychic.webm'), 'Left overlay download does not match chosen palette');
   d.click('primary');
   await d.until(()=>d.phase()==='looping' && !d.active().paused, 'Loop did not play');
   await d.until(()=>!document.querySelector('[data-overlay-side="left"]').paused, 'Overlay did not follow transport');

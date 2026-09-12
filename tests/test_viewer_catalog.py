@@ -75,6 +75,95 @@ class ViewerCatalogTests(unittest.TestCase):
         self.assertEqual(missing['cue_time'], effect.cue_frame / effect.fps)
         self.assertEqual(missing['kind'], 'one-shot')
 
+    def test_edge_anchor_mount_reaches_catalog_with_delivery_metadata(self):
+        names = ('rift-edge-anchor-left', 'rift-edge-anchor-right')
+        for name in names:
+            self.export(name, ('radiant', 'cold'), size=256, fps=30,
+                        frames=90, duration=3, cue_time=None)
+        entries = {entry['id']: entry for entry in self.build()['effects']}
+        self.assertNotIn('rift-edge-anchor', EFFECTS)
+        self.assertNotIn('rift-edge-anchor', entries)
+        self.assertEqual(len(entries), 32)
+        self.assertEqual(sum(entry['kind'] == 'loop' for entry in entries.values()), 11)
+        self.assertIs(EFFECTS[names[0]].mount, EFFECTS[names[1]].mount)
+        for side, name in zip(('left', 'right'), names):
+            with self.subTest(side=side):
+                anchor = entries[name]
+                self.assertEqual(anchor['title'], f'Rift edge · {side.title()} force brace')
+                self.assertEqual(anchor['role'], 'anchor')
+                self.assertEqual(anchor['anchor_side'], side)
+                self.assertEqual(anchor['kind'], 'loop')
+                self.assertEqual(anchor['default_color'], 'radiant')
+                self.assertEqual(anchor['mount'], {'effect': 'vortex', 'size': 32,
+                    'spacing': 8.75, 'left': names[0], 'right': names[1]})
+                self.assertEqual([anchor[key] for key in ('size', 'fps', 'frames', 'duration', 'cue_time')],
+                                 [256, 30, 90, 3, None])
+                self.assertEqual(set(anchor['variants']), {'radiant', 'cold'})
+                for color, variant in anchor['variants'].items():
+                    self.assertEqual(variant['webm'], f'{name}/{color}.webm')
+                    self.assertEqual(variant['poster'], f'{name}/{color}.png')
+        for name, entry in entries.items():
+            if name not in names:
+                self.assertNotIn('mount', entry)
+                self.assertNotIn('anchor_side', entry)
+        self.assertEqual(entries['orb-anchor']['role'], 'anchor')
+        self.assertEqual(entries['rune-anchor']['role'], 'anchor')
+
+    def test_mount_rejects_nonloop_delivery_metadata(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        self.export('rift-edge-anchor-right', loop=False)
+        with self.assertRaisesRegex(ValueError, 'mount partners must be exported as looping anchors'):
+            self.build()
+        self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
+    def test_invalid_anchor_mount_fails_atomically(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        for side in ('left', 'right'):
+            name = f'rift-edge-anchor-{side}'
+            effect = EFFECTS[name]
+            invalid = [({'role': 'effect', 'anchor_side': None},
+                        'invalid anchor preview target|mount partners')]
+            invalid.extend(({'mount': replace(effect.mount, effect=target)}, 'invalid anchor preview target')
+                           for target in ('missing', name))
+            invalid.extend(({'mount': replace(effect.mount, **{key: value})}, 'placement range')
+                           for key, values in (('size', (14.99, 70.01, float('nan'), float('inf'))),
+                                               ('spacing', (3.99, 35.01, float('nan'), float('inf'))))
+                           for value in values)
+            for changes, message in invalid:
+                with self.subTest(side=side, changes=changes), patch.dict(EFFECTS, {
+                        name: replace(effect, **changes)}):
+                    with self.assertRaisesRegex(ValueError, message):
+                        self.build()
+                self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
+    def test_mount_validates_both_partners_atomically(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        for owner in ('rift-edge-anchor-left', 'rift-edge-anchor-right'):
+            effect = EFFECTS[owner]
+            for side in ('left', 'right'):
+                for partner in ('missing', 'rift', 'nonloop-anchor'):
+                    with self.subTest(owner=owner, side=side, partner=partner), patch.dict(EFFECTS, {
+                            'nonloop-anchor': replace(EFFECTS['orb-anchor'], loop=False),
+                            owner: replace(effect, mount=replace(effect.mount, **{side: partner}))}):
+                        with self.assertRaisesRegex(ValueError, 'mount partners'):
+                            self.build()
+                    self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
+    def test_anchor_side_is_validated_and_restricted_to_anchors(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        cases = [('orb-anchor', value) for value in ('middle', '', True)]
+        cases.extend(('rift', value) for value in ('left', 'right'))
+        for name, side in cases:
+            with self.subTest(effect=name, side=side), patch.dict(EFFECTS, {
+                    name: replace(EFFECTS[name], anchor_side=side)}):
+                with self.assertRaisesRegex(ValueError, 'invalid anchor side'):
+                    self.build()
+            self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
     def test_sequence_colors_intersect_all_three_steps_and_anchor_default(self):
         self.export('portal-open', ('purple', 'red'))
         self.export('rift', ('purple', 'gold'))

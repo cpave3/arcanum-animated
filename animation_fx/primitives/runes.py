@@ -35,8 +35,8 @@ def draw_rune(draw, glyph, *, center, size=1, rotation=0, opacity=1, scale=1,
 
 
 def draw_brackets(draw, *, center=(160, 160), height=190, gap=25, bow=8, scale=2,
-                  color=(255, 183, 44), highlight=(255, 225, 126)):
-    for side in (-1, 1):
+                  color=(255, 183, 44), highlight=(255, 225, 126), sides=(-1, 1)):
+    for side in sides:
         points = [((center[0] + side*(gap+bow*math.sin(math.pi*i/40)))*scale,
                    (center[1]-height/2+height*i/40)*scale) for i in range(41)]
         draw.line(points, fill=(*color, 215), width=2*scale)

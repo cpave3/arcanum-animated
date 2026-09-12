@@ -1,6 +1,6 @@
 # Animation collection
 
-Transparent WebM effects for Foundry/Sequencer: 30 effects: nine loops and twenty-one one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
+Transparent WebM effects for Foundry/Sequencer: 32 effects: eleven loops and twenty-one one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
 
 - `fireball-projectile`: centered right-facing orb with a tail to the left; move and rotate the square sprite externally, without stretching (384×384 VTT, 30 fps, 2-second loop).
 - `fireball-embers`: scorched fissures, pulsing hot coals, and drifting sparks (384×384 VTT, 30 fps, 4-second loop).
@@ -9,6 +9,8 @@ Transparent WebM effects for Foundry/Sequencer: 30 effects: nine loops and twent
 - `vortex`: tear with layered outward spirals (384×384 VTT, 30 fps).
 - `vortex-open`: the same outward spirals without a central object; transparent opening (384×384 VTT, 30 fps).
 - `vortex-black-hole`: outward spirals around a perfectly circular dark core with subtle shimmer, a bright photon ring, and orbiting arcs (384×384 VTT, 30 fps).
+- `rift-edge-anchor-left`: native left-hand force brace with `spire`, `eye`, and `branch` runes, three stationary power orbs and three small moving rim contacts (256×256 VTT, 30 fps; Radiant default).
+- `rift-edge-anchor-right`: native right-hand force brace with `gate`, `hourglass`, and `fork` runes, fitted to the opposite bank (256×256 VTT, 30 fps; Radiant default).
 - `orb-anchor`: glowing orb, lightning, and sparks (256×256 VTT, 30 fps).
 - `rune-anchor`: vertical runes, side brackets, and sparks (256×256 VTT, 30 fps).
 
@@ -58,7 +60,7 @@ Thematic palettes: `divine` combines blue shadows, warm gold, and icy white high
 | `radiant` | Gold (same palette as `gold`) |
 | `thunder` | Indigo / violet |
 
-These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 510 WebM/PNG pairs (30 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
+These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 544 WebM/PNG pairs (32 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
 
 ## Preview
 
@@ -74,8 +76,18 @@ The viewer reads `assets/catalog.json` into a searchable library with **Loops**,
 - Loops repeat; one-shots play once and hold their final frame. **Replay** plays a finished one-shot again, and **Restart** starts the selected entry from the beginning.
 - **Pause/Resume** controls the active preview. **Stop** resets a single clip or composition to its poster. Seek is available for single clips and compositions and pauses on the chosen frame; sequences and journeys cannot be scrubbed.
 - Palette choices are remembered independently per library entry during the current page session. Changing palette resets the preview without starting playback. Color is baked into the WebM, not applied with a browser filter.
-- Optional left and right overlays can be toggled independently and share an overlay style and palette; the right overlay is mirrored. Their WebM and PNG downloads are available inside the overlay section. They accompany the focused preview rather than running separate gallery previews.
+- Optional left and right overlays have independent enable toggles, asset selectors, palettes, and mirror toggles; the old shared asset/palette selectors are removed. Native handed anchors need no automatic mirroring. Each side’s WebM and PNG downloads match its selected asset and palette. They accompany the focused preview rather than running separate gallery previews.
 - Every WebM and PNG download matches its selected palette. A sequence exposes downloads for all three clips—opening, loop, and closing—plus their PNGs, and lets you copy all three asset paths.
+
+### Rift-edge anchor review
+
+Choose either **Rift edge · Left force brace** (`rift-edge-anchor-left`) or **Rift edge · Right force brace** (`rift-edge-anchor-right`), then **Preview with Vortex**. This selects the original Vortex without autoplay and loads the two corresponding files: the left asset on the left and the right asset on the right. Both entries share the same mount preset: **32% size**, **8.75% spacing**, and both partner IDs. Press **Play** to review the assembly. Each side has its own asset selector, palette, mirror toggle, and enable toggle. Anchor palettes default to **Radiant** and are independent of the Vortex palette.
+
+These are two native orientations, not one asset reused with automatic mirroring. Each brace follows its own asymmetric bank of the actual compact-rift contour. The left uses the new rune set (`spire`, `eye`, `branch`); the right retains the original set (`gate`, `hourglass`, `fork`). Each has three runes, one brace, and three tethers connecting consistent powered joints: each has a **large stationary orb on the brace and a small contact light following that bank’s rim**. There is no dual middle fork or floating duplicate contact. Both sources are 320×320, 30 fps, 90 frames (3-second loops), with 256×256 VTT delivery, gold source artwork, and all 17 palettes. Existing Orb and Rune anchors and the original Vortex artwork remain unchanged.
+
+The singleton `rift-edge-anchor` is removed from the registry. Generate both handed IDs below; old singleton files are not a substitute for either native asset. No automatic mirror is needed for this pair; manual mirror toggles remain available for independent experimentation.
+
+**The new Foundry macro is STILL ON HOLD pending explicit visual approval.** No new Foundry code is implemented for these anchors. If approved later, the macro will create a Vortex rift with a chosen palette and offer both/left/right anchor toggles and Close. Existing VTT macros and other assets’ durations are unchanged.
 
 ### Ray components in Foundry/Sequencer
 
@@ -182,6 +194,8 @@ python3 render.py --profile high                    # native-resolution exports 
 python3 render.py --effect one-shots               # all twenty-one one-shots, all palettes
 python3 render.py --effect teleport-arrival --color necrotic
 python3 render.py --effect rune-anchor --color red # one asset
+python3 render.py --effect rift-edge-anchor-left --color all # native left brace
+python3 render.py --effect rift-edge-anchor-right --color all # native right brace
 python3 render.py --effect miasma-pool --color necrotic
 python3 render.py --effect turn-undead --color divine # sacred caster-centered release
 python3 render.py --effect ray-cast-3 --color fire   # three caster bursts
@@ -221,7 +235,7 @@ In Foundry, specify the effect's intended world/grid size rather than relying on
 
 Outputs: `assets/{effect}/{color}.webm` and matching transparent `.png` stills (representative posters for one-shots). Each export also writes `assets/{effect}/effect.json` with profile, loop status, exported size, source size, FPS, frame count, duration, cue time, and poster time. Metadata cue time is frame-based; portal opening’s final frame is at 59/30 seconds, with loop handoff after the full 2-second clip. Each effect's geometry is rendered once per frame, then mapped into the requested palettes. Encoders write to unique temporary directories; files are published only after all requested colors for that effect encode successfully. After each successful effect export, the CLI atomically rebuilds `catalog.json` in the output folder via `animation_fx/viewer_catalog.py`. It lists registered effects, palettes, sequences, compositions, journeys, delivery metadata, and available variants with relative WebM/PNG filenames, byte sizes, and per-variant versions. Refresh the viewer after rendering; each variant’s manifest version is used in media URLs to pick up replaced files.
 
-In Sequencer, use a path such as `.file("your-upload-folder/rune-anchor/red.webm")`. Place two independent anchor effects over the rift so they can be toggled separately. The viewer mirrors the right anchor. Foundry integration itself has not been tested here.
+In Sequencer, use a path such as `.file("your-upload-folder/rune-anchor/red.webm")`. Place two independent anchor effects over the rift so they can be toggled separately. Use the native left/right files for the handed rift-edge pair without automatic mirroring; the viewer offers separate manual mirror controls. Foundry integration itself has not been tested here.
 
 The root-level WebMs/PNGs are preserved artwork snapshots, not regenerated outputs. The earlier individual `render_*.py` commands have been replaced by `render.py`.
 
@@ -231,10 +245,13 @@ Effects are recipes. Geometry, particle appearance, glyph definitions, and trans
 
 | Primitive | Where to refine it | Existing consumers |
 | --- | --- | --- |
-| Spark head/trail/glint | `animation_fx/primitives/particles.py:draw_spark` | Teleports, impacts, casting, dispel, portal/vortex transitions, both anchors, all vortex loops, fireball, Turn Undead |
+| Spark head/trail/glint | `animation_fx/primitives/particles.py:draw_spark` | Teleports, impacts, casting, dispel, portal/vortex transitions, all four anchors, all vortex loops, fireball, Turn Undead |
 | Burst particle motion | `particles.py:draw_burst` | All one-shot spark releases; no copied per-effect trails |
-| Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, Casting Release, Dispel, Turn Undead |
-| Binding brackets | `runes.py:draw_brackets` | Rune anchor |
+| Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, rift-edge anchor, Casting Release, Dispel, Turn Undead |
+| Binding brackets | `runes.py:draw_brackets` | Rune anchor; rift-edge anchor uses one side |
+| Charged orb | `orbs.py:orb_layer` | Orb anchor and rift-edge anchor |
+| Lightning tether | `lightning.py:draw_tether` | Rift-edge anchor |
+| Compact rim geometry | `rift.py:compact_contour` | Compact rift rendering and rift-edge anchor contact placement |
 | Ground fractures | `cracks.py:fracture_network` / `draw_cracks` | Ground Eruption and fireball ground; seeded trunks, forks and cross-fractures with progressive reveal |
 | Rift styles | `rift.py:render_rift` (`tall` or `compact`) | Rift loop, vortex loop, both portal transition pairs |
 | Smoke spiral | `swirl.py:render_swirl` | Vortex, open vortex, black hole, vortex transitions |
@@ -247,7 +264,7 @@ Effects are recipes. Geometry, particle appearance, glyph definitions, and trans
 
 `Canvas` in `primitives/canvas.py` supplies rings, soft flashes, spirals, rune placement, and shared burst emitters. Its coordinates use a 512-unit square; `Canvas(size=640)` changes output resolution without changing the recipe's relative layout. Lower-level glyph and spark painters also accept a Pillow drawing context plus scale, so existing supersampled artwork can reuse them unchanged.
 
-The rune library currently includes `spire`, `fork`, `eye`, `chalice`, `gate`, `hourglass`, `branch`, and `hook`. Choose a glyph by name, then vary its position, size, rotation, opacity, or fragmentation. Casting and dispel cycle through this same library; dispel separates the glyph strokes rather than replacing them with unrelated triangles. The anchor deliberately selects five named glyphs via `ANCHOR_GLYPHS`.
+The rune library currently includes `spire`, `fork`, `eye`, `chalice`, `gate`, `hourglass`, `branch`, and `hook`. Choose a glyph by name, then vary its position, size, rotation, opacity, or fragmentation. Casting and dispel cycle through this same library; dispel separates the glyph strokes rather than replacing them with unrelated triangles. The original rune anchor deliberately selects five named glyphs via `ANCHOR_GLYPHS`; each handed rift-edge anchor selects its own three from the same library.
 
 ```python
 from animation_fx.primitives.canvas import Canvas
@@ -316,7 +333,7 @@ Add a `Palette(hue_in_degrees)` entry to `PALETTES` in `animation_fx/palettes.py
 2. Use deterministic particles and integer temporal harmonics for smooth loops. Keep the exterior alpha zero and glow partially transparent; do not bake a background into frames.
 3. Register it in `EFFECTS` with its master palette name. For one-shots set `loop=False`, `cue_frame`, and a visible `poster_frame`. `Effect.render` wraps loop frames but clamps one-shot frames, then maps colors; the exporter handles video, metadata, and still generation.
 4. Generate with `python3 render.py --effect your-effect --color all`.
-5. Refresh the viewer: the generated catalog adds the library entry without per-effect HTML or JavaScript. Optional `Effect` fields `title`, `description`, `role`, `tags`, and `default_color` control presentation; omitted titles are derived from the effect ID. Use `role='anchor'` for an overlay effect.
+5. Refresh the viewer: the generated catalog adds the library entry without per-effect HTML or JavaScript. Optional `Effect` fields `title`, `description`, `role`, `tags`, and `default_color` control presentation; omitted titles are derived from the effect ID. Use `role='anchor'` for an overlay effect. Use `anchor_side='left'` or `'right'` for a native handed anchor; this field is restricted to anchors. Optional `mount=AnchorMount('vortex', size=32, spacing=8.75, left='rift-edge-anchor-left', right='rift-edge-anchor-right')` adds a catalog-driven preview target, placement preset, and two registered looping anchor partners. Both handed entries share this preset; it does not create another exported asset.
 
 ### Add a sequence
 
@@ -330,6 +347,22 @@ python3 -m unittest discover -s tests -v
 
 Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify exact sequence handoffs in every palette, fireball’s left-to-center travel, centered top-down blast, finite endpoints, smooth ember seam, and shared impact/cooling timeline. Fireball component mocks wrap or remove the actual layer functions through `Effect.render`, verifying both calls and visible contributions. Turn Undead tests exercise `Effect.render` for transparent clamped endpoints, centered outward motion, independently timed visible echoes, cue/poster strength, all-palette alpha preservation, and shared-painter contributions. Tests prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. Paired-ray tests exercise `Effect.render` for beam-free caster/impact edges, full-width left-to-right beam travel, shared charge/impact painters, beam-only primitive use, and transparent endpoints in all 17 palettes. Real caster, beam, and impact exports are decoded to check alpha and local cues. Catalog tests check composition tracks against exported timing, maximum track-end duration, three-component palette intersection, invalid references, and Divine/Eldritch thematic grouping. FFmpeg and ffprobe must be on PATH.
 
+
+Targeted rift-edge anchor and catalog checks (without the expensive full collection):
+
+```sh
+python3 -m unittest discover -s tests -p test_rift_edge_anchor.py -v
+python3 -m unittest discover -s tests -p test_viewer_catalog.py -v
+```
+
+Anchor tests exercise both native assets through public rendering in all 17 palettes, preserved alpha, bounded artwork, animation and loop wrapping, three distinct side-specific glyphs, one brace, three tethers, and visible shared rune/orb/lightning/particle contributions. Across all 90 frames, they check a stationary middle power orb and one small moving contact per native bank, exact native-pixel alpha and mirror sampling within one pixel, and contact forward mapping against the actual rim using parent centers 264/376 and scale 0.64. They also verify that the opposite render is not merely a mirrored copy, contour changes move rendered contacts, and original Orb, Rune, and Vortex snapshots remain unchanged. Catalog tests check both delivered partner paths and mount metadata, removal of the old ID, restricted `anchor_side`, and atomic rejection of invalid targets, partner roles/nonloops, and placement ranges.
+
+After rendering both anchors’ palettes, browser review uses the running viewer. The browser checks cover per-side files, palettes, mirror controls, and paired mounting from either anchor:
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_edge_anchor.js)"
+```
 
 Targeted fireball journey, catalog, and macro checks (without the expensive full collection):
 

@@ -3081,6 +3081,272 @@
       }
     },
     {
+      "id": "rift-edge-anchor-left",
+      "title": "Rift edge \u00b7 Left force brace",
+      "description": "A native left-hand brace with three rune-powered stationary orbs and three small contact lights following its own bank.",
+      "kind": "loop",
+      "role": "anchor",
+      "tags": [
+        "anchor",
+        "rift",
+        "brace",
+        "runes",
+        "sparks",
+        "left"
+      ],
+      "default_color": "radiant",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 256,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "rift-edge-anchor-left/purple.webm",
+          "poster": "rift-edge-anchor-left/purple.png",
+          "bytes": 69178,
+          "version": "1789177923503553601-1789177909635255869"
+        },
+        "gold": {
+          "webm": "rift-edge-anchor-left/gold.webm",
+          "poster": "rift-edge-anchor-left/gold.png",
+          "bytes": 98480,
+          "version": "1789177923644556628-1789177909636255890"
+        },
+        "red": {
+          "webm": "rift-edge-anchor-left/red.webm",
+          "poster": "rift-edge-anchor-left/red.png",
+          "bytes": 78062,
+          "version": "1789177923781559569-1789177909643256041"
+        },
+        "orange": {
+          "webm": "rift-edge-anchor-left/orange.webm",
+          "poster": "rift-edge-anchor-left/orange.png",
+          "bytes": 92707,
+          "version": "1789177923925562661-1789177909650256191"
+        },
+        "acid": {
+          "webm": "rift-edge-anchor-left/acid.webm",
+          "poster": "rift-edge-anchor-left/acid.png",
+          "bytes": 98837,
+          "version": "1789177924074565860-1789177909658256363"
+        },
+        "cold": {
+          "webm": "rift-edge-anchor-left/cold.webm",
+          "poster": "rift-edge-anchor-left/cold.png",
+          "bytes": 95340,
+          "version": "1789177924219568973-1789177909665256513"
+        },
+        "fire": {
+          "webm": "rift-edge-anchor-left/fire.webm",
+          "poster": "rift-edge-anchor-left/fire.png",
+          "bytes": 100262,
+          "version": "1789177924363572064-1789177909673256685"
+        },
+        "force": {
+          "webm": "rift-edge-anchor-left/force.webm",
+          "poster": "rift-edge-anchor-left/force.png",
+          "bytes": 78062,
+          "version": "1789177924499574984-1789177909680256835"
+        },
+        "lightning": {
+          "webm": "rift-edge-anchor-left/lightning.webm",
+          "poster": "rift-edge-anchor-left/lightning.png",
+          "bytes": 95156,
+          "version": "1789177924644578097-1789177909688257007"
+        },
+        "melee": {
+          "webm": "rift-edge-anchor-left/melee.webm",
+          "poster": "rift-edge-anchor-left/melee.png",
+          "bytes": 88223,
+          "version": "1789177924782581058-1789177909694257135"
+        },
+        "necrotic": {
+          "webm": "rift-edge-anchor-left/necrotic.webm",
+          "poster": "rift-edge-anchor-left/necrotic.png",
+          "bytes": 90166,
+          "version": "1789177924927584171-1789177909702257307"
+        },
+        "poison": {
+          "webm": "rift-edge-anchor-left/poison.webm",
+          "poster": "rift-edge-anchor-left/poison.png",
+          "bytes": 85372,
+          "version": "1789177925068587197-1789177909709257457"
+        },
+        "psychic": {
+          "webm": "rift-edge-anchor-left/psychic.webm",
+          "poster": "rift-edge-anchor-left/psychic.png",
+          "bytes": 71723,
+          "version": "1789177925207590182-1789177909716257608"
+        },
+        "radiant": {
+          "webm": "rift-edge-anchor-left/radiant.webm",
+          "poster": "rift-edge-anchor-left/radiant.png",
+          "bytes": 98480,
+          "version": "1789177925350593252-1789177909718257651"
+        },
+        "thunder": {
+          "webm": "rift-edge-anchor-left/thunder.webm",
+          "poster": "rift-edge-anchor-left/thunder.png",
+          "bytes": 71430,
+          "version": "1789177925487596193-1789177909726257822"
+        },
+        "eldritch": {
+          "webm": "rift-edge-anchor-left/eldritch.webm",
+          "poster": "rift-edge-anchor-left/eldritch.png",
+          "bytes": 58391,
+          "version": "1789177925619599026-1789177909734257994"
+        },
+        "divine": {
+          "webm": "rift-edge-anchor-left/divine.webm",
+          "poster": "rift-edge-anchor-left/divine.png",
+          "bytes": 101790,
+          "version": "1789177925764602139-1789177909741258145"
+        }
+      },
+      "mount": {
+        "effect": "vortex",
+        "size": 32,
+        "spacing": 8.75,
+        "left": "rift-edge-anchor-left",
+        "right": "rift-edge-anchor-right"
+      },
+      "anchor_side": "left"
+    },
+    {
+      "id": "rift-edge-anchor-right",
+      "title": "Rift edge \u00b7 Right force brace",
+      "description": "A native right-hand brace with three rune-powered stationary orbs and three small contact lights following its own bank.",
+      "kind": "loop",
+      "role": "anchor",
+      "tags": [
+        "anchor",
+        "rift",
+        "brace",
+        "runes",
+        "sparks",
+        "right"
+      ],
+      "default_color": "radiant",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 256,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "rift-edge-anchor-right/purple.webm",
+          "poster": "rift-edge-anchor-right/purple.png",
+          "bytes": 71319,
+          "version": "1789177940113910198-1789177926156610556"
+        },
+        "gold": {
+          "webm": "rift-edge-anchor-right/gold.webm",
+          "poster": "rift-edge-anchor-right/gold.png",
+          "bytes": 101465,
+          "version": "1789177940264913440-1789177926158610599"
+        },
+        "red": {
+          "webm": "rift-edge-anchor-right/red.webm",
+          "poster": "rift-edge-anchor-right/red.png",
+          "bytes": 80575,
+          "version": "1789177940409916553-1789177926165610749"
+        },
+        "orange": {
+          "webm": "rift-edge-anchor-right/orange.webm",
+          "poster": "rift-edge-anchor-right/orange.png",
+          "bytes": 95765,
+          "version": "1789177940559919773-1789177926172610899"
+        },
+        "acid": {
+          "webm": "rift-edge-anchor-right/acid.webm",
+          "poster": "rift-edge-anchor-right/acid.png",
+          "bytes": 101667,
+          "version": "1789177940713923079-1789177926179611050"
+        },
+        "cold": {
+          "webm": "rift-edge-anchor-right/cold.webm",
+          "poster": "rift-edge-anchor-right/cold.png",
+          "bytes": 97566,
+          "version": "1789177940869926429-1789177926186611199"
+        },
+        "fire": {
+          "webm": "rift-edge-anchor-right/fire.webm",
+          "poster": "rift-edge-anchor-right/fire.png",
+          "bytes": 102757,
+          "version": "1789177941022929713-1789177926194611372"
+        },
+        "force": {
+          "webm": "rift-edge-anchor-right/force.webm",
+          "poster": "rift-edge-anchor-right/force.png",
+          "bytes": 80575,
+          "version": "1789177941171932912-1789177926202611543"
+        },
+        "lightning": {
+          "webm": "rift-edge-anchor-right/lightning.webm",
+          "poster": "rift-edge-anchor-right/lightning.png",
+          "bytes": 98006,
+          "version": "1789177941317936047-1789177926210611715"
+        },
+        "melee": {
+          "webm": "rift-edge-anchor-right/melee.webm",
+          "poster": "rift-edge-anchor-right/melee.png",
+          "bytes": 90740,
+          "version": "1789177941465939224-1789177926217611865"
+        },
+        "necrotic": {
+          "webm": "rift-edge-anchor-right/necrotic.webm",
+          "poster": "rift-edge-anchor-right/necrotic.png",
+          "bytes": 92883,
+          "version": "1789177941614942423-1789177926224612015"
+        },
+        "poison": {
+          "webm": "rift-edge-anchor-right/poison.webm",
+          "poster": "rift-edge-anchor-right/poison.png",
+          "bytes": 87944,
+          "version": "1789177941759945536-1789177926232612187"
+        },
+        "psychic": {
+          "webm": "rift-edge-anchor-right/psychic.webm",
+          "poster": "rift-edge-anchor-right/psychic.png",
+          "bytes": 74151,
+          "version": "1789177941905948670-1789177926239612337"
+        },
+        "radiant": {
+          "webm": "rift-edge-anchor-right/radiant.webm",
+          "poster": "rift-edge-anchor-right/radiant.png",
+          "bytes": 101465,
+          "version": "1789177942058951955-1789177926241612380"
+        },
+        "thunder": {
+          "webm": "rift-edge-anchor-right/thunder.webm",
+          "poster": "rift-edge-anchor-right/thunder.png",
+          "bytes": 73709,
+          "version": "1789177942202955047-1789177926248612531"
+        },
+        "eldritch": {
+          "webm": "rift-edge-anchor-right/eldritch.webm",
+          "poster": "rift-edge-anchor-right/eldritch.png",
+          "bytes": 60123,
+          "version": "1789177942338957966-1789177926256612702"
+        },
+        "divine": {
+          "webm": "rift-edge-anchor-right/divine.webm",
+          "poster": "rift-edge-anchor-right/divine.png",
+          "bytes": 103599,
+          "version": "1789177942487961165-1789177926264612874"
+        }
+      },
+      "mount": {
+        "effect": "vortex",
+        "size": 32,
+        "spacing": 8.75,
+        "left": "rift-edge-anchor-left",
+        "right": "rift-edge-anchor-right"
+      },
+      "anchor_side": "right"
+    },
+    {
       "id": "ray-cast-1",
       "title": "Ray caster \u00b7 1 release",
       "description": "Caster-only inward charge and 1 rapid release pulse.",

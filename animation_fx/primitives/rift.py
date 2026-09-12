@@ -54,7 +54,8 @@ def _render_tall(frame):
     return result.resize((SIZE, SIZE), Image.Resampling.LANCZOS)
 
 
-def _rift_contour(phase):
+def compact_contour(phase):
+    """640-unit rim: left bank top-to-bottom, then right bank bottom-to-top; phase in radians."""
     # Sparse contour points give the tear broad fractures instead of a serrated rim.
     left, right = [], []
     for i in range(25):
@@ -100,6 +101,6 @@ def render_rift(frame, variant='tall', background=None):
     if variant == 'compact':
         phase = math.tau * (frame % COMPACT_FRAMES) / COMPACT_FRAMES
         image = Image.new('RGBA', (COMPACT_SIZE, COMPACT_SIZE)) if background is None else background
-        return _add_dark_core(image, _rift_contour(phase), phase,
+        return _add_dark_core(image, compact_contour(phase), phase,
                               np.exp(-((X / .10) ** 2)))
     raise ValueError(f'Unknown rift variant: {variant!r}')
