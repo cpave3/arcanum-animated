@@ -1,23 +1,24 @@
 {
   "loop": false,
   "fps": 30,
-  "frames": 42,
-  "duration": 1.4,
+  "frames": 40,
+  "duration": 1.3333333333333333,
   "size": 384,
   "source_size": 640,
   "profile": "vtt",
-  "cue_time": 0.13333333333333333,
-  "poster_time": 0.2,
+  "cue_time": 0.03333333333333333,
+  "poster_time": 0.1,
   "pairing": {
     "effects": [
+      "ray-beam",
       "ray-cast-1",
       "ray-cast-2",
       "ray-cast-3"
     ],
     "event": "Impact",
     "times": [
-      0.13333333333333333
+      0.03333333333333333
     ],
-    "direction": "from-left"
+    "direction": "center"
   }
 }

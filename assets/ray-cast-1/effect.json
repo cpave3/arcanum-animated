@@ -7,15 +7,16 @@
   "source_size": 640,
   "profile": "vtt",
   "cue_time": 0.4,
-  "poster_time": 0.5333333333333333,
+  "poster_time": 0.4666666666666667,
   "pairing": {
     "effects": [
+      "ray-beam",
       "ray-hit"
     ],
     "event": "Release",
     "times": [
       0.4
     ],
-    "direction": "right"
+    "direction": "center"
   }
 }

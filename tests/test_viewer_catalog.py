@@ -7,7 +7,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from animation_fx.catalog import EFFECTS, SEQUENCES, Effect
+from animation_fx.catalog import COMPOSITIONS, EFFECTS, JOURNEYS, SEQUENCES, Effect
 from animation_fx.viewer_catalog import build_viewer_catalog
 import render
 
@@ -118,6 +118,66 @@ class ViewerCatalogTests(unittest.TestCase):
             {'phase': 'looping', 'effect': 'fireball-embers'},
             {'phase': 'closing', 'effect': 'fireball-closing'}])
 
+    def test_fireball_journey_metadata_and_four_component_palette_intersection(self):
+        names = ('fireball-projectile', 'fireball-detonation', 'fireball-embers', 'fireball-closing')
+        catalog = self.build()
+        entries = {entry['id']: entry for entry in catalog['effects']}
+        for name, frames, kind, cue in [
+                ('fireball-projectile', 60, 'loop', None),
+                ('fireball-detonation', 107, 'one-shot', 1/30)]:
+            self.assertEqual([entries[name][key] for key in
+                              ('frames', 'fps', 'size', 'kind', 'cue_time', 'default_color')],
+                             [frames, 30, 640, kind, cue, 'fire'])
+            self.assertEqual(entries[name]['duration'], frames/30)
+        self.assertEqual({entry['id'] for entry in catalog['journeys']}, set(JOURNEYS))
+        journey = next(j for j in catalog['journeys'] if j['id'] == 'fireball-journey')
+        self.assertEqual(journey['kind'], 'journey')
+        self.assertEqual(journey['title'], 'Fireball · Projectile + burning ground')
+        self.assertEqual(journey['projectile'], names[0])
+        self.assertEqual(journey['travel_duration'], 1)
+        self.assertEqual(journey['default_color'], 'fire')
+        self.assertEqual(journey['colors'], [])
+        steps = [{'phase': phase, 'effect': name} for phase, name in
+                 zip(('opening', 'looping', 'closing'), names[1:])]
+        self.assertEqual(journey['steps'], steps)
+        sequence = next(s for s in catalog['sequences'] if s['id'] == 'fireball-impact-sequence')
+        self.assertEqual(sequence['steps'], steps)
+        self.assertEqual(sequence['default_color'], 'fire')
+        for name in names:
+            self.export(name, ('fire', 'cold'))
+        journey = next(j for j in self.build()['journeys'] if j['id'] == 'fireball-journey')
+        self.assertEqual(set(journey['colors']), {'fire', 'cold'})
+        for name in names:
+            for extension in ('webm', 'png'):
+                with self.subTest(effect=name, missing=extension):
+                    path = self.output / name / f'cold.{extension}'
+                    content = path.read_bytes()
+                    path.unlink()
+                    journey = next(j for j in self.build()['journeys'] if j['id'] == 'fireball-journey')
+                    self.assertEqual(journey['colors'], ['fire'])
+                    path.write_bytes(content)
+
+    def test_invalid_journey_references_and_settings_fail_atomically(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        invalid = [({'projectile': 'missing'}, 'looping projectile'),
+                   ({'projectile': 'fireball'}, 'looping projectile'),
+                   ({'sequence': 'missing'}, 'unknown ground sequence'),
+                   ({'sequence': 'fireball-embers'}, 'unknown ground sequence'),
+                   ({'default_color': 'missing'}, 'unknown default color')]
+        invalid.extend(({'travel_duration': duration}, 'travel duration')
+                       for duration in (0, -1, float('nan'), float('inf')))
+        for changes, message in invalid:
+            with self.subTest(changes=changes), patch.dict(JOURNEYS, {
+                    'fireball-journey': replace(JOURNEYS['fireball-journey'], **changes)}):
+                with self.assertRaisesRegex(ValueError, message):
+                    self.build()
+            self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+        self.export('fireball-projectile', loop=False)
+        with self.assertRaisesRegex(ValueError, 'looping projectile'):
+            self.build()
+        self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
     def test_unknown_sequence_reference_and_wrong_loop_kind_fail_atomically(self):
         self.build()
         before = (self.output / 'catalog.json').read_bytes()
@@ -149,20 +209,27 @@ class ViewerCatalogTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'invalid loop kind'):
             self.build()
 
-    def test_paired_entries_use_exported_local_clock_and_themed_palettes(self):
+    def export_paired_components(self):
         for count in (1, 2, 3):
-            pairing = {'effects': ['ray-hit'], 'event': 'Release',
-                       'times': [(12+10*i)/60 for i in range(count)], 'direction': 'right'}
+            pairing = {'effects': ['ray-beam', 'ray-hit'], 'event': 'Release',
+                       'times': [(12+10*i)/60 for i in range(count)], 'direction': 'center'}
             self.export(f'ray-cast-{count}', ('fire', 'eldritch'), fps=60,
                         frames=36+10*(count-1), duration=(36+10*(count-1))/60,
                         cue_time=12/60, pairing=pairing)
-        hit_pairing = {'effects': ['ray-cast-1', 'ray-cast-2', 'ray-cast-3'],
-                       'event': 'Impact', 'times': [4/60], 'direction': 'from-left'}
-        self.export('ray-hit', ('fire', 'eldritch'), fps=60, frames=42,
-                    duration=42/60, cue_time=4/60, pairing=hit_pairing)
+        hit_pairing = {'effects': ['ray-beam', 'ray-cast-1', 'ray-cast-2', 'ray-cast-3'],
+                       'event': 'Impact', 'times': [1/60], 'direction': 'center'}
+        self.export('ray-hit', ('fire', 'eldritch'), fps=60, frames=40,
+                    duration=40/60, cue_time=1/60, pairing=hit_pairing)
+        self.export('ray-beam', ('fire', 'eldritch'), fps=60, frames=9,
+                    duration=9/60, cue_time=4/60, pairing={
+                        'effects': ['ray-cast-1', 'ray-cast-2', 'ray-cast-3', 'ray-hit'],
+                        'event': 'Arrival', 'times': [4/60], 'direction': 'right'})
+
+    def test_paired_entries_use_exported_local_clock_and_themed_palettes(self):
+        self.export_paired_components()
         catalog = self.build()
         entries = {entry['id']: entry for entry in catalog['effects']}
-        for name in ('ray-cast-1', 'ray-cast-2', 'ray-cast-3', 'ray-hit'):
+        for name in ('ray-beam', 'ray-cast-1', 'ray-cast-2', 'ray-cast-3', 'ray-hit'):
             exported = json.loads((self.output / name / 'effect.json').read_text())
             self.assertEqual(entries[name]['pairing'], exported['pairing'])
             self.assertNotEqual(entries[name]['pairing']['times'], EFFECTS[name].pairing['times'])
@@ -175,9 +242,47 @@ class ViewerCatalogTests(unittest.TestCase):
             self.assertEqual(palettes[name]['group'], 'Themed colors')
             self.assertEqual(palettes[name]['label'], name.title())
 
+    def test_composition_tracks_use_exported_cues_and_maximum_end(self):
+        self.export_paired_components()
+        catalog = self.build()
+        entries = {entry['id']: entry for entry in catalog['effects']}
+        self.assertIsInstance(catalog['compositions'], list)
+        self.assertEqual({c['id'] for c in catalog['compositions']},
+                         {f'ray-composition-{i}' for i in (1, 2, 3)})
+        for count, composition in enumerate(catalog['compositions'], 1):
+            caster = entries[f'ray-cast-{count}']
+            tracks = [{'role': 'caster', 'effect': caster['id'], 'start': 0}]
+            for release in caster['pairing']['times']:
+                tracks.extend([
+                    {'role': 'beam', 'effect': 'ray-beam', 'start': release},
+                    {'role': 'target', 'effect': 'ray-hit', 'start':
+                     release+entries['ray-beam']['cue_time']-entries['ray-hit']['cue_time']}])
+            self.assertEqual(composition['tracks'], tracks)
+            self.assertEqual(composition['duration'], max(
+                t['start']+entries[t['effect']]['duration'] for t in tracks))
+            self.assertEqual(set(composition['colors']), {'fire', 'eldritch'})
+        (self.output / 'ray-beam/eldritch.png').unlink()
+        for composition in self.build()['compositions']:
+            self.assertEqual(composition['colors'], ['fire'])
+        (self.output / 'ray-hit/fire.png').unlink()
+        for composition in self.build()['compositions']:
+            self.assertEqual(composition['colors'], [])
+
+    def test_composition_invalid_references_leave_catalog_intact(self):
+        self.build()
+        before = (self.output / 'catalog.json').read_bytes()
+        for role in ('caster', 'beam', 'impact'):
+            for reference in ('missing', 'rift'):
+                with self.subTest(role=role, reference=reference), patch.dict(COMPOSITIONS, {
+                        'ray-composition-1': replace(COMPOSITIONS['ray-composition-1'],
+                                                     **{role: reference})}):
+                    with self.assertRaisesRegex(ValueError, 'composition components'):
+                        self.build()
+                self.assertEqual((self.output / 'catalog.json').read_bytes(), before)
+
     def test_invalid_pairing_metadata_fails_without_replacing_catalog(self):
-        pairing = {'effects': ['ray-hit'], 'event': 'Release',
-                   'times': [.4], 'direction': 'right'}
+        pairing = {'effects': ['ray-beam', 'ray-hit'], 'event': 'Release',
+                   'times': [.4], 'direction': 'center'}
         self.export('ray-cast-1', pairing=pairing)
         self.build()
         before = (self.output / 'catalog.json').read_bytes()
@@ -216,7 +321,10 @@ class ViewerCatalogTests(unittest.TestCase):
         def export(effect, colors, directory, profile, *, progress=None):
             calls.append(('export', directory.name))
             pairing = {'pairing': effect.pairing} if effect.pairing is not None else {}
-            self.export(directory.name, colors, **pairing)
+            self.export(directory.name, colors, fps=effect.fps, frames=effect.frames,
+                        duration=effect.frames/effect.fps,
+                        cue_time=None if effect.cue_frame is None else effect.cue_frame/effect.fps,
+                        **pairing)
 
         def build(output):
             calls.append(('catalog', output))

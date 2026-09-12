@@ -1,13 +1,14 @@
 async () => {
   const {viewerDriver} = await import('/tests/viewer_driver.js');
   const d = await viewerDriver();
-  const total = d.catalog.effects.length+d.catalog.sequences.length;
+  const entries = [...d.catalog.effects, ...d.catalog.sequences, ...(d.catalog.compositions || []), ...(d.catalog.journeys || [])];
+  const total = entries.length;
   d.assert(document.querySelectorAll('.library-item').length === total, 'Library does not reflect the catalog');
   d.assert([...document.querySelectorAll('video')].every(v=>v.paused), 'Browsing must not autoplay videos');
-  d.assert(document.querySelectorAll('video').length === 5, 'Only stage and overlay video slots should exist');
-  for (const kind of ['loop','one-shot','sequence']) {
+  d.assert(document.querySelectorAll('video').length === 5 + document.querySelectorAll('[data-composition-track], [data-journey-phase]').length, 'Only stage, overlay and selected composition slots should exist');
+  for (const kind of ['loop','one-shot','sequence','composition','journey']) {
     document.querySelector(`[data-kind="${kind}"]`).click();
-    const expected = [...d.catalog.effects,...d.catalog.sequences].filter(e=>e.kind===kind).length;
+    const expected = entries.filter(e=>e.kind===kind).length;
     d.assert(document.querySelectorAll('.library-item').length===expected, `Wrong ${kind} filter`);
   }
   document.querySelector('[data-kind="all"]').click();

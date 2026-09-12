@@ -5,7 +5,7 @@ import math
 from pathlib import Path
 import tempfile
 
-from animation_fx.catalog import EFFECTS, ORIGINAL_COLORS, SEQUENCES, THEMED_COLORS
+from animation_fx.catalog import COMPOSITIONS, EFFECTS, JOURNEYS, ORIGINAL_COLORS, SEQUENCES, THEMED_COLORS
 from animation_fx.palettes import PALETTES
 
 
@@ -48,7 +48,7 @@ def _metadata(effect, directory, has_variants):
                 raise ValueError('pairing times must increase within the clip duration')
             if not isinstance(pairing.get('event'), str) or not pairing['event']:
                 raise ValueError('pairing event must be a label')
-            if pairing.get('direction') not in ('right', 'from-left'):
+            if pairing.get('direction') not in ('right', 'center'):
                 raise ValueError('invalid pairing direction')
         cue = data['cue_time']
         if cue is not None and (type(cue) not in (int, float) or not math.isfinite(cue)
@@ -124,6 +124,50 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
                           'description': sequence.description, 'kind': 'sequence',
                           'tags': list(sequence.tags), 'default_color': sequence.default_color,
                           'steps': steps, 'colors': [color for color in PALETTES if color in colors]})
+    compositions = []
+    for name, recipe in COMPOSITIONS.items():
+        references = (recipe.caster, recipe.beam, recipe.impact)
+        if any(ref not in by_id or by_id[ref]['kind'] != 'one-shot' for ref in references):
+            raise ValueError(f'{name}: composition components must reference registered one-shots')
+        caster, beam, impact = (by_id[ref] for ref in references)
+        if (not caster.get('pairing') or beam['cue_time'] is None or impact['cue_time'] is None):
+            raise ValueError(f'{name}: composition requires release, arrival and impact timing')
+        if recipe.default_color not in PALETTES:
+            raise ValueError(f'{name}: unknown default color')
+        tracks = [{'role': 'caster', 'effect': recipe.caster, 'start': 0}]
+        for release in caster['pairing']['times']:
+            impact_start = release + beam['cue_time'] - impact['cue_time']
+            if impact_start < 0:
+                raise ValueError(f'{name}: impact would start before the composition')
+            tracks.extend([{'role': 'beam', 'effect': recipe.beam, 'start': release},
+                           {'role': 'target', 'effect': recipe.impact, 'start': impact_start}])
+        colors = set.intersection(*(set(by_id[ref]['variants']) for ref in references))
+        compositions.append({'id': name, 'kind': 'composition', 'title': recipe.title,
+            'description': 'Caster charge, stretched connecting rays and independently overlapping target impacts.',
+            'tags': ['paired', 'ray', 'scorching-ray', 'eldritch-blast'],
+            'default_color': recipe.default_color,
+            'colors': [color for color in PALETTES if color in colors], 'tracks': tracks,
+            'duration': max(track['start']+by_id[track['effect']]['duration'] for track in tracks)})
+    journeys = []
+    by_sequence = {sequence['id']: sequence for sequence in sequences}
+    for name, recipe in JOURNEYS.items():
+        if recipe.projectile not in by_id or by_id[recipe.projectile]['kind'] != 'loop':
+            raise ValueError(f'{name}: journey requires a registered looping projectile')
+        if recipe.sequence not in by_sequence:
+            raise ValueError(f'{name}: unknown ground sequence')
+        if not math.isfinite(recipe.travel_duration) or recipe.travel_duration <= 0:
+            raise ValueError(f'{name}: travel duration must be positive')
+        if recipe.default_color not in PALETTES:
+            raise ValueError(f'{name}: unknown default color')
+        sequence = by_sequence[recipe.sequence]
+        colors = set(sequence['colors']) & set(by_id[recipe.projectile]['variants'])
+        journeys.append({'id': name, 'kind': 'journey', 'title': recipe.title,
+            'description': 'Move a twisting fireball to To, detonate, then burn until closed or timed out.',
+            'tags': ['fireball', 'projectile', 'persistent', 'scorch'],
+            'default_color': recipe.default_color,
+            'colors': [color for color in PALETTES if color in colors],
+            'projectile': recipe.projectile, 'travel_duration': recipe.travel_duration,
+            'steps': sequence['steps']})
     palettes = []
     for name, palette in PALETTES.items():
         rgb = colorsys.hsv_to_rgb(palette.hue / 360, palette.saturation_scale, 1)
@@ -131,7 +175,8 @@ def build_viewer_catalog(output_dir: Path | str) -> dict:
                          'group': 'Original colors' if name in ORIGINAL_COLORS else
                                   'Themed colors' if name in THEMED_COLORS else 'Damage types',
                          'swatch': '#' + ''.join(f'{round(channel * 255):02x}' for channel in rgb)})
-    catalog = {'schema': 1, 'palettes': palettes, 'effects': effects, 'sequences': sequences}
+    catalog = {'schema': 1, 'palettes': palettes, 'effects': effects, 'sequences': sequences,
+               'compositions': compositions, 'journeys': journeys}
     output_dir.mkdir(parents=True, exist_ok=True)
     temporary = None
     try:

@@ -23,6 +23,8 @@
           <button type="button" data-kind="all" aria-pressed="true">All <span data-count="all">0</span></button>
           <button type="button" data-kind="loop" aria-pressed="false">Loops <span data-count="loop">0</span></button>
           <button type="button" data-kind="one-shot" aria-pressed="false">One-shots <span data-count="one-shot">0</span></button>
+          <button type="button" data-kind="composition" aria-pressed="false">Composed <span data-count="composition">0</span></button>
+          <button type="button" data-kind="journey" aria-pressed="false">Journeys <span data-count="journey">0</span></button>
           <button type="button" data-kind="sequence" aria-pressed="false">Sequences <span data-count="sequence">0</span></button>
         </div>
         <p id="catalog-state" role="status" aria-live="polite">Loading…</p>
@@ -46,6 +48,11 @@
           <div class="stage-well">
             <div id="stage" class="stage" data-background="grid" role="img" aria-label="Selected effect composition">
               <div id="scene" class="scene">
+                <div id="composition-scene" data-enabled="false" aria-hidden="true">
+                  <span class="dummy-token" data-token="from">From</span>
+                  <span class="dummy-token" data-token="to">To</span>
+                  <img id="composition-poster" alt="" hidden>
+                </div>
                 <img id="poster" alt="Selected effect poster" hidden>
                 <video data-main-slot="0" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
                 <video data-main-slot="1" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
@@ -86,6 +93,23 @@
             <label for="speed">Playback speed</label>
             <select id="speed"><option value="0.25">0.25×</option><option value="0.5">0.5×</option><option value="1" selected>1× · Normal</option><option value="2">2×</option></select>
           </section>
+          <section id="composition-controls" class="settings-section" aria-labelledby="positions-heading" hidden>
+            <h3 id="positions-heading">From / To positions</h3>
+            <p id="positions-note" class="section-note">Move the tokens with these controls. Arrow keys adjust position. Distance changes beam length, not thickness or timing.</p>
+            <label for="from-x">From horizontal</label><input id="from-x" type="range" min="5" max="95" value="22">
+            <label for="from-y">From vertical</label><input id="from-y" type="range" min="5" max="95" value="50">
+            <label for="to-x">To horizontal</label><input id="to-x" type="range" min="5" max="95" value="78">
+            <label for="to-y">To vertical</label><input id="to-y" type="range" min="5" max="95" value="50">
+            <button id="reset-positions" type="button">Reset positions</button>
+          </section>
+          <section id="journey-controls" class="settings-section" aria-labelledby="journey-heading" hidden>
+            <h3 id="journey-heading">Journey timing</h3>
+            <label for="travel-duration">Flight seconds <span class="label-hint">0.25–3</span></label>
+            <input id="travel-duration" type="number" min="0.25" max="3" step="0.05" value="1" required>
+            <label for="burn-duration">Burn seconds <span class="label-hint">0 = manual Close</span></label>
+            <input id="burn-duration" type="number" min="0" step="any" value="0" required>
+            <p class="section-note">Burn time counts only the loop, then Close waits for its boundary. Pause and speed affect both clocks. Flight timing is preview-only, not Foundry movement speed. The first flash follows arrival by one blank frame (1/30s).</p>
+          </section>
           <details class="settings-section overlays">
             <summary>Overlays <span class="label-hint">Optional</span></summary>
             <p class="section-note">Layer independent accents over the effect. The right side is mirrored.</p>
@@ -101,6 +125,7 @@
             <div id="downloads" class="downloads" aria-label="Asset downloads"></div>
             <label for="path-field">Asset path</label>
             <div class="path-row"><input id="path-field" type="text" readonly placeholder="Select an effect"><button id="copy-path" type="button" disabled>Copy path</button></div>
+            <div id="composed-effects" class="downloads" aria-label="Composed previews"></div>
             <div id="pairing" hidden>
               <p id="pairing-cues" class="section-note"></p>
               <div id="paired-effects" class="downloads" aria-label="Paired effects"></div>

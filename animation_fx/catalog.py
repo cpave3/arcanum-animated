@@ -79,6 +79,17 @@ EFFECTS = {
                                 title='Fireball · Stylized',
                                 description='Abstract rounded flame lobes, bold hot-color bands, and flying cinders; the original scorch finish.',
                                 tags=('projectile', 'explosion', 'stylized', 'scorch')),
+    'fireball-projectile': Effect(
+        FrameRecipe(fireball.traveling_projectile, SIZE=640, FRAMES=fireball.PROJECTILE_FRAMES),
+        'purple', default_color='fire', title='Fireball · Moving projectile',
+        description='Centered right-facing orb and tail. Move and rotate the sprite; do not stretch it.',
+        tags=('fireball', 'projectile', 'flight')),
+    'fireball-detonation': Effect(
+        FrameRecipe(fireball.detonation, SIZE=640, FRAMES=fireball.DETONATION_FRAMES),
+        'purple', loop=False, cue_frame=1, poster_frame=21, default_color='fire',
+        title='Fireball · Detonation',
+        description='Explosion-only opening at the destination, settling into the shared burning ground.',
+        tags=('fireball', 'explosion', 'scorch')),
     'fireball-opening': Effect(FrameRecipe(fireball.opening, SIZE=640, FRAMES=fireball.OPEN_FRAMES),
                                'purple', loop=False, cue_frame=fireball.IMPACT_FRAME, poster_frame=34, default_color='fire',
                                description='The same fireball impact settles into persistent burning ground.'),
@@ -131,22 +142,49 @@ for count in (1, 2, 3):
         FrameRecipe(partial(paired_rays.caster, count=count), SIZE=paired_rays.SIZE,
                     FPS=paired_rays.FPS, FRAMES=paired_rays.caster_frames(count)),
         'purple', loop=False, cue_frame=paired_rays.CHARGE_FRAMES,
-        poster_frame=paired_rays.CHARGE_FRAMES+paired_rays.HIT_FRAME,
-        title=f'Ray caster · {count} beam' + ('s' if count > 1 else ''), default_color='fire',
-        description=f'A short charge and {count} rapid rightward beam burst' + ('s.' if count > 1 else '.'),
+        poster_frame=paired_rays.CHARGE_FRAMES+2,
+        title=f'Ray caster · {count} release' + ('s' if count > 1 else ''), default_color='fire',
+        description=f'Caster-only inward charge and {count} rapid release pulse' + ('s.' if count > 1 else '.'),
         tags=('paired', 'caster', 'beam', 'scorching-ray', 'eldritch-blast'),
-        paired_effects=('ray-hit',), event_frames=paired_rays.release_frames(count),
-        event_label='Release', direction='right')
+        paired_effects=('ray-beam', 'ray-hit'), event_frames=paired_rays.release_frames(count),
+        event_label='Release', direction='center')
 
 EFFECTS['ray-hit'] = Effect(
     FrameRecipe(paired_rays.target, SIZE=paired_rays.SIZE, FPS=paired_rays.FPS,
                 FRAMES=paired_rays.HIT_FRAMES),
     'purple', loop=False, cue_frame=paired_rays.HIT_FRAME, poster_frame=paired_rays.HIT_FRAME+2,
     title='Ray target · Impact', default_color='fire',
-    description='A matching beam enters from the left and strikes the target at the canvas center.',
+    description='Impact-only burst centered on the target; schedule it at the beam arrival.',
     tags=('paired', 'target', 'beam', 'scorching-ray', 'eldritch-blast'),
-    paired_effects=tuple(f'ray-cast-{count}' for count in (1, 2, 3)),
-    event_frames=(paired_rays.HIT_FRAME,), event_label='Impact', direction='from-left')
+    paired_effects=('ray-beam', *(f'ray-cast-{count}' for count in (1, 2, 3))),
+    event_frames=(paired_rays.HIT_FRAME,), event_label='Impact', direction='center')
+
+
+EFFECTS['ray-beam'] = Effect(
+    FrameRecipe(paired_rays.beam, SIZE=paired_rays.SIZE, FPS=paired_rays.FPS,
+                FRAMES=paired_rays.BEAM_FRAMES),
+    'purple', loop=False, cue_frame=paired_rays.BEAM_HIT_FRAME,
+    poster_frame=paired_rays.BEAM_HIT_FRAME, title='Ray beam · Stretchable', default_color='fire',
+    description='Beam-only, full-width left-to-right ray for Sequencer stretchTo with onlyX.',
+    tags=('paired', 'beam', 'stretch', 'scorching-ray', 'eldritch-blast'),
+    paired_effects=tuple(f'ray-cast-{count}' for count in (1, 2, 3))+('ray-hit',),
+    event_frames=(paired_rays.BEAM_HIT_FRAME,), event_label='Arrival', direction='right')
+
+
+@dataclass(frozen=True)
+class Composition:
+    title: str
+    caster: str
+    beam: str
+    impact: str
+    default_color: str = 'fire'
+
+
+COMPOSITIONS = {
+    f'ray-composition-{count}': Composition(f'Ray · {count}-shot composition',
+                                           f'ray-cast-{count}', 'ray-beam', 'ray-hit')
+    for count in (1, 2, 3)
+}
 
 
 @dataclass(frozen=True)
@@ -161,6 +199,9 @@ class Sequence:
 
 
 SEQUENCES = {
+    'fireball-impact-sequence': Sequence('Fireball · Detonation and burning ground',
+        'fireball-detonation', 'fireball-embers', 'fireball-closing',
+        default_color='fire', tags=('fireball', 'scorch')),
     'fireball-sequence': Sequence('Fireball sequence', 'fireball-opening', 'fireball-embers',
                                   'fireball-closing', default_color='fire',
                                   description='Incoming bolt, explosive impact, sustained burning ground, then fade.',
@@ -170,6 +211,21 @@ SEQUENCES = {
     'vortex-sequence': Sequence('Vortex sequence', 'vortex-opening', 'vortex',
                                 'vortex-closing', tags=('vortex',)),
 }
+
+@dataclass(frozen=True)
+class Journey:
+    title: str
+    projectile: str
+    sequence: str
+    travel_duration: float = 1
+    default_color: str = 'fire'
+
+
+JOURNEYS = {
+    'fireball-journey': Journey('Fireball · Projectile + burning ground',
+                               'fireball-projectile', 'fireball-impact-sequence'),
+}
+
 
 # Palette geometry stays in palettes.py; viewer grouping is presentation only.
 ORIGINAL_COLORS = frozenset(('purple', 'gold', 'red', 'orange'))

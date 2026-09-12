@@ -1,8 +1,10 @@
 import { PreviewPlayer } from './player.js';
+import { CompositionPlayer } from './composition-player.js';
+import { JourneyPlayer } from './journey-player.js';
 
 const $ = id => document.getElementById(id);
-const kindLabel = { loop: 'Loop', 'one-shot': 'One-shot', sequence: 'Sequence' };
-const phaseLabel = { opening: 'Open', looping: 'Loop', closing: 'Close', playing: 'Clip' };
+const kindLabel = { loop: 'Loop', 'one-shot': 'One-shot', sequence: 'Sequence', composition: 'Composition', journey: 'Journey' };
+const phaseLabel = { flying: 'Flight', opening: 'Open', looping: 'Loop', closing: 'Close', playing: 'Clip' };
 const bytes = value => `${Math.round(value / 1024)} KiB`;
 const seconds = value => `${Number(value).toFixed(1)}s`;
 const catalogURL = new URL('../assets/catalog.json', import.meta.url);
@@ -22,8 +24,10 @@ async function initialize() {
     throw new Error('Invalid viewer catalog. Rebuild it with python3 render.py --catalog-only.');
   }
   const effects = new Map(catalog.effects.map(effect => [effect.id, effect]));
-  const entries = [...catalog.effects, ...catalog.sequences];
-  const colors = item => item.kind === 'sequence' ? item.colors : Object.keys(item.variants);
+  const compositions = catalog.compositions || [];
+  const journeys = catalog.journeys || [];
+  const entries = [...catalog.effects, ...catalog.sequences, ...compositions, ...journeys];
+  const colors = item => ['sequence', 'composition', 'journey'].includes(item.kind) ? item.colors : Object.keys(item.variants);
   const preferences = new Map();
   let selected = null;
   let selectedColor = null;
@@ -47,11 +51,28 @@ async function initialize() {
   }
 
   function stepsFor(item) {
+    if (item.kind === 'journey') return [{ phase: 'flying', effect: effects.get(item.projectile) },
+      ...item.steps.map(step => ({ ...step, effect: effects.get(step.effect) }))];
+    if (item.kind === 'composition') return [...new Map(item.tracks.map(track =>
+      [track.effect, { ...track, effect: effects.get(track.effect) }])).values()];
     return item.kind === 'sequence' ? item.steps.map(step => ({ ...step, effect: effects.get(step.effect) }))
       : [{ phase: item.kind === 'loop' ? 'looping' : 'playing', effect: item }];
   }
 
   function specFor(item, color) {
+    if (item.kind === 'journey') {
+      const [projectile, ...steps] = stepsFor(item).map(step => ({ ...step, url: assetURL(step.effect.variants[color], 'webm') }));
+      return { kind: 'journey', projectile, steps, poster: assetURL(projectile.effect.variants[color], 'poster') };
+    }
+    if (item.kind === 'composition') {
+      const tracks = item.tracks.map(track => {
+        const effect = effects.get(track.effect);
+        return { ...track, effect, url: assetURL(effect.variants[color], 'webm') };
+      });
+      return { kind: item.kind, tracks,
+        duration: Math.max(item.duration, ...tracks.map(track => track.start + track.effect.duration)),
+        poster: assetURL(tracks.find(track => track.role === 'caster').effect.variants[color], 'poster') };
+    }
     const steps = stepsFor(item).map(step => ({ ...step,
       url: assetURL(step.effect.variants[color], 'webm') }));
     const posterEffect = item.kind === 'sequence' ? steps[1].effect : item;
@@ -90,35 +111,43 @@ async function initialize() {
 
   function updateTransport(state) {
     const available = selected && colors(selected).length > 0;
-    const active = ['loading', 'opening', 'looping', 'closing', 'playing'].includes(state.phase);
+    const active = ['loading', 'flying', 'opening', 'looping', 'closing', 'playing'].includes(state.phase);
     $('stage').dataset.phase = state.phase;
-    $('primary').textContent = state.phase === 'error' ? 'Retry' : selected?.kind === 'sequence' ? 'Start' : state.phase === 'ended' ? 'Replay' : 'Play';
+    $('primary').textContent = state.phase === 'error' ? 'Retry' : ['sequence', 'journey'].includes(selected?.kind) ? 'Start' : state.phase === 'ended' ? 'Replay' : 'Play';
     $('primary').disabled = !available || active;
     $('pause').disabled = !available || state.active < 0 || state.phase === 'ended';
     $('pause').textContent = state.paused ? 'Resume' : 'Pause';
-    $('stop').disabled = !available || (!active && state.phase !== 'ended') || state.phase === 'closing' || (selected?.kind === 'sequence' && !state.wanted && active);
-    $('stop').textContent = selected?.kind === 'sequence' ? 'Close' : 'Stop';
+    $('stop').disabled = !available || (!active && state.phase !== 'ended') || state.phase === 'closing' || (['sequence', 'journey'].includes(selected?.kind) && !state.wanted && active);
+    $('stop').textContent = ['sequence', 'journey'].includes(selected?.kind) ? 'Close' : 'Stop';
     $('restart').disabled = !available;
-    $('seek').disabled = !available || selected?.kind === 'sequence' || state.phase === 'loading' || state.phase === 'error';
-    let label = { idle: 'Ready', loading: 'Loading…', opening: 'Opening', looping: 'Looping',
+    $('seek').disabled = !available || ['sequence', 'journey'].includes(selected?.kind) || state.phase === 'loading' || state.phase === 'error';
+    let label = { idle: 'Ready', loading: 'Loading…', flying: 'Flying', opening: 'Opening', looping: 'Looping',
       closing: 'Closing', playing: 'Playing', ended: 'Finished · replay to watch again', error: state.error }[state.phase];
-    if (selected?.kind === 'sequence' && !state.wanted && state.phase === 'opening') label = 'Opening · close queued';
-    if (selected?.kind === 'sequence' && !state.wanted && state.phase === 'looping') label = 'Finishing loop · close queued';
+    if (['sequence', 'journey'].includes(selected?.kind) && !state.wanted && state.phase === 'opening') label = 'Opening · close queued';
+    if (['sequence', 'journey'].includes(selected?.kind) && !state.wanted && state.phase === 'looping') label = 'Finishing loop · close queued';
     if (state.paused && active) label = `Paused · ${label}`;
     if (!selected) label = 'Select an effect';
-    else if (!available) label = `Not rendered. Run python3 render.py --effect ${selected.kind === 'sequence' ? 'all' : selected.id}`;
+    else if (!available) label = `Not rendered. Run python3 render.py --effect ${['sequence', 'composition', 'journey'].includes(selected.kind) ? 'all' : selected.id}`;
     $('playback-status').textContent = label;
     $('playback-status').dataset.state = state.phase;
     for (const step of $('phase-strip').children) step.dataset.active = String(step.dataset.phase === state.phase);
     syncOverlays(state);
   }
 
-  const player = new PreviewPlayer([...document.querySelectorAll('[data-main-slot]')], {
+  const clipPlayer = new PreviewPlayer([...document.querySelectorAll('[data-main-slot]')], {
     poster: $('poster'), onChange: updateTransport, onTime: updateTime,
   });
 
+  const compositionPlayer = new CompositionPlayer($('composition-scene'), {
+    poster: $('composition-poster'), onChange: updateTransport, onTime: updateTime,
+  });
+  const journeyPlayer = new JourneyPlayer($('composition-scene'), {
+    onChange: updateTransport, onTime: updateTime,
+  });
+  let player = clipPlayer;
+
   function overlaysPaused(state = player.snapshot()) {
-    return state.paused || !['opening', 'looping', 'closing', 'playing'].includes(state.phase);
+    return state.paused || !['flying', 'opening', 'looping', 'closing', 'playing'].includes(state.phase);
   }
 
   function syncOverlays(state) {
@@ -187,13 +216,14 @@ async function initialize() {
       const button = element('button', 'library-item'); button.type = 'button'; button.dataset.entry = item.id;
       const color = colorFor(item);
       if (color) {
-        const preview = item.kind === 'sequence' ? effects.get(item.steps[1].effect) : item;
+        const preview = item.kind === 'composition' ? effects.get(item.tracks.find(track => track.role === 'caster').effect)
+          : item.kind === 'journey' ? effects.get(item.projectile) : item.kind === 'sequence' ? effects.get(item.steps[1].effect) : item;
         const image = element('img', 'library-thumb'); image.alt = ''; image.loading = 'lazy';
         image.src = assetURL(preview.variants[color], 'poster'); button.append(image);
       } else button.append(element('span', 'library-thumb', '—'));
       const copy = element('span', 'item-copy');
       copy.append(element('span', 'item-title', item.title),
-        element('span', 'item-meta', `${kindLabel[item.kind]} · ${color ? (item.kind === 'sequence' ? `${item.steps.length} stages` : seconds(item.duration)) : 'Not rendered'}`));
+        element('span', 'item-meta', `${kindLabel[item.kind]} · ${color ? (['sequence', 'journey'].includes(item.kind) ? `${item.steps.length + (item.kind === 'journey' ? 1 : 0)} stages` : seconds(item.duration)) : 'Not rendered'}`));
       button.append(copy); row.append(button); $('library-list').append(row);
       button.addEventListener('click', () => selectEntry(item, true));
     }
@@ -218,7 +248,7 @@ async function initialize() {
   function updateDownloads() {
     $('downloads').replaceChildren(); paths = [];
     if (selectedColor) for (const step of stepsFor(selected)) {
-      const label = selected.kind === 'sequence' ? `${phaseLabel[step.phase]} · ${step.effect.title}` : null;
+      const label = selected.kind === 'composition' ? `${step.role} · ${step.effect.title}` : ['sequence', 'journey'].includes(selected.kind) ? `${phaseLabel[step.phase]} · ${step.effect.title}` : null;
       $('downloads').append(downloadRow(step.effect, selectedColor, label));
       paths.push(new URL(step.effect.variants[selectedColor].webm, catalogURL).pathname.replace(/^\//, ''));
     }
@@ -236,13 +266,17 @@ async function initialize() {
     $('stage').setAttribute('aria-label', `${selected.title} preview`);
     $('asset-stats').replaceChildren();
     const steps = stepsFor(selected);
-    const info = selected.kind === 'sequence'
+    const info = selected.kind === 'journey'
+      ? ['Moving projectile → persistent ground', 'Close at loop boundary', 'Arrival → blank frame → flash (1/30s)']
+      : selected.kind === 'composition'
+      ? [seconds(selected.duration), `${selected.tracks.length} independent tracks`, 'From → To · native clip timing']
+      : selected.kind === 'sequence'
       ? [steps.map(step => `${phaseLabel[step.phase]} ${seconds(step.effect.duration)}`).join(' → '), 'Close at loop boundary']
       : [`${selected.size} × ${selected.size}`, `${selected.fps} fps`, seconds(selected.duration), ...(selected.cue_time === null ? [] : [`Cue ${seconds(selected.cue_time)}`])];
     if (selectedColor) info.push(bytes(steps.reduce((sum, step) => sum + step.effect.variants[selectedColor].bytes, 0)));
     for (const text of info) $('asset-stats').append(element('span', '', text));
     $('phase-strip').replaceChildren();
-    if (selected.kind === 'sequence') for (const step of steps) {
+    if (['sequence', 'journey'].includes(selected.kind)) for (const step of steps) {
       const node = element('li', '', `${phaseLabel[step.phase]} · ${seconds(step.effect.duration)}`);
       node.dataset.phase = step.phase; $('phase-strip').append(node);
     }
@@ -257,7 +291,7 @@ async function initialize() {
     $('paired-effects').replaceChildren();
     if (selected.pairing) {
       const pair = selected.pairing;
-      $('pairing-cues').textContent = `${pair.event}: ${pair.times.map(seconds).join(', ')} · Beam ${pair.direction.replace('-', ' ')}`;
+      $('pairing-cues').textContent = `${pair.event}: ${pair.times.map(seconds).join(', ')} · Direction: ${pair.direction.replace('-', ' ')}`;
       for (const id of pair.effects) {
         const partner = effects.get(id);
         const button = element('button', '', `Pair with ${partner.title}`); button.type = 'button';
@@ -269,12 +303,43 @@ async function initialize() {
         $('paired-effects').append(button);
       }
     }
+    $('composed-effects').replaceChildren();
+    for (const item of [...compositions, ...journeys].filter(item => item.kind === 'journey'
+      ? item.projectile === selected.id || item.steps.some(step => step.effect === selected.id)
+      : item.tracks.some(track => track.effect === selected.id))) {
+      const button = element('button', '', `Preview ${item.title}`); button.type = 'button';
+      if (item.kind === 'journey') button.dataset.journeyEffect = item.id;
+      else button.dataset.composedEffect = item.id;
+      button.addEventListener('click', () => {
+        if (colors(item).includes(selectedColor)) preferences.set(item.id, selectedColor);
+        selectEntry(item, true);
+      });
+      $('composed-effects').append(button);
+    }
     updateDownloads();
+    const nextPlayer = selected.kind === 'journey' ? journeyPlayer : selected.kind === 'composition' ? compositionPlayer : clipPlayer;
+    if (player !== nextPlayer) player.load(null);
+    player = nextPlayer;
+    $('composition-scene').dataset.enabled = String(['composition', 'journey'].includes(selected.kind));
+    $('composition-controls').hidden = !['composition', 'journey'].includes(selected.kind);
+    $('journey-controls').hidden = selected.kind !== 'journey';
+    $('positions-note').textContent = selected.kind === 'journey'
+      ? 'Move From and To. The projectile moves and rotates without stretching; ground stays centered on To.'
+      : 'Move the tokens with these controls. Arrow keys adjust position. Distance changes beam length, not thickness or timing.';
+    if (selected.kind === 'journey') {
+      if ($('travel-duration').checkValidity()) journeyPlayer.setTravelDuration(Number($('travel-duration').value));
+      if ($('burn-duration').checkValidity()) journeyPlayer.setBurnDuration(Number($('burn-duration').value));
+    }
+    player.setRate(Number($('speed').value));
     player.load(selectedColor ? specFor(selected, selectedColor) : null);
+    if (['composition', 'journey'].includes(selected.kind)) {
+      for (const side of ['from', 'to']) for (const axis of ['x', 'y']) player.setPosition(side, axis, Number($(`${side}-${axis}`).value));
+    }
     updateCurrentMark();
   }
 
   function selectEntry(item, focusPreview = false) {
+    if (item.kind === 'journey' && selected?.id !== item.id) $('travel-duration').value = item.travel_duration;
     selected = item; selectedColor = colorFor(item);
     fillPalettes($('palette'), colors(item), selectedColor);
     updateSelection();
@@ -289,6 +354,29 @@ async function initialize() {
     updateSelection();
     const thumbnail = $('library-list').querySelector(`[data-entry="${CSS.escape(selected.id)}"] img`);
     if (thumbnail) thumbnail.src = specFor(selected, color).poster;
+  }
+
+  for (const side of ['from', 'to']) for (const axis of ['x', 'y']) {
+    $(`${side}-${axis}`).addEventListener('input', event => {
+      if (['composition', 'journey'].includes(selected?.kind)) player.setPosition(side, axis, Number(event.target.value));
+    });
+  }
+  $('reset-positions').addEventListener('click', () => {
+    for (const side of ['from', 'to']) for (const axis of ['x', 'y']) {
+      const value = axis === 'y' ? 50 : side === 'from' ? 22 : 78;
+      $(`${side}-${axis}`).value = value;
+      if (['composition', 'journey'].includes(selected?.kind)) player.setPosition(side, axis, value);
+    }
+  });
+
+  for (const [id, apply] of [['travel-duration', value => journeyPlayer.setTravelDuration(value)],
+    ['burn-duration', value => journeyPlayer.setBurnDuration(value)]]) {
+    $(id).addEventListener('change', () => {
+      if (!$(id).checkValidity() || !Number.isFinite(Number($(id).value))) {
+        $(id).reportValidity(); return;
+      }
+      apply(Number($(id).value));
+    });
   }
 
   $('palette').addEventListener('change', () => setColor($('palette').value));
@@ -306,7 +394,7 @@ async function initialize() {
   $('restart').addEventListener('click', () => player.start());
   $('pause').addEventListener('click', () => player.setPaused(!player.paused));
   $('stop').addEventListener('click', () => player.stop());
-  $('seek').addEventListener('input', () => player.seek(Number($('seek').value)));
+  $('seek').addEventListener('input', () => { if (!['sequence', 'journey'].includes(selected?.kind)) player.seek(Number($('seek').value)); });
   $('seek').addEventListener('change', () => $('seek').blur());
   $('speed').addEventListener('change', () => {
     const rate = Number($('speed').value); player.setRate(rate); overlays.forEach(layer => layer.player.setRate(rate));

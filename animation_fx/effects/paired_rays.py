@@ -1,4 +1,4 @@
-"""Matching caster/target ray recipes; Foundry decides which targets receive hits."""
+"""Independent caster, stretchable beam and impact recipes for Sequencer."""
 import math
 
 from PIL import Image
@@ -12,8 +12,10 @@ SIZE = 640
 FPS = 30
 CHARGE_FRAMES = 12
 BURST_SPACING = 10
-HIT_FRAME = beams.TRAVEL_FRAMES
-HIT_FRAMES = 42
+BEAM_HIT_FRAME = beams.TRAVEL_FRAMES
+BEAM_FRAMES = beams.PULSE_FRAMES + 1
+HIT_FRAME = 1
+HIT_FRAMES = 40
 
 
 def release_frames(count):
@@ -50,7 +52,6 @@ def caster(frame, *, count):
     releases = release_frames(count)
     for onset in releases:
         local = frame-onset
-        beams.draw_beam(canvas, local, (256, 256), (530, 256), origin_fade=24)
         if 0 <= local < 10:
             impulse = math.exp(-local/2.6)
             canvas.flash(38, impulse)
@@ -62,7 +63,7 @@ def caster(frame, *, count):
 
 
 def impact(frame):
-    """Local impact component, reusable without the incoming half-beam."""
+    """Local impact component, independent of the connecting beam's travel."""
     if frame < 0:
         return Image.new('RGBA', (SIZE, SIZE))
     canvas = Canvas(size=SIZE)
@@ -81,10 +82,15 @@ def impact(frame):
     return compose(cloud, canvas.finish())
 
 
-def target(frame):
+def beam(frame):
+    """Full-width positive-X ray: stretch only its length between token centers."""
     canvas = Canvas(size=SIZE)
-    beams.draw_beam(canvas, frame, (-18, 256), (256, 256))
-    image = compose(canvas.finish(), impact(frame-HIT_FRAME))
-    opacity = smooth(frame/2)*(1-smooth((frame-(HIT_FRAMES-9))/8))
+    beams.draw_beam(canvas, frame, (0, 256), (512, 256), origin_fade=12)
+    return fade_horizontal_edges(canvas.finish(), fraction=.04)
+
+
+def target(frame):
+    image = impact(frame-HIT_FRAME)
+    opacity = smooth(frame)*(1-smooth((frame-(HIT_FRAMES-9))/8))
     image.putalpha(image.getchannel('A').point(lambda a: round(a*opacity)))
-    return fade_horizontal_edges(image)
+    return image

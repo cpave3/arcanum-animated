@@ -13,7 +13,7 @@ from animation_fx.effects import paired_rays
 from animation_fx.export import export_effect
 from animation_fx.palettes import PALETTES
 from animation_fx.primitives import beams
-from animation_fx.profiles import ExportProfile
+from animation_fx.profiles import ExportProfile, PROFILES
 from animation_fx.viewer_catalog import build_viewer_catalog
 
 
@@ -26,10 +26,11 @@ class PairedRayTests(unittest.TestCase):
 
     def test_public_render_has_transparent_endpoints_and_all_palette_posters(self):
         self.assertEqual(len(PALETTES), 17)
-        for name, frames in zip((*CASTERS, 'ray-hit'), (36, 46, 56, 42)):
+        for name, frames in zip((*CASTERS, 'ray-beam', 'ray-hit'), (36, 46, 56, 9, 40)):
             effect = EFFECTS[name]
             self.assertEqual((effect.size, effect.fps, effect.frames, effect.loop),
                              (640, 30, frames, False))
+            self.assertEqual(PROFILES['vtt'].size_for(effect.size), 384)
             master = self.pixels(name, effect.poster_frame)
             self.assertTrue(master[..., 3].any())
             for color in PALETTES:
@@ -42,32 +43,31 @@ class PairedRayTests(unittest.TestCase):
                         visible = master[..., 3] > 100
                         self.assertFalse(np.array_equal(poster[visible, :3], master[visible, :3]))
 
-    def test_rendered_right_edge_has_exact_burst_count_with_charge_and_gaps(self):
-        for count, name in enumerate(CASTERS, 1):
-            with self.subTest(effect=name):
-                alpha = [self.pixels(name, frame)[..., 3]
-                         for frame in range(EFFECTS[name].frames)]
-                # Measure actual edge light, not release metadata or painter calls.
-                edge = [bool(image[290:350, -40:-24].max() > 20) for image in alpha]
-                starts = [i for i, on in enumerate(edge) if on and not edge[i-1]]
-                self.assertEqual(len(starts), count, edge)
-                self.assertEqual(starts, [16+10*i for i in range(count)])
-                self.assertGreater(alpha[8][240:400, 240:400].sum(), 1000)
-                self.assertFalse(any(edge[:12]))
-                for onset in (12+10*i for i in range(count)):
-                    self.assertGreater(alpha[onset+4][290:350, 500:].sum(), 1000)
-                    for frame in (onset+8, onset+9):
-                        self.assertFalse(alpha[frame][290:350, 500:].any())
+    def test_caster_and_hit_render_without_edge_beams(self):
+        for name in (*CASTERS, 'ray-hit'):
+            for frame in range(EFFECTS[name].frames):
+                with self.subTest(effect=name, frame=frame):
+                    alpha = self.pixels(name, frame)[..., 3]
+                    self.assertLessEqual(alpha[:, :80].max(), 2)
+                    self.assertLessEqual(alpha[:, -80:].max(), 2)
+            self.assertGreater(self.pixels(name, EFFECTS[name].cue_frame)[280:360, 280:360, 3].sum(), 1000)
 
-    def test_beams_feather_to_zero_at_both_frame_edges(self):
-        for name, frame, reverse in [('ray-cast-3', 16, True), ('ray-hit', 4, False)]:
-            alpha = self.pixels(name, frame)[..., 3]
-            self.assertFalse(alpha[:, 0].any())
-            self.assertFalse(alpha[:, -1].any())
-            row = alpha[320, ::-1] if reverse else alpha[320]
-            self.assertLess(row[8], row[24])
-            self.assertLess(row[24], row[48])
-            self.assertGreater(row[64], 150)
+    def test_beam_travels_only_left_to_right_and_spans_width_at_arrival(self):
+        fronts = []
+        for frame in (1, 2, 3, 4):
+            alpha = self.pixels('ray-beam', frame)[..., 3]
+            y, x = np.where(alpha > 100)
+            fronts.append(x.max())
+            self.assertLess(abs(y.mean()-320), 3)
+            self.assertGreater(x.max()-x.min(), (y.max()-y.min())*2)
+            self.assertFalse(alpha[:240].any())
+            self.assertFalse(alpha[400:].any())
+        self.assertTrue(all(b-a > 100 for a, b in zip(fronts, fronts[1:])), fronts)
+        alpha = self.pixels('ray-beam', 4)[..., 3]
+        self.assertTrue((alpha[320, 40:600] > 100).all())
+        self.assertFalse(alpha[:, [0, -1]].any())
+        self.assertLess(alpha[320, 8], alpha[320, 24])
+        self.assertLess(alpha[320, -9], alpha[320, -25])
 
     def test_charge_reuses_inward_vortex_and_condenses_without_glyphs(self):
         from animation_fx.primitives import swirl, runes
@@ -84,44 +84,6 @@ class PairedRayTests(unittest.TestCase):
         self.assertGreater(early[radius > 70, 3].sum(), later[radius > 70, 3].sum()*2)
         self.assertGreater(later[radius < 12, 3].mean(), early[radius < 12, 3].mean())
 
-    def test_caster_beam_origin_is_feathered_and_orb_is_painted_last(self):
-        from animation_fx.primitives.canvas import Canvas
-        events = []
-        beam_painter, charge_painter = beams.draw_beam, paired_rays.charge
-        def beam(*args, **kwargs):
-            events.append(('beam', kwargs.get('origin_fade')))
-            return beam_painter(*args, **kwargs)
-        def charge(*args):
-            events.append(('orb', None))
-            return charge_painter(*args)
-        with patch.object(beams, 'draw_beam', side_effect=beam), \
-                patch.object(paired_rays, 'charge', side_effect=charge):
-            rendered = self.pixels('ray-cast-1', 16)
-        self.assertEqual(events, [('beam', 24), ('orb', None)])
-        with patch.object(paired_rays, 'charge'):
-            without_orb = self.pixels('ray-cast-1', 16)
-        self.assertGreater(rendered[310:330, 310:330, 3].sum(), without_orb[310:330, 310:330, 3].sum())
-        isolated = Canvas(size=640)
-        beam_painter(isolated, 4, (256, 256), (530, 256), origin_fade=24)
-        row = np.asarray(isolated.image)[512, :, 3]
-        self.assertEqual(row[512], 0)
-        self.assertLess(row[520], row[536])
-        self.assertLess(row[536], row[560])
-
-    def test_target_enters_left_before_frame_four_then_impacts_at_center(self):
-        for frame in (1, 2, 3):
-            alpha = self.pixels('ray-hit', frame)[..., 3]
-            self.assertGreater(alpha[290:350, :80].sum(), 1000)
-            self.assertFalse(alpha[:, 320:].any())
-        cue = self.pixels('ray-hit', 4)[..., 3]
-        self.assertGreater(cue[300:340, 300:340].sum(), 1000)
-        alpha = self.pixels('ray-hit', 10)[..., 3].astype(float)
-        y, x = np.indices(alpha.shape)
-        self.assertLess(abs((x*alpha).sum()/alpha.sum()-320), 8)
-        self.assertLess(abs((y*alpha).sum()/alpha.sum()-320), 8)
-        self.assertGreater(alpha[:280].sum(), 1000)
-        self.assertGreater(alpha[360:].sum(), 1000)
-
     def test_caster_recipes_share_one_count_parameterized_renderer(self):
         for count, name in enumerate(CASTERS, 1):
             recipe = EFFECTS[name].renderer.render
@@ -129,28 +91,38 @@ class PairedRayTests(unittest.TestCase):
             self.assertEqual(recipe.keywords, {'count': count})
             self.assertTrue(self.pixels(name, 16)[..., 3].any())
 
-    def test_shared_beam_painter_visibly_contributes_to_all_four_effects(self):
-        for name in (*CASTERS, 'ray-hit'):
-            frame = 2 if name == 'ray-hit' else 16
+    def test_only_standalone_beam_uses_shared_beam_painter(self):
+        for name in (*CASTERS, 'ray-hit', 'ray-beam'):
             with self.subTest(effect=name):
                 with patch.object(beams, 'draw_beam', wraps=beams.draw_beam) as spy:
-                    complete = self.pixels(name, frame)
-                self.assertTrue(spy.called)
-                with patch.object(beams, 'draw_beam', return_value=None):
-                    removed = self.pixels(name, frame)
-                self.assertGreater(np.abs(complete.astype(float)-removed).sum(), 1000)
-                region = np.s_[:, :160, 3] if name == 'ray-hit' else np.s_[:, 500:, 3]
-                self.assertGreater(complete[region].sum(), removed[region].sum()+1000)
+                    complete = self.pixels(name, EFFECTS[name].poster_frame)
+                if name == 'ray-beam':
+                    self.assertEqual(spy.call_args.args[2:4], ((0, 256), (512, 256)))
+                    with patch.object(beams, 'draw_beam'):
+                        removed = self.pixels(name, EFFECTS[name].poster_frame)
+                    self.assertFalse(removed[..., 3].any())
+                    self.assertGreater(complete[..., 3].sum(), 1000)
+                else:
+                    spy.assert_not_called()
 
-    def test_separate_target_impact_has_visible_contribution_only_after_arrival(self):
-        for frame in (3, 4, 10):
+    def test_casters_reuse_charge_painter_with_visible_contribution(self):
+        for name in CASTERS:
+            with patch.object(paired_rays, 'charge', wraps=paired_rays.charge) as spy:
+                complete = self.pixels(name, 8)
+            spy.assert_called_once()
+            with patch.object(paired_rays, 'charge'):
+                removed = self.pixels(name, 8)
+            self.assertGreater(complete[..., 3].sum(), removed[..., 3].sum()+1000)
+
+    def test_target_reuses_impact_painter_after_blank_frame_zero(self):
+        for frame in (0, 1, 10):
             with patch.object(paired_rays, 'impact', wraps=paired_rays.impact) as spy:
                 complete = self.pixels('ray-hit', frame)
-            spy.assert_called_once_with(frame-4)
+            spy.assert_called_once_with(frame-1)
             with patch.object(paired_rays, 'impact', return_value=Image.new('RGBA', (640, 640))):
                 removed = self.pixels('ray-hit', frame)
-            if frame < 4:
-                np.testing.assert_array_equal(complete, removed)
+            if frame == 0:
+                self.assertFalse(complete[..., 3].any())
             else:
                 self.assertGreater(complete[280:360, 280:360, 3].sum(),
                                    removed[280:360, 280:360, 3].sum()+1000)
@@ -158,10 +130,12 @@ class PairedRayTests(unittest.TestCase):
     def test_real_exports_preserve_local_cues_pairing_and_decodable_alpha(self):
         profile = ExportProfile('test', scale=1, max_size=96, crf=22, cpu_used=8)
         expected = {
-            'ray-cast-1': {'effects': ['ray-hit'], 'event': 'Release',
-                           'times': [12/30], 'direction': 'right'},
-            'ray-hit': {'effects': list(CASTERS), 'event': 'Impact',
-                        'times': [4/30], 'direction': 'from-left'},
+            'ray-cast-1': {'effects': ['ray-beam', 'ray-hit'], 'event': 'Release',
+                           'times': [12/30], 'direction': 'center'},
+            'ray-hit': {'effects': ['ray-beam', *CASTERS], 'event': 'Impact',
+                        'times': [1/30], 'direction': 'center'},
+            'ray-beam': {'effects': [*CASTERS, 'ray-hit'], 'event': 'Arrival',
+                         'times': [4/30], 'direction': 'right'},
         }
         with tempfile.TemporaryDirectory() as temporary:
             output = Path(temporary)
@@ -183,12 +157,13 @@ class PairedRayTests(unittest.TestCase):
                     self.assertEqual(len(frames), effect.frames)
                     self.assertFalse(frames[[0, -1], ..., 3].any())
                     self.assertGreater(frames[effect.poster_frame, ..., 3].sum(), 1000)
-                    if name == 'ray-cast-1':
-                        self.assertGreater(frames[16, 40:56, -4:, 3].sum(), 100)
-                        self.assertLess(frames[21, 40:56, -4:, 3].max(), 5)
+                    if name == 'ray-beam':
+                        self.assertGreater(frames[4, 46:50, 6:90, 3].min(), 80)
+                        self.assertLess(frames[1, :, 60:, 3].max(), 5)
                     else:
-                        self.assertGreater(frames[2, 40:56, :8, 3].sum(), 100)
-                        self.assertGreater(frames[4, 44:52, 44:52, 3].sum(), 100)
+                        self.assertLess(frames[:, :, :8, 3].max(), 5)
+                        self.assertLess(frames[:, :, -8:, 3].max(), 5)
+                        self.assertGreater(frames[effect.cue_frame, 44:52, 44:52, 3].sum(), 100)
             entries = {entry['id']: entry for entry in build_viewer_catalog(output)['effects']}
             for name, pairing in expected.items():
                 self.assertEqual(entries[name]['pairing'], pairing)

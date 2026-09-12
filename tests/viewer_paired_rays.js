@@ -1,48 +1,51 @@
 async () => {
   const {viewerDriver} = await import('/tests/viewer_driver.js');
   const d = await viewerDriver();
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d', {willReadFrequently:true});
-  function regionPeak(left, right) {
-    const video = d.active();
-    canvas.width = video.videoWidth; canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0);
-    const x = Math.floor(left*canvas.width), width = Math.max(1, Math.floor((right-left)*canvas.width));
-    const data = context.getImageData(x, Math.floor(canvas.height*.47), width, Math.floor(canvas.height*.06)).data;
-    let peak = 0; for (let i=3; i<data.length; i+=4) peak = Math.max(peak, data[i]);
-    return peak;
-  }
-  d.set('speed', '0.25');
-  for (const count of [1, 2, 3]) {
-    d.select(`ray-cast-${count}`); d.set('palette', 'eldritch');
-    d.assert(!d.$('pairing').hidden && d.$('pairing-cues').textContent.includes('Release'), 'Missing paired release timing');
-    d.assert(d.$('palette').options.length === d.catalog.palettes.length, 'Missing ray palettes');
-    d.click('primary');
-    await d.until(() => d.phase() === 'playing' && d.active().currentTime > 0, 'Caster did not start');
-    let bursts = 0, lit = false;
-    while (d.phase() === 'playing') {
-      const next = regionPeak(.91, .96) > 30;
-      if (next && !lit) bursts++;
-      lit = next;
-      if (next) d.assert(regionPeak(1-1/canvas.width, 1) < 8, 'Outgoing beam has a hard edge');
-      await d.wait(15);
+  const ids = ['ray-cast-1', 'ray-cast-2', 'ray-cast-3', 'ray-beam', 'ray-hit'];
+  d.set('speed', '0.5');
+  let partnerLinks = 0, compositionLinks = 0;
+  for (const id of ids) {
+    const effect = d.catalog.effects.find(entry => entry.id === id);
+    d.select(id); d.set('palette', 'eldritch');
+    d.assert(d.phase() === 'idle' && !d.active(), `${id} autoplayed`);
+    d.assert(!d.$('pairing').hidden, `${id} lacks timing controls`);
+    const cues = d.$('pairing-cues').textContent;
+    d.assert(cues.includes(effect.pairing.event) && cues.includes(effect.pairing.direction), `${id} timing label mismatch`);
+    d.assert(effect.pairing.direction === (id === 'ray-beam' ? 'right' : 'center'), `${id} uses baked-half direction`);
+    d.assert(d.$('palette').options.length === 17, `${id} missing palettes`);
+    for (const color of ['fire', 'eldritch']) {
+      d.set('palette', color);
+      d.assert(new URL(d.$('poster').src).pathname.endsWith(`/${id}/${color}.png`), `${id} poster mismatch`);
+      for (const extension of ['webm', 'png']) {
+        d.assert([...document.querySelectorAll('a[download]')].some(link =>
+          new URL(link.href).pathname.endsWith(`/${id}/${color}.${extension}`)), `${id} missing ${color} ${extension} download`);
+      }
     }
-    d.assert(bursts === count, `Expected ${count} decoded bursts, got ${bursts}`);
-    await d.until(() => !d.active().seeking, 'Final caster seek did not finish');
-    await d.wait(80);
-    d.assert(d.pixels().maximum === 0, 'Caster left an afterimage');
+    d.click('primary');
+    await d.until(() => d.phase() === 'playing' && d.active()?.currentTime > 0, `${id} did not play`);
+    await d.until(() => d.phase() === 'ended' && !d.active().seeking, `${id} did not finish`);
+    await d.wait(100);
+    d.assert(d.pixels().maximum === 0, `${id} left an afterimage`);
+    d.click('stop');
+    d.assert(d.phase() === 'idle' && !d.$('poster').hidden, `${id} stop did not reset`);
+    d.assert(d.$('paired-effects').children.length === effect.pairing.effects.length, `${id} partner list mismatch`);
+    for (const partner of effect.pairing.effects) {
+      d.select(id); d.set('palette', 'eldritch');
+      document.querySelector(`[data-paired-effect="${partner}"]`).click();
+      d.assert(d.$('workspace').dataset.entry === partner, `Link did not select ${partner}`);
+      d.assert(d.$('palette').value === 'eldritch' && d.phase() === 'idle' && !d.active(), 'Partner link changed palette or autoplayed');
+      partnerLinks++;
+    }
+    const compositions = d.catalog.compositions.filter(entry => entry.tracks.some(track => track.effect === id));
+    d.assert(compositions.length === (id.startsWith('ray-cast-') ? 1 : 3), `${id} missing compositions`);
+    for (const composition of compositions) {
+      d.select(id); d.set('palette', 'eldritch');
+      document.querySelector(`[data-composed-effect="${composition.id}"]`).click();
+      d.assert(d.$('workspace').dataset.entry === composition.id, 'Composition link failed');
+      d.assert(d.$('palette').value === 'eldritch' && d.phase() === 'idle', 'Composition link changed palette or autoplayed');
+      d.assert(!d.$('composition-controls').hidden, 'Composition position controls missing');
+      compositionLinks++;
+    }
   }
-  document.querySelector('[data-paired-effect="ray-hit"]').click();
-  d.assert(d.$('workspace').dataset.entry === 'ray-hit', 'Pair link did not select target');
-  d.assert(d.$('palette').value === 'eldritch' && d.phase() === 'idle', 'Pair link must preserve palette without autoplay');
-  d.assert(d.$('paired-effects').children.length === 3, 'Target must link to all caster variants');
-  d.click('primary');
-  await d.until(() => d.phase() === 'playing' && d.active().currentTime > .06, 'Target beam did not arrive');
-  d.assert(regionPeak(.04, .2) > 30, 'Incoming beam is not visible on the left');
-  d.assert(regionPeak(0, 1/canvas.width) < 8, 'Incoming beam has a hard edge');
-  await d.until(() => d.active().currentTime > .2, 'Impact did not start');
-  d.assert(regionPeak(.47, .53) > 100, 'Target was not struck at its center');
-  await d.until(() => d.phase() === 'ended' && !d.active().seeking, 'Target did not finish');
-  await d.wait(80); d.assert(d.pixels().maximum === 0, 'Target left an afterimage');
-  return {oneTwoThreeBursts:true, softenedEdges:true, pairedNavigation:true, palettePreserved:true, incomingImpact:true};
+  return {components: ids.length, partnerLinks, compositionLinks, transparentEndpoints: true, noAutoplay: true};
 }

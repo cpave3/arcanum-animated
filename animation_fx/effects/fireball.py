@@ -17,6 +17,8 @@ OPEN_FRAMES = 120
 LOOP_FRAMES = 120
 CLOSE_FRAMES = 90
 SHOT_FRAMES = OPEN_FRAMES + CLOSE_FRAMES - 1
+PROJECTILE_FRAMES = 60
+DETONATION_FRAMES = OPEN_FRAMES - IMPACT_FRAME + 1
 X, Y = centered_grid(SIZE, SIZE/2)
 R = np.hypot(X, Y)
 ANGLE = np.arctan2(Y, X)
@@ -60,22 +62,40 @@ def ground(phase=0, growth=1, energy=1):
                    sparks.finish(growth))
 
 
-def projectile(frame):
-    t = frame/IMPACT_FRAME
-    head = -.94+.94*t**1.35
+def projectile_material(head, tail_phase, ball_phase, curl_phase):
+    """Shared orb artwork; placement and animation clocks are supplied by the recipe."""
     dx = X-head
     wake = np.clip(-dx/.62, 0, 1)
     width = .018+.085*(1-wake)
-    curl = .026*np.sin(dx*32-frame*.65)*wake
-    noise = combustion.turbulence(dx*5, Y*8, frame*.25)
+    curl = .026*np.sin(dx*32-curl_phase)*wake
+    noise = combustion.turbulence(dx*5, Y*8, tail_phase)
     density = np.exp(-((Y-curl)/width)**2*2)*np.clip(1-wake, 0, 1)
     density *= (dx < 0)*(.6+.4*noise)*np.clip((X+.98)/.10, 0, 1)
     tail = combustion.energy_field(density, .4+.5*(1-wake)+.15*noise)
-    ball = combustion.flame_cloud(dx, Y, .125, frame*.4,
+    ball = combustion.flame_cloud(dx, Y, .125, ball_phase,
                                   roughness=.12, core_heat=.65, detail=4)
     core = Canvas(size=SIZE)
     core.flash(22, .95, (256+head*256, 256))
-    return attenuate(compose(tail, ball, core.finish()), smooth(t/.15))
+    return compose(tail, ball, core.finish())
+
+
+def projectile(frame):
+    t = frame/IMPACT_FRAME
+    head = -.94+.94*t**1.35
+    return attenuate(projectile_material(head, frame*.25, frame*.4, frame*.65), smooth(t/.15))
+
+
+def traveling_projectile(frame):
+    """Centered right-facing looping sprite; Sequencer moves its canvas through space."""
+    phase = math.tau*(frame % PROJECTILE_FRAMES)/PROJECTILE_FRAMES
+    return projectile_material(0, phase, 5*phase, 2*phase)
+
+
+def detonation(frame):
+    """No baked flight: one clear lead-in frame, then the existing impact-to-embers recipe."""
+    if frame == 0:
+        return Image.new('RGBA', (SIZE, SIZE))
+    return impact(frame+IMPACT_FRAME-1)
 
 
 # Delay, outward destination, final radius. The central ignition triggers unequal pockets.

@@ -1,0 +1,24 @@
+{
+  "loop": false,
+  "fps": 30,
+  "frames": 9,
+  "duration": 0.3,
+  "size": 384,
+  "source_size": 640,
+  "profile": "vtt",
+  "cue_time": 0.13333333333333333,
+  "poster_time": 0.13333333333333333,
+  "pairing": {
+    "effects": [
+      "ray-cast-1",
+      "ray-cast-2",
+      "ray-cast-3",
+      "ray-hit"
+    ],
+    "event": "Arrival",
+    "times": [
+      0.13333333333333333
+    ],
+    "direction": "right"
+  }
+}

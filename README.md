@@ -1,7 +1,8 @@
 # Animation collection
 
-Transparent WebM effects for Foundry/Sequencer: eight loops and nineteen one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
+Transparent WebM effects for Foundry/Sequencer: 30 effects: nine loops and twenty-one one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
 
+- `fireball-projectile`: centered right-facing orb with a tail to the left; move and rotate the square sprite externally, without stretching (384×384 VTT, 30 fps, 2-second loop).
 - `fireball-embers`: scorched fissures, pulsing hot coals, and drifting sparks (384×384 VTT, 30 fps, 4-second loop).
 - `miasma-pool`: irregular dark floor pools with slow billowing smoke from multiple vents (384×384 VTT, 24 fps, 4-second loop).
 - `rift`: neon tear with a dark shimmering interior (384×384 VTT, 24 fps).
@@ -11,18 +12,20 @@ Transparent WebM effects for Foundry/Sequencer: eight loops and nineteen one-sho
 - `orb-anchor`: glowing orb, lightning, and sparks (256×256 VTT, 30 fps).
 - `rune-anchor`: vertical runes, side brackets, and sparks (256×256 VTT, 30 fps).
 
-Loops last 3 seconds, except the 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Turn Undead (4 seconds) and the fireball and paired-ray clips below.
+Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Turn Undead (4 seconds) and the fireball and paired-ray clips below.
 
 | One-shot ID | Motion | Cue time at 1× |
 | --- | --- | --- |
-| `ray-cast-1` | Caster charge, then one rightward beam (36 frames, 1.2 s) | 0.4 s: release |
-| `ray-cast-2` | Same charge, then two rightward bursts (46 frames, ≈1.5333 s) | 0.4, ≈0.733333 s: releases |
-| `ray-cast-3` | Same charge, then three rightward bursts (56 frames, ≈1.8667 s) | 0.4, ≈0.733333, ≈1.066667 s: releases |
-| `ray-hit` | Matching left-entry beam and centered impact (42 frames, 1.4 s) | 4/30 s (≈0.133333 s): impact |
+| `ray-cast-1` | Caster-only charge and one release pulse (36 frames, 1.2 s) | Frame 12: release |
+| `ray-cast-2` | Caster-only charge and two release pulses (46 frames, ≈1.5333 s) | Frames 12, 22: releases |
+| `ray-cast-3` | Caster-only charge and three release pulses (56 frames, ≈1.8667 s) | Frames 12, 22, 32: releases |
+| `ray-beam` | Standalone full-width left-to-right beam (9 frames, 0.3 s) | Frame 4: arrival |
+| `ray-hit` | Centered impact only; blank frame 0 (40 frames, ≈1.3333 s) | Frame 1: impact |
 | `turn-undead` | Glyphs assemble one by one, spin to charge, then fly outward intact with searing radiant echoes (120 frames, 4 s) | 1.80 s: release |
 | `fireball` | Left-to-center bolt, top-down blast, then scorched ground cools to empty (209 frames, ≈6.97 s) | 0.47 s: impact |
 | `fireball-stylized` | Graphic flame variant: rounded lobes, bold hot-color bands, and cinders; same flight, impact timing, and fading ground (≈6.97 s) | 0.47 s: impact |
 | `fireball-opening` | Same impact settles into burning ground (120 frames, 4 s) | 0.47 s: impact; handoff at 4 s |
+| `fireball-detonation` | Centered explosion only; blank frame 0, then the original impact settles into embers (107 frames, ≈3.57 s) | Frame 1: impact; frame 106 matches embers frame 0 |
 | `fireball-closing` | Burning ground cools and scorch fades (90 frames, 3 s) | 0.00 s: replace `fireball-embers` loop |
 | `teleport-departure` | Spirals gather inward, swell, collapse into a flash, then scatter | 1.00 s: move/hide token |
 | `teleport-arrival` | Flash expands into rings and curling wisps | 0.40 s: show token |
@@ -35,7 +38,7 @@ Loops last 3 seconds, except the 4-second miasma pool and fireball embers. One-s
 | `vortex-opening` | Rift opens, then swirl emerges outward from it | 2.00 s: hand off to `vortex` loop |
 | `vortex-closing` | Swirl is sucked inward, rift seals, shared closing sparks scatter | 0.00 s: replace `vortex` loop |
 
-One-shots do not wrap frames. All finish fully transparent **except sequence openings: `portal-open`, `vortex-opening`, and `fireball-opening`**. Their final source frames exactly match `rift`, `vortex`, and `fireball-embers` frame 0, respectively, in every palette. The corresponding closing clips start on those same frames; switch from the loop at its cycle boundary. Lossy WebM compression can introduce small pixel differences between clips. Arrival and departure are independently animated, not reversed copies. Cue times refer to the effect starting, and scale with playback speed. These assets do not move tokens automatically.
+One-shots do not wrap frames. All finish fully transparent **except sequence openings: `portal-open`, `vortex-opening`, `fireball-opening`, and `fireball-detonation`**. Their final source frames exactly match their respective loops’ frame 0 (`rift`, `vortex`, or `fireball-embers`) in every palette. The corresponding closing clips start on those same frames; switch from the loop at its cycle boundary. Lossy WebM compression can introduce small pixel differences between clips. Arrival and departure are independently animated, not reversed copies. Cue times refer to the effect starting, and scale with playback speed. These assets do not move tokens automatically.
 
 Original colors: `purple`, `gold`, `red`, `orange`.
 
@@ -55,7 +58,7 @@ Thematic palettes: `divine` combines blue shadows, warm gold, and icy white high
 | `radiant` | Gold (same palette as `gold`) |
 | `thunder` | Indigo / violet |
 
-These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 459 WebM/PNG pairs (27 effects × 17 palettes/colorways).
+These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 510 WebM/PNG pairs (30 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
 
 ## Preview
 
@@ -65,40 +68,101 @@ python3 serve.py
 
 Open http://localhost:8000. Use `--port 8001` if needed. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. Refresh the page after HTML or catalog changes; no server restart is needed for those changes.
 
-The viewer reads `assets/catalog.json` into a searchable library with **Loops**, **One-shots**, and **Sequences** filters. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
+The viewer reads `assets/catalog.json` into a searchable library with **Loops**, **One-shots**, **Composed**, **Sequences**, and **Journeys** filters. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
 
-- Nothing plays automatically when you select an entry or change its palette. Press **Play** for a single clip or **Start** for a sequence.
+- Nothing plays automatically when you select an entry or change its palette. Press **Play** for a single clip or composition, or **Start** for a sequence or journey.
 - Loops repeat; one-shots play once and hold their final frame. **Replay** plays a finished one-shot again, and **Restart** starts the selected entry from the beginning.
-- **Pause/Resume** controls the active preview. **Stop** resets a single clip to its poster. Seek is available for single clips only and pauses on the chosen frame; sequences cannot be scrubbed.
+- **Pause/Resume** controls the active preview. **Stop** resets a single clip or composition to its poster. Seek is available for single clips and compositions and pauses on the chosen frame; sequences and journeys cannot be scrubbed.
 - Palette choices are remembered independently per library entry during the current page session. Changing palette resets the preview without starting playback. Color is baked into the WebM, not applied with a browser filter.
 - Optional left and right overlays can be toggled independently and share an overlay style and palette; the right overlay is mirrored. Their WebM and PNG downloads are available inside the overlay section. They accompany the focused preview rather than running separate gallery previews.
 - Every WebM and PNG download matches its selected palette. A sequence exposes downloads for all three clips—opening, loop, and closing—plus their PNGs, and lets you copy all three asset paths.
 
-### Paired rays in Foundry/Sequencer
+### Ray components in Foundry/Sequencer
 
-Use `ray-cast-1`, `ray-cast-2`, or `ray-cast-3` on the caster and `ray-hit` on each desired target. `fire` is their default for a Scorching Ray look; choose `eldritch` for an Eldritch Blast look. All four start and finish fully transparent in all 17 palettes.
+Use one `ray-cast-1`, `ray-cast-2`, or `ray-cast-3` on the caster, a separate `ray-beam` for each release, and `ray-hit` on each target that should show an impact. `fire` is the default for a Scorching Ray look; choose `eldritch` for an Eldritch Blast look. All five components have 640×640 source frames, 384×384 VTT exports, and 30 fps. They start and finish fully transparent in all 17 palettes.
 
-- The caster draws an accelerating, twisting inward vortex into a bright core over 0.4 s, then releases at local frames 12, 22, and 32 as applicable: 0.4 s, ≈0.733333 s, and ≈1.066667 s. Clip durations are 1.2 s, ≈1.5333 s, and ≈1.8667 s respectively. Each pulse fades out before the next burst. The outgoing and incoming beam edges feather to full transparency at the frame border, including their glow. Caster beams also feather in beneath the orb rather than starting with a flat cut.
-- The target clip lasts 1.4 s. A matching beam enters from the **left**, reaching a centered impact at local frame 4: 4/30 s (≈0.133333 s).
-- Center each canvas on its token. Rotate both halves by the **same** caster-to-target heading: the caster emits rightward and the target receives from the left. Do not mirror the target half. All bursts in a multi-ray caster clip have the same baked heading; for independently aimed rays, repeat `ray-cast-1` with separate rotations.
-- Schedule `ray-hit` externally only for each desired roll result (a hit or failed save, according to your workflow). These assets do not roll attacks, select targets, resolve misses, or automatically trigger hits. Starting a target clip at a caster release places its impact 4/30 s later; to schedule an impact at a chosen time, start the target clip 4/30 s before it. Adjust timing for playback speed.
+- **Caster:** an accelerating inward vortex charges for 12 frames (0.4 s), followed by centered release pulses only—no baked outgoing beams. The 1/2/3-release clips last 36/46/56 frames, with releases at frames 12, 22, and 32 as applicable.
+- **Beam:** a standalone 9-frame clip travels across the full canvas width, from logical `(0, 256)` to `(512, 256)`. Stretch its X axis between caster and target centers while keeping its Y scale fixed. Its arrival cue is local frame 4 (≈0.133333 s). Travel always takes four frames, independent of distance: long distances stretch the pixels, not the travel time.
+- **Impact:** a 40-frame centered burst with no incoming beam. Frame 0 is blank; the impact cue is local frame 1 (≈0.033333 s).
 
-Each paired export's `effect.json` includes `pairing`: `effects` lists partner IDs, `event` is `Release` or `Impact`, `times` contains precise frame/FPS seconds on that clip's **local clock**, and `direction` is `right` or `from-left`. Caster partners are `['ray-hit']`; the target partners are `['ray-cast-1', 'ray-cast-2', 'ray-cast-3']`. Use the numeric metadata, not rounded labels, for scheduling. `catalog.json` carries the exported pairing metadata through to the viewer.
+At native speed, let `frameMs = 1000 / 30`. Start each beam at `releaseFrame * frameMs` and each hit at `(releaseFrame + 4 - 1) * frameMs`. The hit's frame-1 cue then coincides with the beam's frame-4 arrival. These are absolute delays from the same sequence start, not waits between effects; impact tails must overlap independently. Adjust all timing consistently if changing playback speed.
 
-The viewer offers matching-palette partner links when that palette is available on the partner. Each half retains independent playback: following a link does not start or automatically synchronize the clips. Foundry/Sequencer scheduling remains external and has not been tested here.
+Pairing is defined in the source registry, `animation_fx/catalog.py`: caster partners are `ray-beam` and `ray-hit` (`Release`, direction `center`); beam partners are all three casters and `ray-hit` (`Arrival`, direction `right`); hit partners are `ray-beam` and all three casters (`Impact`, direction `center`). Exported `effect.json` files include this `pairing` metadata, and `assets/catalog.json` carries it to the viewer. `times` are precise frame/FPS seconds on each component's **local clock**. Use numeric metadata rather than rounded labels for scheduling.
 
-Paired-ray browser regression check (fresh page):
+#### Breaking migration from baked rays
+
+Old caster/target exports are incompatible with this component timing and geometry. Re-render **all five effects in all palettes**, then update existing Foundry macros to schedule the separate beam and impact. Reindexing alone does not replace old media.
+
+```sh
+python3 render.py --effect ray-cast-1 --color all
+python3 render.py --effect ray-cast-2 --color all
+python3 render.py --effect ray-cast-3 --color all
+python3 render.py --effect ray-beam --color all
+python3 render.py --effect ray-hit --color all
+```
+
+These are migration instructions, not a claim that exports have been regenerated here. Compositions are preview recipes, not additional exports.
+
+#### Foundry script macro
+
+Copy [examples/sequencer-rays.js](examples/sequencer-rays.js) into a Foundry **Script** macro with Sequencer enabled. Set `BASE` to your uploaded assets directory **relative to Foundry's Data directory**, without a leading slash (for example, `modules/my-animations/assets`). Choose `color` and `beamCount` (1, 2, or 3), select one caster token, and target one or more tokens. The macro uses the target list round-robin. Its per-beam `impactMask` defaults to all hits; set entries to `false` to suppress individual impacts, not their beams.
+
+This is a visual preview: make your own rolls and supply the hit results. There is no attack, save, or roll integration, and no automatic token movement.
+
+The caster and hits use `.scaleToObject(3)`. Beams use `.atLocation(caster).stretchTo(target, { onlyX: true }).scale({ x: 1, y: canvas.grid.size * 3 / 384 })`: fixed three-grid-square height for these VTT files, independent of distance. Do not add `.anchor()`, `.size()`, or `.scaleToObject()` to the beam. Sequencer handles the custom sprite's left-center anchor and rotation for `stretchTo`; there is no need to rotate or mirror the centered endpoint effects. If using 640-pixel high-profile files instead, change the beam scale denominator to 640.
+
+The API behavior was checked against Sequencer's source ([effect section](https://github.com/fantasycalendar/FoundryVTT-Sequencer/blob/master/src/sections/effect.js), [canvas effect](https://github.com/fantasycalendar/FoundryVTT-Sequencer/blob/master/src/canvas-effects/canvas-effect.js)); the macro has **not been run in Foundry**.
+
+#### Composed ray previews
+
+The **Composed** filter contains three non-exported entries: `ray-composition-1`, `ray-composition-2`, and `ray-composition-3`. Each combines a caster track with one independent beam and impact track per release. Impact tails overlap without restarting earlier hits. All tracks share a palette and composition clock while retaining their local clip timing.
+
+Use the **From / To** horizontal and vertical position sliders and **Reset positions** to change the endpoints; the dummy tokens are **not draggable**. The connecting beam rotates and stretches only in length; endpoint effects stay centered and square. Distance changes do not change the four-frame travel time.
+
+Compositions support **Play**, **Pause/Resume**, **Stop**, **Replay**, **Restart**, seek, and playback speed. Selection and palette changes reset without autoplay. Downloads and copied paths refer to the three unique components (caster, beam, impact), not a flattened composition export. Matching-palette partner and composition links let you navigate without starting playback.
+
+Composition browser regression check (fresh page, after migration exports):
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_compositions.js)"
+```
+
+This exercises decoded beams and impacts, overlapping tracks, endpoint sliders and Reset, full transport, cancellation, and component downloads. `tests/viewer_paired_rays.js` checks all five components, timing labels, palette downloads, transparent endings, and partner/composition navigation without autoplay:
 
 ```sh
 playwright-cli goto http://localhost:8000
 playwright-cli eval "$(cat tests/viewer_paired_rays.js)"
 ```
 
-This checks decoded 1/2/3-burst playback, feathered edges, left-entry impact, and matching-palette partner navigation without autoplay.
+### Fireball journey in the viewer
+
+Select **Journeys → Fireball · Projectile + burning ground** (`fireball-journey`). Set the **From / To** position sliders, **Travel duration** (default 1 second), and **Burn duration** (default 0: manual Close). Start moves a fixed-size square projectile toward To, rotating its right-facing head along the path without stretching. On arrival, detonation plays at To, then embers loop until Close or the optional positive burn duration expires. Burn duration counts only time in the ember phase, not flight or opening.
+
+Close during flight cancels the journey. During the loop, Close waits for the next 4-second boundary; a positive burn duration likewise rounds up to that boundary. Closing lasts 3 seconds at 1×. From/To controls, Pause/Resume, Restart, and playback speed apply to the journey; selecting another entry or palette cancels playback without autoplay. Downloads and copied paths cover all four component clips in the selected palette. A palette is available only when all four have both WebM and PNG files.
+
+The viewer starts detonation’s blank frame 0 at arrival, so the first flash follows 1/30 second later at 1×. The Foundry macro starts opening one frame before arrival to align its frame-1 flash. This is nominal scheduling, **not frame-perfect synchronization**: client scheduling and media decoding can add jitter.
+
+### Fireball script macros in Foundry/Sequencer
+
+1. Enable Sequencer and upload the four folders `fireball-projectile`, `fireball-detonation`, `fireball-embers`, and `fireball-closing` from `assets/` into your Foundry assets directory. Keep the palette filenames and folder structure.
+2. Copy [examples/sequencer-fireball.js](examples/sequencer-fireball.js) into a **Script** macro. Set `BASE` to that directory relative to Foundry’s Data directory, without a leading slash (for example, `modules/my-animations/assets`). Set `color`, ground `size`, `projectileSize`, and `speed` as needed.
+3. Copy [examples/sequencer-clear-fireballs.js](examples/sequencer-clear-fireballs.js) into a second **Script** macro for Clear. It reads each cast’s stored path, palette, destination, and size; keep the shared namespace unchanged in both macros.
+4. Select exactly one caster token, run the cast macro, and choose the destination with the crosshair. Canceling the crosshair creates nothing. These are visual effects only: no rolls, damage, or token movement.
+
+The projectile uses `.moveTowards(point, { rotate: true }).duration(travelMs)`, not `stretchTo`: the sprite moves at fixed size, looping its 60-frame artwork when travel exceeds 2 seconds. Travel time depends on distance and the configured grid-squares-per-second speed. The original `fireball`, `fireball-opening`, and `fireball-stylized` assets remain available and unchanged; this journey is an additional way to use the shared artwork, not a replacement.
+
+Projectile and detonation use `.belowTokens(false)`, so tokens are engulfed by the flight/explosion. Embers and both manual/timed closing use `.belowTokens()`, so tokens stand above the cracked ground. The viewer uses the same ordering around its dummy tokens.
+
+`burnSeconds = 0` leaves embers persistent until manual Clear. A positive value is an optional duration in **seconds of EMBERS only**, after detonation finishes. Clear cancels an active timer, so it cannot play a second closing later. The timeout is local to the casting client: it does not survive reload or resume on another client. Persistent markers and embers do survive reload, so manual Clear still works. Reload during flight/opening does not resume the interrupted cast.
+
+Clear ends **all casts in this namespace in the current scene** that the caller has permission to delete, including other users’ casts when permitted. Use one GM to clear all users’ fireballs, or configure Sequencer’s effect-delete permission; denied casts produce a warning. Other namespaces and scenes are not touched. Clearing during flight cancels later stages without adding ground; clearing opening or embers plays the 3-second closing at the stored destination. Unlike the viewer, manual Clear and timed expiry stop the current phase immediately: mid-loop/opening removal can visibly jump to closing frame 0.
+
+One GM clearing is recommended because cross-client socket operations are not atomic: simultaneous clears can duplicate closing, and a delayed creation can reappear. Repeat Clear for a remaining marker; an orphan without a marker needs manual Effect Manager removal. The APIs were checked against Sequencer source and the mocked Node regression suite; these macros have **not been tested in an actual Foundry session**.
 
 ### Chained sequences
 
-The library includes `portal-open → rift → portal-close`, `vortex-opening → vortex → vortex-closing`, and `fireball-opening → fireball-embers → fireball-closing`. Available palettes are those exported for all three clips.
+The library includes `portal-open → rift → portal-close`, `vortex-opening → vortex → vortex-closing`, `fireball-opening → fireball-embers → fireball-closing`, and `fireball-detonation → fireball-embers → fireball-closing` (`fireball-impact-sequence`). Available palettes are those exported for all three clips.
 
 - Press **Start** to preload all three clips and begin opening. The steady clip repeats until you request **Close**.
 - **Close** during the loop waits for the next loop boundary (up to one loop at 1×: 3 seconds for portals, 4 seconds for fireball), keeping source frames aligned. An early Close during opening queues closing immediately after opening, without entering the loop. Close during initial loading cancels the start.
@@ -115,14 +179,17 @@ Python 3.10+, Pillow, NumPy, and an FFmpeg build with `libvpx-vp9` are required.
 python3 -m pip install -r requirements.txt
 python3 render.py                                  # entire collection, VTT profile
 python3 render.py --profile high                    # native-resolution exports in assets-high/
-python3 render.py --effect one-shots               # all nineteen one-shots, all palettes
+python3 render.py --effect one-shots               # all twenty-one one-shots, all palettes
 python3 render.py --effect teleport-arrival --color necrotic
 python3 render.py --effect rune-anchor --color red # one asset
 python3 render.py --effect miasma-pool --color necrotic
 python3 render.py --effect turn-undead --color divine # sacred caster-centered release
 python3 render.py --effect ray-cast-3 --color fire   # three caster bursts
+python3 render.py --effect ray-beam --color fire    # independently stretched connecting beam
 python3 render.py --effect ray-hit --color eldritch # independent target impact
 python3 render.py --effect fireball --color fire    # finite impact and cooling
+python3 render.py --effect fireball-projectile --color all
+python3 render.py --effect fireball-detonation --color all
 python3 render.py --effect fireball-opening --color all
 python3 render.py --effect fireball-embers --color all
 python3 render.py --effect fireball-closing --color all
@@ -152,7 +219,7 @@ Measured on the original 210-file collection before adding miasma and vortex tra
 
 In Foundry, specify the effect's intended world/grid size rather than relying on its native pixel dimensions, so switching resolution does not change its footprint.
 
-Outputs: `assets/{effect}/{color}.webm` and matching transparent `.png` stills (representative posters for one-shots). Each export also writes `assets/{effect}/effect.json` with profile, loop status, exported size, source size, FPS, frame count, duration, cue time, and poster time. Metadata cue time is frame-based; portal opening’s final frame is at 59/30 seconds, with loop handoff after the full 2-second clip. Each effect's geometry is rendered once per frame, then mapped into the requested palettes. Encoders write to unique temporary directories; files are published only after all requested colors for that effect encode successfully. After each successful effect export, the CLI atomically rebuilds `catalog.json` in the output folder via `animation_fx/viewer_catalog.py`. It lists registered effects, palettes, sequences, delivery metadata, and available variants with relative WebM/PNG filenames, byte sizes, and per-variant versions. Refresh the viewer after rendering; each variant’s manifest version is used in media URLs to pick up replaced files.
+Outputs: `assets/{effect}/{color}.webm` and matching transparent `.png` stills (representative posters for one-shots). Each export also writes `assets/{effect}/effect.json` with profile, loop status, exported size, source size, FPS, frame count, duration, cue time, and poster time. Metadata cue time is frame-based; portal opening’s final frame is at 59/30 seconds, with loop handoff after the full 2-second clip. Each effect's geometry is rendered once per frame, then mapped into the requested palettes. Encoders write to unique temporary directories; files are published only after all requested colors for that effect encode successfully. After each successful effect export, the CLI atomically rebuilds `catalog.json` in the output folder via `animation_fx/viewer_catalog.py`. It lists registered effects, palettes, sequences, compositions, journeys, delivery metadata, and available variants with relative WebM/PNG filenames, byte sizes, and per-variant versions. Refresh the viewer after rendering; each variant’s manifest version is used in media URLs to pick up replaced files.
 
 In Sequencer, use a path such as `.file("your-upload-folder/rune-anchor/red.webm")`. Place two independent anchor effects over the rift so they can be toggled separately. The viewer mirrors the right anchor. Foundry integration itself has not been tested here.
 
@@ -174,7 +241,7 @@ Effects are recipes. Geometry, particle appearance, glyph definitions, and trans
 | Closing/opening accents | `transitions.py:transition_accents` | Both plain and swirling portals share the flash and finishing sparks |
 | Turbulent combustion | `combustion.py:turbulence` / `energy_field` / `flame_cloud` | Fireball projectile, explosion, and hot coals; Turn Undead radiant shells |
 | Expanding gas pocket | `gas.py:billow` | Realistic fireball central ignition and staggered secondary explosions |
-| Finite beam pulse | `beams.py:draw_beam` | All three count-parameterized caster recipes and the target incoming beam; `paired_rays.impact` supplies the separate target impact |
+| Finite beam pulse | `beams.py:draw_beam` | Standalone `ray-beam`; `paired_rays.caster` supplies charge/releases and `paired_rays.impact` supplies the separate target impact |
 | Placement/compositing | `geometry.py:scale_layer` / `compose` | Transition recipes; usable by new effects |
 | Timeline utilities | `timing.py:progress` / `smooth` | Finite effect recipes |
 
@@ -222,14 +289,16 @@ python3 render.py --effect fireball-stylized --color all
 
 ### Fireball components and orientation
 
-`animation_fx/effects/fireball.py` composes three independent transparent layers: `projectile(frame)` for the fast, round bolt with an incandescent core, `explosion(frame)` for the volumetric blast with a central ignition and six staggered secondary gas pockets (frame relative to detonation), and `ground(phase, growth, energy)` for scorch, fractures, coals, and sparks. The shared `gas.billow` primitive expands locally shaded cloud volumes, transports them outward, and cools them into smoke; texture travels with each pocket rather than waving over a disk. The same revised explosion is used by the finite shot and sequence opening. Shared combustion primitives supply the bolt material; ground reuses the fracture and spark painters. The projectile travels horizontally **from the left edge toward the canvas center**, not upward. At frame 14 (≈0.47 s) it becomes a broad, centered, top-down explosion. Place the canvas center at the intended impact point; `fire` is the default palette for all four clips and the sequence.
+`animation_fx/effects/fireball.py` composes three independent transparent layers: `projectile(frame)` for the fast, round bolt with an incandescent core, `explosion(frame)` for the volumetric blast with a central ignition and six staggered secondary gas pockets (frame relative to detonation), and `ground(phase, growth, energy)` for scorch, fractures, coals, and sparks. The shared `gas.billow` primitive expands locally shaded cloud volumes, transports them outward, and cools them into smoke; texture travels with each pocket rather than waving over a disk. The same revised explosion is used by the finite shot and sequence opening. Shared combustion primitives supply the bolt material; ground reuses the fracture and spark painters. The projectile travels horizontally **from the left edge toward the canvas center**, not upward. At frame 14 (≈0.47 s) it becomes a broad, centered, top-down explosion. Place the canvas center at the intended impact point; `fire` is the default palette for the original four clips and sequence, as well as the new projectile, detonation, impact sequence, and journey.
+
+`projectile_material` supplies both the original moving bolt and the new centered looping orb. `fireball-detonation` never draws a projectile: frame 0 is blank, frames 1–106 match original opening frames 14–119, and its last frame exactly matches embers/closing frame 0 in every palette. The projectile loop keeps its head centered and points right with its tail to the left; external movement and rotation determine its world trajectory.
 
 The finite `fireball` and `fireball-opening` use the same impact timeline. Opening frame 119, embers frame 0, and closing frame 0 are pixel-identical before encoding in every palette. Embers repeat over 120 frames. The finite shot continues with closing frame 1 after opening frame 119, avoiding a duplicated handoff frame: 120 + 90 − 1 = 209 frames. Its first and last frames are fully transparent, as are the opening’s first frame and closing’s last frame. Ground can remain visible without reaching fully opaque alpha.
 
 Other infrastructure:
 - `animation_fx/layers.py`: glow compositing and dark-shimmer material.
 - `animation_fx/palettes.py`: named colorways, shared HSV mapping, and optional brightness-indexed gradients (used by Divine and Eldritch), preserving alpha and brightness.
-- `animation_fx/catalog.py`: effect registration, centralized `SEQUENCES`, and public `Effect.render(frame, color)` API.
+- `animation_fx/catalog.py`: effect registration, centralized `SEQUENCES`, `COMPOSITIONS`, and `JOURNEYS`, and public `Effect.render(frame, color)` API.
 - `animation_fx/viewer_catalog.py`: generated viewer manifest from registries and completed exports.
 - `animation_fx/recipe.py`: callable frame recipes with size/timing metadata.
 - `animation_fx/export.py` / `profiles.py`: transparent export and VTT/high delivery settings.
@@ -259,8 +328,27 @@ Register a `Sequence` in `SEQUENCES` in `animation_fx/catalog.py`, referencing a
 python3 -m unittest discover -s tests -v
 ```
 
-Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify exact sequence handoffs in every palette, fireball’s left-to-center travel, centered top-down blast, finite endpoints, smooth ember seam, and shared impact/cooling timeline. Fireball component mocks wrap or remove the actual layer functions through `Effect.render`, verifying both calls and visible contributions. Turn Undead tests exercise `Effect.render` for transparent clamped endpoints, centered outward motion, independently timed visible echoes, cue/poster strength, all-palette alpha preservation, and shared-painter contributions. Tests prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. Paired-ray tests count rendered right-edge pulses, check pre-release charge and beam-free gaps, verify left-entry travel and the separate centered impact, and remove the shared beam painter to prove its visible contribution to all four clips. Small real caster/target exports are decoded to check alpha and visible beams; their JSON pairing cues are checked through catalog generation. Catalog tests reject invalid pairing times and missing partner IDs and verify Divine/Eldritch thematic grouping. FFmpeg and ffprobe must be on PATH.
+Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify exact sequence handoffs in every palette, fireball’s left-to-center travel, centered top-down blast, finite endpoints, smooth ember seam, and shared impact/cooling timeline. Fireball component mocks wrap or remove the actual layer functions through `Effect.render`, verifying both calls and visible contributions. Turn Undead tests exercise `Effect.render` for transparent clamped endpoints, centered outward motion, independently timed visible echoes, cue/poster strength, all-palette alpha preservation, and shared-painter contributions. Tests prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. Paired-ray tests exercise `Effect.render` for beam-free caster/impact edges, full-width left-to-right beam travel, shared charge/impact painters, beam-only primitive use, and transparent endpoints in all 17 palettes. Real caster, beam, and impact exports are decoded to check alpha and local cues. Catalog tests check composition tracks against exported timing, maximum track-end duration, three-component palette intersection, invalid references, and Divine/Eldritch thematic grouping. FFmpeg and ffprobe must be on PATH.
 
+
+Targeted fireball journey, catalog, and macro checks (without the expensive full collection):
+
+```sh
+python3 -m unittest discover -s tests -p test_fireball_journey.py -v
+python3 -m unittest discover -s tests -p test_viewer_catalog.py -v
+node --test tests/test_fireball_macros.js
+```
+
+Journey tests exercise `Effect.render` for a stationary centered head, left tail, animated periodic seam/wrapping, all-palette alpha, projectile-free detonation, original-impact offsets, exact ground handoffs, visible shared-material contributions, and the unchanged original frame-8 bolt hash. Catalog tests cover four-component palette intersection and atomic rejection of invalid journey references. The 17 Node macro tests use mocked Foundry/Sequencer APIs, not a live Foundry integration.
+
+Fireball journey browser regression (running viewer with all four component exports):
+
+```sh
+playwright-cli goto http://localhost:8000
+playwright-cli eval "$(cat tests/viewer_fireball_journey.js)"
+```
+
+This checks moving decoded pixels, fixed-size rotation, From/To controls, timing, pause/resume, flight cancellation, persistent and timed burns, boundary closing, and all four downloads.
 
 Optional browser regression checks (require Playwright CLI and a running viewer; use a fresh page for each):
 
