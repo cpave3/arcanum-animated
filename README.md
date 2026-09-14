@@ -1,5 +1,7 @@
 # Animation collection
 
+[Demo](https://cpave3.github.io/arcanum-animated/)
+
 Transparent WebM effects for Foundry/Sequencer: 33 effects: eleven loops and twenty-two one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
 
 - `fireball-projectile`: centered right-facing orb with a tail to the left; move and rotate the square sprite externally, without stretching (384×384 VTT, 30 fps, 2-second loop).
@@ -16,30 +18,30 @@ Transparent WebM effects for Foundry/Sequencer: 33 effects: eleven loops and twe
 
 Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Celestial Revelation (5 seconds), Turn Undead (4 seconds) and the fireball and paired-ray clips below.
 
-| One-shot ID | Motion | Cue time at 1× |
-| --- | --- | --- |
-| `ray-cast-1` | Caster-only charge and one release pulse (36 frames, 1.2 s) | Frame 12: release |
-| `ray-cast-2` | Caster-only charge and two release pulses (46 frames, ≈1.5333 s) | Frames 12, 22: releases |
-| `ray-cast-3` | Caster-only charge and three release pulses (56 frames, ≈1.8667 s) | Frames 12, 22, 32: releases |
-| `ray-beam` | Standalone full-width left-to-right beam (9 frames, 0.3 s) | Frame 4: arrival |
-| `ray-hit` | Centered impact only; blank frame 0 (40 frames, ≈1.3333 s) | Frame 1: impact |
-| `celestial-revelation` | Caster-centered light fades into a pool, spirals inward to a bright core, then bursts outward and dissolves (150 frames, 5 s) | 2.70 s: revelation burst |
-| `turn-undead` | Glyphs assemble one by one, spin to charge, then fly outward intact with searing radiant echoes (120 frames, 4 s) | 1.80 s: release |
-| `fireball` | Left-to-center bolt, top-down blast, then scorched ground cools to empty (209 frames, ≈6.97 s) | 0.47 s: impact |
-| `fireball-stylized` | Graphic flame variant: rounded lobes, bold hot-color bands, and cinders; same flight, impact timing, and fading ground (≈6.97 s) | 0.47 s: impact |
-| `fireball-opening` | Same impact settles into burning ground (120 frames, 4 s) | 0.47 s: impact; handoff at 4 s |
-| `fireball-detonation` | Centered explosion only; blank frame 0, then the original impact settles into embers (107 frames, ≈3.57 s) | Frame 1: impact; frame 106 matches embers frame 0 |
-| `fireball-closing` | Burning ground cools and scorch fades (90 frames, 3 s) | 0.00 s: replace `fireball-embers` loop |
-| `teleport-departure` | Spirals gather inward, swell, collapse into a flash, then scatter | 1.00 s: move/hide token |
-| `teleport-arrival` | Flash expands into rings and curling wisps | 0.40 s: show token |
-| `impact-burst` | Central flash, short traveling sparks, and an expanding shock ring | 0.23 s |
-| `ground-eruption` | Top-down branching fissures grow, glow, and vent small energy bursts | 0.83 s |
-| `casting-release` | Varied library runes assemble, power gathers, then discharges | 1.10 s |
-| `dispel` | Varied rune ward breaks into outward-moving glyph fragments | 0.67 s |
-| `portal-open` | A point grows into the existing neon rift | 2.00 s: hand off to `rift` loop |
-| `portal-close` | The existing rift contracts into a flash and disappears | 0.00 s: replace `rift` loop |
-| `vortex-opening` | Rift opens, then swirl emerges outward from it | 2.00 s: hand off to `vortex` loop |
-| `vortex-closing` | Swirl is sucked inward, rift seals, shared closing sparks scatter | 0.00 s: replace `vortex` loop |
+| One-shot ID            | Motion                                                                                                                           | Cue time at 1×                                    |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| `ray-cast-1`           | Caster-only charge and one release pulse (36 frames, 1.2 s)                                                                      | Frame 12: release                                 |
+| `ray-cast-2`           | Caster-only charge and two release pulses (46 frames, ≈1.5333 s)                                                                 | Frames 12, 22: releases                           |
+| `ray-cast-3`           | Caster-only charge and three release pulses (56 frames, ≈1.8667 s)                                                               | Frames 12, 22, 32: releases                       |
+| `ray-beam`             | Standalone full-width left-to-right beam (9 frames, 0.3 s)                                                                       | Frame 4: arrival                                  |
+| `ray-hit`              | Centered impact only; blank frame 0 (40 frames, ≈1.3333 s)                                                                       | Frame 1: impact                                   |
+| `celestial-revelation` | Caster-centered light fades into a pool, spirals inward to a bright core, then bursts outward and dissolves (150 frames, 5 s)    | 2.70 s: revelation burst                          |
+| `turn-undead`          | Glyphs assemble one by one, spin to charge, then fly outward intact with searing radiant echoes (120 frames, 4 s)                | 1.80 s: release                                   |
+| `fireball`             | Left-to-center bolt, top-down blast, then scorched ground cools to empty (209 frames, ≈6.97 s)                                   | 0.47 s: impact                                    |
+| `fireball-stylized`    | Graphic flame variant: rounded lobes, bold hot-color bands, and cinders; same flight, impact timing, and fading ground (≈6.97 s) | 0.47 s: impact                                    |
+| `fireball-opening`     | Same impact settles into burning ground (120 frames, 4 s)                                                                        | 0.47 s: impact; handoff at 4 s                    |
+| `fireball-detonation`  | Centered explosion only; blank frame 0, then the original impact settles into embers (107 frames, ≈3.57 s)                       | Frame 1: impact; frame 106 matches embers frame 0 |
+| `fireball-closing`     | Burning ground cools and scorch fades (90 frames, 3 s)                                                                           | 0.00 s: replace `fireball-embers` loop            |
+| `teleport-departure`   | Spirals gather inward, swell, collapse into a flash, then scatter                                                                | 1.00 s: move/hide token                           |
+| `teleport-arrival`     | Flash expands into rings and curling wisps                                                                                       | 0.40 s: show token                                |
+| `impact-burst`         | Central flash, short traveling sparks, and an expanding shock ring                                                               | 0.23 s                                            |
+| `ground-eruption`      | Top-down branching fissures grow, glow, and vent small energy bursts                                                             | 0.83 s                                            |
+| `casting-release`      | Varied library runes assemble, power gathers, then discharges                                                                    | 1.10 s                                            |
+| `dispel`               | Varied rune ward breaks into outward-moving glyph fragments                                                                      | 0.67 s                                            |
+| `portal-open`          | A point grows into the existing neon rift                                                                                        | 2.00 s: hand off to `rift` loop                   |
+| `portal-close`         | The existing rift contracts into a flash and disappears                                                                          | 0.00 s: replace `rift` loop                       |
+| `vortex-opening`       | Rift opens, then swirl emerges outward from it                                                                                   | 2.00 s: hand off to `vortex` loop                 |
+| `vortex-closing`       | Swirl is sucked inward, rift seals, shared closing sparks scatter                                                                | 0.00 s: replace `vortex` loop                     |
 
 One-shots do not wrap frames. All finish fully transparent **except sequence openings: `portal-open`, `vortex-opening`, `fireball-opening`, and `fireball-detonation`**. Their final source frames exactly match their respective loops’ frame 0 (`rift`, `vortex`, or `fireball-embers`) in every palette. The corresponding closing clips start on those same frames; switch from the loop at its cycle boundary. Lossy WebM compression can introduce small pixel differences between clips. Arrival and departure are independently animated, not reversed copies. Cue times refer to the effect starting, and scale with playback speed. These assets do not move tokens automatically.
 
@@ -47,19 +49,19 @@ Original colors: `purple`, `gold`, `red`, `orange`.
 
 Thematic palettes: `divine` combines blue shadows, warm gold, and icy white highlights; it is the default for Turn Undead and Celestial Revelation. `eldritch` runs from dark violet through purple and magenta to saturated red highlights. Both preserve source brightness and alpha. Neither is a damage type.
 
-| Damage palette | Look |
-| --- | --- |
-| `acid` | Vivid lime with yellow highlights |
-| `cold` | Ice blue / cyan |
-| `fire` | Orange with hot yellow highlights |
-| `force` | Red (same palette as `red`) |
-| `lightning` | Pale electric blue |
-| `melee` | Muted cool steel for bludgeoning, piercing, and slashing |
-| `necrotic` | Spectral green shadows, cyan/mint highlights |
-| `poison` | Saturated venom green |
-| `psychic` | Pink / rose |
-| `radiant` | Gold (same palette as `gold`) |
-| `thunder` | Indigo / violet |
+| Damage palette | Look                                                     |
+| -------------- | -------------------------------------------------------- |
+| `acid`         | Vivid lime with yellow highlights                        |
+| `cold`         | Ice blue / cyan                                          |
+| `fire`         | Orange with hot yellow highlights                        |
+| `force`        | Red (same palette as `red`)                              |
+| `lightning`    | Pale electric blue                                       |
+| `melee`        | Muted cool steel for bludgeoning, piercing, and slashing |
+| `necrotic`     | Spectral green shadows, cyan/mint highlights             |
+| `poison`       | Saturated venom green                                    |
+| `psychic`      | Pink / rose                                              |
+| `radiant`      | Gold (same palette as `gold`)                            |
+| `thunder`      | Indigo / violet                                          |
 
 These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 561 WebM/PNG pairs (33 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
 
@@ -69,7 +71,7 @@ These are artistic assignments, not official D&D color definitions. Damage palet
 python3 serve.py
 ```
 
-Open http://localhost:8000. Use `--port 8001` if needed. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. Refresh the page after HTML or catalog changes; no server restart is needed for those changes.
+Open <http://localhost:8000>. Use `--port 8001` if needed. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. Refresh the page after HTML or catalog changes; no server restart is needed for those changes.
 
 The viewer reads `assets/catalog.json` into a searchable library with **Loops**, **One-shots**, **Composed**, **Sequences**, and **Journeys** filters. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
 
@@ -128,13 +130,13 @@ The approved assembly has a standalone **Script** macro: [examples/sequencer-rif
 3. Set `SIZE` if desired (the full rift canvas width, initially 6 grid squares) and `ANCHOR_PALETTE` (initially `radiant`). Both anchor sizes and offsets scale with the rift.
 4. Run the macro. No token selection is required. Its dialog stays open for repeated table controls; closing the dialog does not close the rift or disable its ambient effects.
 
-| Control | Action |
-| --- | --- |
-| Create rift | Choose one of the 17 rift palettes, then place a free-position crosshair (no grid snapping, so intersections and between-square positions work). Plays the full 2-second swirling opening and starts the persistent 3-second vortex loop. Anchors start OFF. |
-| Toggle both | Turns both anchors ON unless both are already ON, in which case it turns both OFF. A mixed state becomes both ON. |
-| Toggle left | Changes only the left anchor, without restarting the rift or right anchor. |
-| Toggle right | Changes only the right anchor, without restarting the rift or left anchor. |
-| Close | Cancels pending creation, removes both anchors and the loop, and plays the 2-second vortex closing at the saved position and size. |
+| Control      | Action                                                                                                                                                                                                                                                       |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Create rift  | Choose one of the 17 rift palettes, then place a free-position crosshair (no grid snapping, so intersections and between-square positions work). Plays the full 2-second swirling opening and starts the persistent 3-second vortex loop. Anchors start OFF. |
+| Toggle both  | Turns both anchors ON unless both are already ON, in which case it turns both OFF. A mixed state becomes both ON.                                                                                                                                            |
+| Toggle left  | Changes only the left anchor, without restarting the rift or right anchor.                                                                                                                                                                                   |
+| Toggle right | Changes only the right anchor, without restarting the rift or left anchor.                                                                                                                                                                                   |
+| Close        | Cancels pending creation, removes both anchors and the loop, and plays the 2-second vortex closing at the saved position and size.                                                                                                                           |
 
 The dialog reports the active palette and left/right state. Palette selection applies to **creation**, not recoloring an existing rift. Close the existing rift before creating another. Close remains available while opening; other conflicting operations are disabled. Assets are preloaded before creation, and the closing asset is loaded before removing a live rift. Finite transition clips explicitly use `.waitUntilFinished()`; the steady loop is not launched while the opening is still playing.
 
@@ -153,7 +155,6 @@ For a playing loop, Close waits up to the remainder of its 3-second cycle before
 ```sh
 node --test tests/test_rift_macros.js
 ```
-
 
 ### Ray components in Foundry/Sequencer
 
@@ -291,11 +292,11 @@ python3 render.py --catalog-only                  # reindex existing exports; no
 
 Measured on the original 210-file collection before adding miasma and vortex transitions: **211.6 MiB → 60.1 MiB (71.6% smaller)**. The largest VTT file is about 733 KiB. Example purple exports:
 
-| Effect | Previous | VTT |
-| --- | ---: | ---: |
-| Vortex | 2,494 KiB | 582 KiB |
-| Rune anchor | 711 KiB | 234 KiB |
-| Teleport arrival | 821 KiB | 219 KiB |
+| Effect           |  Previous |     VTT |
+| ---------------- | --------: | ------: |
+| Vortex           | 2,494 KiB | 582 KiB |
+| Rune anchor      |   711 KiB | 234 KiB |
+| Teleport arrival |   821 KiB | 219 KiB |
 
 In Foundry, specify the effect's intended world/grid size rather than relying on its native pixel dimensions, so switching resolution does not change its footprint.
 
@@ -309,24 +310,24 @@ The root-level WebMs/PNGs are preserved artwork snapshots, not regenerated outpu
 
 Effects are recipes. Geometry, particle appearance, glyph definitions, and transition accents live in reusable primitives, independent of palette mapping and video export.
 
-| Primitive | Where to refine it | Existing consumers |
-| --- | --- | --- |
-| Spark head/trail/glint | `animation_fx/primitives/particles.py:draw_spark` | Teleports, impacts, casting, dispel, portal/vortex transitions, all four anchors, all vortex loops, fireball, Turn Undead |
-| Burst particle motion | `particles.py:draw_burst` | All one-shot spark releases; no copied per-effect trails |
-| Variable rune | `runes.py:GLYPHS` / `draw_rune` | Rune anchor, rift-edge anchor, Casting Release, Dispel, Turn Undead |
-| Binding brackets | `runes.py:draw_brackets` | Rune anchor; rift-edge anchor uses one side |
-| Charged orb | `orbs.py:orb_layer` | Orb anchor and rift-edge anchor |
-| Lightning tether | `lightning.py:draw_tether` | Rift-edge anchor |
-| Compact rim geometry | `rift.py:compact_contour` | Compact rift rendering and rift-edge anchor contact placement |
-| Ground fractures | `cracks.py:fracture_network` / `draw_cracks` | Ground Eruption and fireball ground; seeded trunks, forks and cross-fractures with progressive reveal |
-| Rift styles | `rift.py:render_rift` (`tall` or `compact`) | Rift loop, vortex loop, both portal transition pairs |
-| Smoke spiral | `swirl.py:render_swirl` | Vortex, open vortex, black hole, vortex transitions |
-| Closing/opening accents | `transitions.py:transition_accents` | Both plain and swirling portals share the flash and finishing sparks |
-| Turbulent combustion | `combustion.py:turbulence` / `energy_field` / `flame_cloud` | Fireball projectile, explosion, and hot coals; Turn Undead radiant shells |
-| Expanding gas pocket | `gas.py:billow` | Realistic fireball central ignition and staggered secondary explosions |
-| Finite beam pulse | `beams.py:draw_beam` | Standalone `ray-beam`; `paired_rays.caster` supplies charge/releases and `paired_rays.impact` supplies the separate target impact |
-| Placement/compositing | `geometry.py:scale_layer` / `compose` | Transition recipes; usable by new effects |
-| Timeline utilities | `timing.py:progress` / `smooth` | Finite effect recipes |
+| Primitive               | Where to refine it                                          | Existing consumers                                                                                                                |
+| ----------------------- | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Spark head/trail/glint  | `animation_fx/primitives/particles.py:draw_spark`           | Teleports, impacts, casting, dispel, portal/vortex transitions, all four anchors, all vortex loops, fireball, Turn Undead         |
+| Burst particle motion   | `particles.py:draw_burst`                                   | All one-shot spark releases; no copied per-effect trails                                                                          |
+| Variable rune           | `runes.py:GLYPHS` / `draw_rune`                             | Rune anchor, rift-edge anchor, Casting Release, Dispel, Turn Undead                                                               |
+| Binding brackets        | `runes.py:draw_brackets`                                    | Rune anchor; rift-edge anchor uses one side                                                                                       |
+| Charged orb             | `orbs.py:orb_layer`                                         | Orb anchor and rift-edge anchor                                                                                                   |
+| Lightning tether        | `lightning.py:draw_tether`                                  | Rift-edge anchor                                                                                                                  |
+| Compact rim geometry    | `rift.py:compact_contour`                                   | Compact rift rendering and rift-edge anchor contact placement                                                                     |
+| Ground fractures        | `cracks.py:fracture_network` / `draw_cracks`                | Ground Eruption and fireball ground; seeded trunks, forks and cross-fractures with progressive reveal                             |
+| Rift styles             | `rift.py:render_rift` (`tall` or `compact`)                 | Rift loop, vortex loop, both portal transition pairs                                                                              |
+| Smoke spiral            | `swirl.py:render_swirl`                                     | Vortex, open vortex, black hole, vortex transitions                                                                               |
+| Closing/opening accents | `transitions.py:transition_accents`                         | Both plain and swirling portals share the flash and finishing sparks                                                              |
+| Turbulent combustion    | `combustion.py:turbulence` / `energy_field` / `flame_cloud` | Fireball projectile, explosion, and hot coals; Turn Undead radiant shells                                                         |
+| Expanding gas pocket    | `gas.py:billow`                                             | Realistic fireball central ignition and staggered secondary explosions                                                            |
+| Finite beam pulse       | `beams.py:draw_beam`                                        | Standalone `ray-beam`; `paired_rays.caster` supplies charge/releases and `paired_rays.impact` supplies the separate target impact |
+| Placement/compositing   | `geometry.py:scale_layer` / `compose`                       | Transition recipes; usable by new effects                                                                                         |
+| Timeline utilities      | `timing.py:progress` / `smooth`                             | Finite effect recipes                                                                                                             |
 
 `Canvas` in `primitives/canvas.py` supplies rings, soft flashes, spirals, rune placement, and shared burst emitters. Its coordinates use a 512-unit square; `Canvas(size=640)` changes output resolution without changing the recipe's relative layout. Lower-level glyph and spark painters also accept a Pillow drawing context plus scale, so existing supersampled artwork can reuse them unchanged.
 
@@ -379,6 +380,7 @@ python3 render.py --effect fireball-stylized --color all
 The finite `fireball` and `fireball-opening` use the same impact timeline. Opening frame 119, embers frame 0, and closing frame 0 are pixel-identical before encoding in every palette. Embers repeat over 120 frames. The finite shot continues with closing frame 1 after opening frame 119, avoiding a duplicated handoff frame: 120 + 90 − 1 = 209 frames. Its first and last frames are fully transparent, as are the opening’s first frame and closing’s last frame. Ground can remain visible without reaching fully opaque alpha.
 
 Other infrastructure:
+
 - `animation_fx/layers.py`: glow compositing and dark-shimmer material.
 - `animation_fx/palettes.py`: named colorways, shared HSV mapping, and optional brightness-indexed gradients (used by Divine and Eldritch), preserving alpha and brightness.
 - `animation_fx/catalog.py`: effect registration, centralized `SEQUENCES`, `COMPOSITIONS`, and `JOURNEYS`, and public `Effect.render(frame, color)` API.
@@ -412,7 +414,6 @@ python3 -m unittest discover -s tests -v
 ```
 
 Tests exercise actual frame rendering for all effect/color pairs, preserve the original artwork snapshots, check animated dark cores and alpha, and invoke the CLI to encode/decode real transparent WebMs, including a one-shot’s transparent endpoints, visible poster, and metadata, plus a VTT-versus-high export size regression. They also verify exact sequence handoffs in every palette, fireball’s left-to-center travel, centered top-down blast, finite endpoints, smooth ember seam, and shared impact/cooling timeline. Fireball component mocks wrap or remove the actual layer functions through `Effect.render`, verifying both calls and visible contributions. Turn Undead tests exercise `Effect.render` for transparent clamped endpoints, centered outward motion, independently timed visible echoes, cue/poster strength, all-palette alpha preservation, and shared-painter contributions. Tests prove primitive reuse by changing one glyph/spark implementation and observing all consuming effects change. Paired-ray tests exercise `Effect.render` for beam-free caster/impact edges, full-width left-to-right beam travel, shared charge/impact painters, beam-only primitive use, and transparent endpoints in all 17 palettes. Real caster, beam, and impact exports are decoded to check alpha and local cues. Catalog tests check composition tracks against exported timing, maximum track-end duration, three-component palette intersection, invalid references, and Divine/Eldritch thematic grouping. FFmpeg and ffprobe must be on PATH.
-
 
 Targeted rift-edge anchor and catalog checks (without the expensive full collection):
 
@@ -467,7 +468,6 @@ playwright-cli eval "$(cat tests/viewer_one_shots.js)"
 
 This checks focused one-shot playback, idle posters, Replay, decoded final-frame alpha, pause/resume, palette/download consistency, and overlays. The viewer explicitly seeks to the final presentation frame after playback ends so dropped frames under load cannot leave an earlier afterimage on screen.
 
-
 Sequence browser regression check (fresh page):
 
 ```sh
@@ -476,7 +476,6 @@ playwright-cli eval "$(cat tests/viewer_sequences.js)"
 ```
 
 This exercises the catalog’s real chains through multiple loop iterations, boundary-aligned Close, early Close, pause/resume, loading cancellation, and reuse after completion.
-
 
 Fireball browser check (visible bolt, expanding blast, transparent finish, and the sustained ember sequence):
 
@@ -502,7 +501,6 @@ playwright-cli eval "$(cat tests/viewer_sequence_frames.js)"
 ```
 
 This checks decoded, changing pixels during both opening and closing, plus actual on-screen video bounds—not just playback phase labels.
-
 
 Run the same sequence checks in Firefox as well as Chromium:
 
