@@ -1,6 +1,6 @@
 # Animation collection
 
-Transparent WebM effects for Foundry/Sequencer: 32 effects: eleven loops and twenty-one one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
+Transparent WebM effects for Foundry/Sequencer: 33 effects: eleven loops and twenty-two one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
 
 - `fireball-projectile`: centered right-facing orb with a tail to the left; move and rotate the square sprite externally, without stretching (384×384 VTT, 30 fps, 2-second loop).
 - `fireball-embers`: scorched fissures, pulsing hot coals, and drifting sparks (384×384 VTT, 30 fps, 4-second loop).
@@ -14,7 +14,7 @@ Transparent WebM effects for Foundry/Sequencer: 32 effects: eleven loops and twe
 - `orb-anchor`: glowing orb, lightning, and sparks (256×256 VTT, 30 fps).
 - `rune-anchor`: vertical runes, side brackets, and sparks (256×256 VTT, 30 fps).
 
-Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Turn Undead (4 seconds) and the fireball and paired-ray clips below.
+Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Celestial Revelation (5 seconds), Turn Undead (4 seconds) and the fireball and paired-ray clips below.
 
 | One-shot ID | Motion | Cue time at 1× |
 | --- | --- | --- |
@@ -23,6 +23,7 @@ Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasm
 | `ray-cast-3` | Caster-only charge and three release pulses (56 frames, ≈1.8667 s) | Frames 12, 22, 32: releases |
 | `ray-beam` | Standalone full-width left-to-right beam (9 frames, 0.3 s) | Frame 4: arrival |
 | `ray-hit` | Centered impact only; blank frame 0 (40 frames, ≈1.3333 s) | Frame 1: impact |
+| `celestial-revelation` | Caster-centered light fades into a pool, spirals inward to a bright core, then bursts outward and dissolves (150 frames, 5 s) | 2.70 s: revelation burst |
 | `turn-undead` | Glyphs assemble one by one, spin to charge, then fly outward intact with searing radiant echoes (120 frames, 4 s) | 1.80 s: release |
 | `fireball` | Left-to-center bolt, top-down blast, then scorched ground cools to empty (209 frames, ≈6.97 s) | 0.47 s: impact |
 | `fireball-stylized` | Graphic flame variant: rounded lobes, bold hot-color bands, and cinders; same flight, impact timing, and fading ground (≈6.97 s) | 0.47 s: impact |
@@ -44,7 +45,7 @@ One-shots do not wrap frames. All finish fully transparent **except sequence ope
 
 Original colors: `purple`, `gold`, `red`, `orange`.
 
-Thematic palettes: `divine` combines blue shadows, warm gold, and icy white highlights; it is the default for Turn Undead. `eldritch` runs from dark violet through purple and magenta to saturated red highlights. Both preserve source brightness and alpha. Neither is a damage type.
+Thematic palettes: `divine` combines blue shadows, warm gold, and icy white highlights; it is the default for Turn Undead and Celestial Revelation. `eldritch` runs from dark violet through purple and magenta to saturated red highlights. Both preserve source brightness and alpha. Neither is a damage type.
 
 | Damage palette | Look |
 | --- | --- |
@@ -60,7 +61,7 @@ Thematic palettes: `divine` combines blue shadows, warm gold, and icy white high
 | `radiant` | Gold (same palette as `gold`) |
 | `thunder` | Indigo / violet |
 
-These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 544 WebM/PNG pairs (32 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
+These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 561 WebM/PNG pairs (33 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
 
 ## Preview
 
@@ -79,6 +80,37 @@ The viewer reads `assets/catalog.json` into a searchable library with **Loops**,
 - Optional left and right overlays have independent enable toggles, asset selectors, palettes, and mirror toggles; the old shared asset/palette selectors are removed. Native handed anchors need no automatic mirroring. Each side’s WebM and PNG downloads match its selected asset and palette. They accompany the focused preview rather than running separate gallery previews.
 - Every WebM and PNG download matches its selected palette. A sequence exposes downloads for all three clips—opening, loop, and closing—plus their PNGs, and lets you copy all three asset paths.
 
+### GitHub Pages
+
+The workflow in `.github/workflows/pages.yml` publishes the static preview on pushes to `main`, or manually from **Actions → Deploy preview to GitHub Pages → Run workflow**.
+
+1. Push this repository to GitHub, including `assets/` and its `catalog.json`.
+2. In **Settings → Pages → Build and deployment**, select **GitHub Actions** as the source.
+3. Run the workflow (or push another commit to `main`). The deployment URL appears in the workflow's `github-pages` environment, normally `https://<owner>.github.io/<repository>/`.
+
+Only `index.html`, `viewer.css`, `viewer/`, and `assets/` are published. No Python server, build, or animation rendering runs on GitHub. After adding or changing exports, run `python3 render.py --catalog-only` locally and commit the updated catalog and assets before deploying. The viewer's relative URLs support repository subpaths without configuration. The preview and downloadable media are public on a public Pages site. If your default branch is not `main`, update the workflow's branch trigger.
+
+### Celestial Revelation controls in Foundry
+
+Use [examples/sequencer-celestial-revelation.js](examples/sequencer-celestial-revelation.js) as a **Script** macro with Sequencer enabled.
+
+1. Copy `assets/celestial-revelation/` into your Foundry Data directory (only `divine.webm`, `radiant.webm`, and `necrotic.webm` are required).
+2. Set `BASE` in the macro to the folder **containing** `celestial-revelation`, relative to Data, with no leading slash or `Data/` prefix. For example, `worlds/your-world/animations`.
+3. Select exactly one token and run the macro. The dialog stays bound to that token even if selection changes. Choose **Divine**, **Radiant**, or **Necrotic**, then **Activate**.
+4. **Clear** cancels an unfinished reveal and restores the complete lighting configuration saved before activation. Closing the dialog only dismisses the controls; select the same token and rerun the macro to manage it again.
+
+The five-second animation follows the token and draws above it. `SIZE = 6` is the full sprite width in grid squares, not the light radius. At media time **2.70 seconds**, the macro applies a 360° color-matched light with bright radius **10**, dim radius **0**, and alpha **0.25**. Radii use Foundry scene distance units; this is 10 ft on a feet-based scene. Existing light animation and darkness restrictions are temporarily disabled so the revelation light is visible. Divine uses pale warm gold, Radiant golden yellow, and Necrotic spectral mint; edit `COLORS` to adjust the light tint.
+
+Timing uses Sequencer's `mediaIsPlaying` and `mediaCurrentTime`, not a timeout measured from clicking Activate. Slow loading does not switch the light on early. Network/document propagation and client rendering can still add delay: alignment is **best-effort, not frame-perfect across clients**. If playback fails, ends before its cue, or supplies no usable clock within 20 seconds, the macro reports the problem and attempts to restore the original lighting rather than silently enabling it at an arbitrary time.
+
+The original lighting and active palette are saved in the token's `flags.world.celestialRevelation`. Clear works after reload; an interrupted charge is shown as interrupted and must be cleared before another activation. The light lasts until Clear, with no automatic expiry. Clear restores the saved lighting, including replacing any manual light edits made while the revelation was active. Failed restoration retains the backup for a retry. Scene changes before the cue cancel activation; deleting the token leaves no separate ambient light behind.
+
+Use one controlling GM/client per token: the local dialog lock and serialized writes prevent repeated local clicks and Clear/write races, but separate clients are not a distributed lock. The user needs token-update and Sequencer effect permissions. This is token lighting, not an Active Effect, and does not consume an Aasimar feature use or modify rules data. APIs were checked against Sequencer source; **the macro has not been run in a live Foundry session**.
+
+```sh
+node --test tests/test_celestial_macros.js
+```
+
 ### Rift-edge anchor review
 
 Choose either **Rift edge · Left force brace** (`rift-edge-anchor-left`) or **Rift edge · Right force brace** (`rift-edge-anchor-right`), then **Preview with Vortex**. This selects the original Vortex without autoplay and loads the two corresponding files: the left asset on the left and the right asset on the right. Both entries share the same mount preset: **32% size**, **8.75% spacing**, and both partner IDs. Press **Play** to review the assembly. Each side has its own asset selector, palette, mirror toggle, and enable toggle. Anchor palettes default to **Radiant** and are independent of the Vortex palette.
@@ -87,7 +119,41 @@ These are two native orientations, not one asset reused with automatic mirroring
 
 The singleton `rift-edge-anchor` is removed from the registry. Generate both handed IDs below; old singleton files are not a substitute for either native asset. No automatic mirror is needed for this pair; manual mirror toggles remain available for independent experimentation.
 
-**The new Foundry macro is STILL ON HOLD pending explicit visual approval.** No new Foundry code is implemented for these anchors. If approved later, the macro will create a Vortex rift with a chosen palette and offer both/left/right anchor toggles and Close. Existing VTT macros and other assets’ durations are unchanged.
+### Rift controls in Foundry/Sequencer
+
+The approved assembly has a standalone **Script** macro: [examples/sequencer-rift-controls.js](examples/sequencer-rift-controls.js).
+
+1. Enable Sequencer. Copy the five complete folders `vortex-opening`, `vortex`, `vortex-closing`, `rift-edge-anchor-left`, and `rift-edge-anchor-right` from `assets/` into your Foundry Data directory. The macro needs the WebMs; PNGs and JSON are optional.
+2. Paste the file into a Foundry macro of type **Script**. Set `BASE` to the folder containing those five folders, relative to Data, e.g. `worlds/your-world/animations`. Do not include `Data/` or a leading slash.
+3. Set `SIZE` if desired (the full rift canvas width, initially 6 grid squares) and `ANCHOR_PALETTE` (initially `radiant`). Both anchor sizes and offsets scale with the rift.
+4. Run the macro. No token selection is required. Its dialog stays open for repeated table controls; closing the dialog does not close the rift or disable its ambient effects.
+
+| Control | Action |
+| --- | --- |
+| Create rift | Choose one of the 17 rift palettes, then place a free-position crosshair (no grid snapping, so intersections and between-square positions work). Plays the full 2-second swirling opening and starts the persistent 3-second vortex loop. Anchors start OFF. |
+| Toggle both | Turns both anchors ON unless both are already ON, in which case it turns both OFF. A mixed state becomes both ON. |
+| Toggle left | Changes only the left anchor, without restarting the rift or right anchor. |
+| Toggle right | Changes only the right anchor, without restarting the rift or left anchor. |
+| Close | Cancels pending creation, removes both anchors and the loop, and plays the 2-second vortex closing at the saved position and size. |
+
+The dialog reports the active palette and left/right state. Palette selection applies to **creation**, not recoloring an existing rift. Close the existing rift before creating another. Close remains available while opening; other conflicting operations are disabled. Assets are preloaded before creation, and the closing asset is loaded before removing a live rift. Finite transition clips explicitly use `.waitUntilFinished()`; the steady loop is not launched while the opening is still playing.
+
+Tag Ambient Lights and Ambient Sounds with the exact Tagger tag **`rift`** (configurable as `AMBIENT_TAG` in the macro). The macro sets `hidden: false` when opening starts and `hidden: true` when closing starts, after any loop-boundary wait. It changes only tagged documents in the scene where the controller was opened; anchor toggles and unrelated tags are unaffected. Normal sound range/volume and light darkness settings still apply. You need permission to update these documents—normally a GM.
+
+Canceled placement and failed preloading do not touch ambient effects. A failed opening restores the ambient values it changed; partial update failures attempt to restore prior values and show an error. If disabling a light/sound fails, the live rift stays available for another Close attempt. Close can also disable leftover tagged effects when no visual rift exists. Close the old control dialog before running a newly pasted macro version, so the old controller is not reused.
+
+The native left/right anchor files are **not mirrored**. Their canvases are 32% of the rift canvas width, with centers offset left/right by 8.75%. Anchors render above the rift, and all three render above tokens. `syncGroup` ties newly enabled anchors to the existing vortex’s 3-second loop clock, without cropping their loops or restarting the rift.
+
+One controlled rift is supported per scene. Persistent effects carry their own palette, paths, point, and pixel geometry; reopening the macro after a reload discovers them. Saved pixel dimensions keep existing anchors aligned if the grid or macro configuration changes. The invisible control marker is intentional—remove the rift through this macro rather than deleting only its visible loop.
+
+Run as a GM, or use a user with Sequencer permission to delete all effects belonging to that rift. Other effect namespaces and scenes are untouched. Use **one GM controller**: cross-client socket operations are not transactional. Reload does not resume an interrupted opening; Close can clean up its saved marker. Scene changes suppress late creation/closing to avoid rendering on the wrong map.
+
+For a playing loop, Close waits up to the remainder of its 3-second cycle before closing. Opening/interrupted effects or unavailable clocks close immediately. This is **best-effort alignment**, not frame-perfect synchronization across clients. Sequencer APIs were checked against source and the macro is covered by mocked execution tests; it has **not been run in a live Foundry session**.
+
+```sh
+node --test tests/test_rift_macros.js
+```
+
 
 ### Ray components in Foundry/Sequencer
 

@@ -106,6 +106,130 @@
   ],
   "effects": [
     {
+      "id": "celestial-revelation",
+      "title": "Celestial Revelation",
+      "description": "Light pools around the caster, spirals into a brilliant core, and explodes into a feathered corona.",
+      "kind": "one-shot",
+      "role": "effect",
+      "tags": [
+        "aasimar",
+        "celestial",
+        "sacred",
+        "burst",
+        "radial"
+      ],
+      "default_color": "divine",
+      "duration": 5.0,
+      "fps": 30,
+      "frames": 150,
+      "size": 384,
+      "cue_time": 2.7,
+      "variants": {
+        "purple": {
+          "webm": "celestial-revelation/purple.webm",
+          "poster": "celestial-revelation/purple.png",
+          "bytes": 740938,
+          "version": "1789268147660936630-1789268122795564142"
+        },
+        "gold": {
+          "webm": "celestial-revelation/gold.webm",
+          "poster": "celestial-revelation/gold.png",
+          "bytes": 791700,
+          "version": "1789268148284945978-1789268122811564381"
+        },
+        "red": {
+          "webm": "celestial-revelation/red.webm",
+          "poster": "celestial-revelation/red.png",
+          "bytes": 786125,
+          "version": "1789268148914955416-1789268122827564621"
+        },
+        "orange": {
+          "webm": "celestial-revelation/orange.webm",
+          "poster": "celestial-revelation/orange.png",
+          "bytes": 804932,
+          "version": "1789268149539964778-1789268122842564845"
+        },
+        "acid": {
+          "webm": "celestial-revelation/acid.webm",
+          "poster": "celestial-revelation/acid.png",
+          "bytes": 847411,
+          "version": "1789268150179974366-1789268122859565100"
+        },
+        "cold": {
+          "webm": "celestial-revelation/cold.webm",
+          "poster": "celestial-revelation/cold.png",
+          "bytes": 819259,
+          "version": "1789268150798984039-1789268122875565340"
+        },
+        "fire": {
+          "webm": "celestial-revelation/fire.webm",
+          "poster": "celestial-revelation/fire.png",
+          "bytes": 821408,
+          "version": "1789268151417996112-1789268122892565595"
+        },
+        "force": {
+          "webm": "celestial-revelation/force.webm",
+          "poster": "celestial-revelation/force.png",
+          "bytes": 786125,
+          "version": "1789268152050008440-1789268122908565834"
+        },
+        "lightning": {
+          "webm": "celestial-revelation/lightning.webm",
+          "poster": "celestial-revelation/lightning.png",
+          "bytes": 779489,
+          "version": "1789268152663020397-1789268122924566074"
+        },
+        "melee": {
+          "webm": "celestial-revelation/melee.webm",
+          "poster": "celestial-revelation/melee.png",
+          "bytes": 648260,
+          "version": "1789268153191030696-1789268122941566328"
+        },
+        "necrotic": {
+          "webm": "celestial-revelation/necrotic.webm",
+          "poster": "celestial-revelation/necrotic.png",
+          "bytes": 784010,
+          "version": "1789268153813042828-1789268122957566568"
+        },
+        "poison": {
+          "webm": "celestial-revelation/poison.webm",
+          "poster": "celestial-revelation/poison.png",
+          "bytes": 731274,
+          "version": "1789268154423054726-1789268122973566808"
+        },
+        "psychic": {
+          "webm": "celestial-revelation/psychic.webm",
+          "poster": "celestial-revelation/psychic.png",
+          "bytes": 734436,
+          "version": "1789268155035066664-1789268122990567063"
+        },
+        "radiant": {
+          "webm": "celestial-revelation/radiant.webm",
+          "poster": "celestial-revelation/radiant.png",
+          "bytes": 791700,
+          "version": "1789268155646078581-1789268123005567287"
+        },
+        "thunder": {
+          "webm": "celestial-revelation/thunder.webm",
+          "poster": "celestial-revelation/thunder.png",
+          "bytes": 756018,
+          "version": "1789268156262090597-1789268123022567542"
+        },
+        "eldritch": {
+          "webm": "celestial-revelation/eldritch.webm",
+          "poster": "celestial-revelation/eldritch.png",
+          "bytes": 428051,
+          "version": "1789268156773100564-1789268123043567857"
+        },
+        "divine": {
+          "webm": "celestial-revelation/divine.webm",
+          "poster": "celestial-revelation/divine.png",
+          "bytes": 799822,
+          "version": "1789268157364112091-1789268123066568201"
+        }
+      }
+    },
+    {
       "id": "turn-undead",
       "title": "Turn Undead",
       "description": "A sacred seal releases searing caster-centered light and rapid radiant echoes.",

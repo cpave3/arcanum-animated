@@ -5,7 +5,7 @@ from typing import Protocol
 
 from PIL import Image
 
-from animation_fx.effects import fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
+from animation_fx.effects import celestial_revelation, fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
 from animation_fx.effects import orb_anchor, rift, rift_edge_anchor, rune_anchor, vortex, vortex_black_hole, vortex_open
 from animation_fx.palettes import PALETTES, colorize
 from animation_fx.recipe import FrameRecipe
@@ -76,6 +76,12 @@ class Effect:
 
 
 EFFECTS = {
+    'celestial-revelation': Effect(celestial_revelation, 'purple', loop=False,
+                          cue_frame=celestial_revelation.BLAST_FRAME,
+                          poster_frame=celestial_revelation.POSTER_FRAME,
+                          default_color='divine', title='Celestial Revelation',
+                          description='Light pools around the caster, spirals into a brilliant core, and explodes into a feathered corona.',
+                          tags=('aasimar', 'celestial', 'sacred', 'burst', 'radial')),
     'turn-undead': Effect(turn_undead, 'purple', loop=False,
                           cue_frame=turn_undead.BLAST_FRAME, poster_frame=turn_undead.POSTER_FRAME,
                           default_color='divine', title='Turn Undead',
