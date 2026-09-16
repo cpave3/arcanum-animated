@@ -19,8 +19,9 @@
         <div class="section-heading"><h2 id="library-heading">Library</h2><span id="library-count" class="count">—</span></div>
         <label class="sr-only" for="search">Search effects</label>
         <input id="search" type="search" placeholder="Search effects…" autocomplete="off">
-        <div id="filters" class="filters" role="group" aria-label="Filter by effect kind">
+        <div id="filters" class="filters" role="group" aria-label="Filter by effect category">
           <button type="button" data-kind="all" aria-pressed="true">All <span data-count="all">0</span></button>
+          <button type="button" data-kind="token-effect" aria-pressed="false">Token effects <span data-count="token-effect">0</span></button>
           <button type="button" data-kind="loop" aria-pressed="false">Loops <span data-count="loop">0</span></button>
           <button type="button" data-kind="one-shot" aria-pressed="false">One-shots <span data-count="one-shot">0</span></button>
           <button type="button" data-kind="composition" aria-pressed="false">Composed <span data-count="composition">0</span></button>
@@ -53,6 +54,7 @@
                   <span class="dummy-token" data-token="to">To</span>
                   <img id="composition-poster" alt="" hidden>
                 </div>
+                <div id="token-preview" hidden aria-hidden="true"><img src="viewer/preview-token.svg" alt=""></div>
                 <img id="poster" alt="Selected effect poster" hidden>
                 <video data-main-slot="0" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
                 <video data-main-slot="1" muted playsinline preload="none" data-active="false" aria-hidden="true"></video>
@@ -81,6 +83,11 @@
             <label for="palette">Palette</label>
             <select id="palette" aria-label="Effect palette"></select>
             <div id="palette-swatches" class="palette-swatches" role="group" aria-label="Palette swatches"></div>
+          </section>
+          <section id="token-preview-controls" class="settings-section" aria-labelledby="token-preview-heading" hidden>
+            <h3 id="token-preview-heading">Preview token</h3>
+            <div class="checkbox-row"><label for="hide-preview-token"><input id="hide-preview-token" type="checkbox"> Hide preview token</label></div>
+            <p class="section-note">The token sits behind the effect and scales with it, inset by 5% for a closer visual fit.</p>
           </section>
           <section class="settings-section" aria-labelledby="stage-heading">
             <h3 id="stage-heading">Stage</h3>

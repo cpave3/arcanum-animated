@@ -145,7 +145,7 @@ test('full finite opening then persistent vortex, anchors OFF and explicit store
   const marker = h.effects.find(e => e.data.name.includes('.active.'));
   assert.equal(marker.data.opacity, 0); assert.equal(marker.data.file, 'icons/svg/circle.svg');
   const meta = JSON.parse(decodeURIComponent(marker.data.name.split('.active.')[1]));
-  assert.deepEqual(meta, { base: 'modules/my-animations/assets', size: 6, gridSize: 100, width: 600,
+  assert.deepEqual(meta, { base: 'assets/animations', size: 6, gridSize: 100, width: 600,
     palette: 'purple', anchorPalette: 'radiant', point: { x: 500, y: 400 }, sceneId: 'a' });
   assert.equal(h.hookCount(), 0); assert.equal(h.timers.size, 0);
 });

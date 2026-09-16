@@ -1,6 +1,6 @@
 // Foundry Script macro; requires Sequencer and regenerated 384px VTT ray assets.
 // API checked against Sequencer source; not run in Foundry.
-const BASE = "modules/my-animations/assets"; // Relative to Foundry Data; no leading slash.
+const BASE = "assets/animations"; // Relative to Foundry Data; no leading slash.
 const color = "fire"; // Any exported palette, e.g. "eldritch".
 const beamCount = 3; // 1, 2, or 3.
 const impactMask = Array(beamCount).fill(true); // Per beam, e.g. [true, false, true].

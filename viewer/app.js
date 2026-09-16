@@ -3,7 +3,8 @@ import { CompositionPlayer } from './composition-player.js';
 import { JourneyPlayer } from './journey-player.js';
 
 const $ = id => document.getElementById(id);
-const kindLabel = { loop: 'Loop', 'one-shot': 'One-shot', sequence: 'Sequence', composition: 'Composition', journey: 'Journey' };
+const kindLabel = { 'token-effect': 'Token effect', loop: 'Loop', 'one-shot': 'One-shot', sequence: 'Sequence', composition: 'Composition', journey: 'Journey' };
+const categoryFor = item => item.tags.includes('token') ? 'token-effect' : item.kind;
 const phaseLabel = { flying: 'Flight', opening: 'Open', looping: 'Loop', closing: 'Close', playing: 'Clip' };
 const bytes = value => `${Math.round(value / 1024)} KiB`;
 const seconds = value => `${Number(value).toFixed(1)}s`;
@@ -227,7 +228,7 @@ async function initialize() {
 
   function renderLibrary() {
     const query = $('search').value.trim().toLowerCase();
-    const visible = entries.filter(item => (filter === 'all' || item.kind === filter) &&
+    const visible = entries.filter(item => (filter === 'all' || categoryFor(item) === filter) &&
       `${item.title} ${item.id} ${item.description} ${item.tags.join(' ')}`.toLowerCase().includes(query));
     $('library-list').replaceChildren();
     for (const item of visible) {
@@ -242,7 +243,7 @@ async function initialize() {
       } else button.append(element('span', 'library-thumb', '—'));
       const copy = element('span', 'item-copy');
       copy.append(element('span', 'item-title', item.title),
-        element('span', 'item-meta', `${kindLabel[item.kind]} · ${color ? (['sequence', 'journey'].includes(item.kind) ? `${item.steps.length + (item.kind === 'journey' ? 1 : 0)} stages` : seconds(item.duration)) : 'Not rendered'}`));
+        element('span', 'item-meta', `${kindLabel[categoryFor(item)]} · ${color ? (['sequence', 'journey'].includes(item.kind) ? `${item.steps.length + (item.kind === 'journey' ? 1 : 0)} stages` : seconds(item.duration)) : 'Not rendered'}`));
       button.append(copy); row.append(button); $('library-list').append(row);
       button.addEventListener('click', () => selectEntry(item, true));
     }
@@ -276,10 +277,18 @@ async function initialize() {
     $('copy-path').textContent = paths.length > 1 ? 'Copy paths' : 'Copy path';
   }
 
+  function updateTokenPreview() {
+    const tokenEffect = selected && categoryFor(selected) === 'token-effect';
+    $('token-preview-controls').hidden = !tokenEffect;
+    $('token-preview').hidden = !tokenEffect || $('hide-preview-token').checked;
+  }
+
   function updateSelection() {
     $('workspace').dataset.entry = selected.id;
     $('workspace').dataset.kind = selected.kind;
-    $('selection-kind').textContent = kindLabel[selected.kind];
+    $('workspace').dataset.category = categoryFor(selected);
+    $('selection-kind').textContent = kindLabel[categoryFor(selected)];
+    updateTokenPreview();
     $('selection-title').textContent = selected.title;
     $('selection-description').textContent = selected.description || (selected.kind === 'loop' ? 'A seamless loop. Press Play to preview.' : 'Plays once, then holds its final frame.');
     $('stage').setAttribute('aria-label', `${selected.title} preview`);
@@ -418,11 +427,12 @@ async function initialize() {
     $('overlay-controls').open = true;
   });
 
+  $('hide-preview-token').addEventListener('change', updateTokenPreview);
   $('palette').addEventListener('change', () => setColor($('palette').value));
   $('search').addEventListener('input', renderLibrary);
   for (const button of document.querySelectorAll('[data-kind]')) {
     const kind = button.dataset.kind;
-    button.querySelector('[data-count]').textContent = kind === 'all' ? entries.length : entries.filter(item => item.kind === kind).length;
+    button.querySelector('[data-count]').textContent = kind === 'all' ? entries.length : entries.filter(item => categoryFor(item) === kind).length;
     button.addEventListener('click', () => {
       filter = kind;
       for (const tab of document.querySelectorAll('[data-kind]')) tab.setAttribute('aria-pressed', String(tab === button));

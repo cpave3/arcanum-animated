@@ -17,10 +17,10 @@ RNG = np.random.default_rng(73)
 PARTICLES = RNG.random((220, 5))
 
 
-def render_swirl(frame):
-    """Render the smoke ribbons and sparks without a central object."""
+def render_swirl(frame, *, inward=False, particle_count=None):
+    """Render smoke ribbons and sparks; inward flow also reverses particle trails."""
     time = (frame % FRAMES) / FRAMES
-    phase = math.tau * time
+    phase = math.tau * time * (-1 if inward else 1)
     # Integer temporal harmonics make every field periodic over one loop.
     noise = (np.sin(19 * X + 11 * Y + 2 * np.sin(9 * Y + phase))
              + np.sin(31 * Y - 13 * X + np.sin(15 * X - phase))
@@ -48,16 +48,18 @@ def render_swirl(frame):
 
     sparks = Image.new('RGBA', (SIZE, SIZE))
     draw = ImageDraw.Draw(sparks)
-    for offset, direction, speed, size, brightness in PARTICLES:
+    for offset, direction, speed, size, brightness in PARTICLES[:particle_count]:
         age = (time + offset) % 1
-        radius = .16 + .84 * age
-        theta = direction * math.tau + 3.5 * age
+        travel = 1-age if inward else age
+        radius = .16 + .84 * travel
+        theta = direction * math.tau + 3.5 * travel
         x = SIZE / 2 + 275 * radius * math.cos(theta)
         y = SIZE / 2 + 275 * radius * math.sin(theta)
         opacity = int(230 * math.sin(math.pi * age) ** 1.4 * (.4 + .6 * brightness))
         length = .012 + .022 * speed
-        tail_r = radius - length
-        tail_theta = theta - length * 3.5 / .84
+        trail_direction = 1 if inward else -1
+        tail_r = radius + trail_direction * length
+        tail_theta = theta + trail_direction * length * 3.5 / .84
         tail = (SIZE / 2 + 275 * tail_r * math.cos(tail_theta),
                 SIZE / 2 + 275 * tail_r * math.sin(tail_theta))
         particles.draw_spark(draw, (x, y), tail, color=(239, 184, 255), alpha=opacity,

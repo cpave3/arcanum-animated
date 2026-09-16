@@ -12,7 +12,7 @@
 // Marker names carry durable metadata; reload discovers state but cannot resume opening.
 // Socket creates/deletes are not transactional across clients: use ONE GM controller.
 // Scene changes suppress late stages/closing; orphan socket effects need Effect Manager cleanup.
-const BASE = "modules/my-animations/assets";
+const BASE = "assets/animations";
 const SIZE = 6; // Full canvas width in current grid units, converted once to stored pixels.
 const ANCHOR_PALETTE = "radiant";
 const PALETTES = ["purple", "gold", "red", "orange", "acid", "cold", "fire", "force", "lightning", "melee", "necrotic", "poison", "psychic", "radiant", "thunder", "eldritch", "divine"];

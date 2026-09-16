@@ -2,8 +2,15 @@
 
 [Demo](https://cpave3.github.io/arcanum-animated/)
 
-Transparent WebM effects for Foundry/Sequencer: 33 effects: eleven loops and twenty-two one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
+Transparent WebM effects for Foundry/Sequencer: 40 effects: eighteen loops and twenty-two one-shots, each available in 11 damage palettes (the three physical types share `melee`), four original colorways, and two thematic palettes, `divine` and `eldritch`:
 
+- `token-acid`: clinging corrosive patches, boiling surface bubbles, sizzling droplets, and faint fumes (640×640, 30 fps, 3-second loop; Acid default).
+- `token-charmed`: orbiting helical strand with near/far shading and traveling glints (640×640, 30 fps, 3-second loop; Psychic default).
+- `token-electric`: short, scattered aura zaps (640×640, 30 fps, 3-second loop; Lightning default).
+- `token-poison`: rising bubbles that swell and pop (640×640, 30 fps, 3-second loop; Poison default).
+- `token-frost`: shimmering crystalline edge frost, ice shards, and drifting snow crystals (640×640, 30 fps, 3-second loop; Cold default).
+- `token-necrotic`: a lightweight inward vortex of ghostly currents and soul motes (640×640, 30 fps, 3-second loop; Necrotic default).
+- `token-burning`: fast, tall flames across the token and rising embers (640×640 in both profiles, 30 fps, 2-second loop; Fire default).
 - `fireball-projectile`: centered right-facing orb with a tail to the left; move and rotate the square sprite externally, without stretching (384×384 VTT, 30 fps, 2-second loop).
 - `fireball-embers`: scorched fissures, pulsing hot coals, and drifting sparks (384×384 VTT, 30 fps, 4-second loop).
 - `miasma-pool`: irregular dark floor pools with slow billowing smoke from multiple vents (384×384 VTT, 24 fps, 4-second loop).
@@ -16,7 +23,7 @@ Transparent WebM effects for Foundry/Sequencer: 33 effects: eleven loops and twe
 - `orb-anchor`: glowing orb, lightning, and sparks (256×256 VTT, 30 fps).
 - `rune-anchor`: vertical runes, side brackets, and sparks (256×256 VTT, 30 fps).
 
-Loops last 3 seconds, except the 2-second fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Celestial Revelation (5 seconds), Turn Undead (4 seconds) and the fireball and paired-ray clips below.
+Loops last 3 seconds, except the 2-second token-burning and fireball projectile and 4-second miasma pool and fireball embers. One-shots use 384×384 VTT at 30 fps and last 2 seconds except Celestial Revelation (5 seconds), Turn Undead (4 seconds) and the fireball and paired-ray clips below.
 
 | One-shot ID            | Motion                                                                                                                           | Cue time at 1×                                    |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
@@ -63,7 +70,7 @@ Thematic palettes: `divine` combines blue shadows, warm gold, and icy white high
 | `radiant`      | Gold (same palette as `gold`)                            |
 | `thunder`      | Indigo / violet                                          |
 
-These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 561 WebM/PNG pairs (33 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
+These are artistic assignments, not official D&D color definitions. Damage palettes apply to every registered effect, including future effects. A full export produces 680 WebM/PNG pairs (40 effects × 17 palettes/colorways). Three compositions, four sequences, and one journey reference these clips; they add no exported effects or pairs.
 
 ## Preview
 
@@ -73,8 +80,9 @@ python3 serve.py
 
 Open <http://localhost:8000>. Use `--port 8001` if needed. `serve.py` supports byte-range requests for reliable WebM seeking; the plain `python -m http.server` server does not provide this behavior. The server serves this directory regardless of your current working directory. Refresh the page after HTML or catalog changes; no server restart is needed for those changes.
 
-The viewer reads `assets/catalog.json` into a searchable library with **Loops**, **One-shots**, **Composed**, **Sequences**, and **Journeys** filters. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
+The viewer reads `assets/catalog.json` into a searchable library with **Token effects**, **Loops**, **One-shots**, **Composed**, **Sequences**, and **Journeys** filters. Token-tagged overlays have their own category rather than appearing under general Loops; their playback remains looping. Library thumbnails are static PNGs, not playing videos. Select an entry to inspect it on one focused stage, initially over a battle grid. Background, effect size, and playback speed are configurable.
 
+- Token effects show a sample portrait behind the artwork by default. Use **Preview token → Hide preview token** in the settings sidebar to see the transparent effect alone. The preference lasts for the page session; hiding the portrait does not stop playback. Portrait and effect scale together; the portrait is inset 5% from the macros’ 1.35× scale reference for a closer visual fit. Non-token entries do not show this portrait.
 - Nothing plays automatically when you select an entry or change its palette. Press **Play** for a single clip or composition, or **Start** for a sequence or journey.
 - Loops repeat; one-shots play once and hold their final frame. **Replay** plays a finished one-shot again, and **Restart** starts the selected entry from the beginning.
 - **Pause/Resume** controls the active preview. **Stop** resets a single clip or composition to its poster. Seek is available for single clips and compositions and pauses on the chosen frame; sequences and journeys cannot be scrubbed.
@@ -92,12 +100,69 @@ The workflow in `.github/workflows/pages.yml` publishes the static preview on pu
 
 Only `index.html`, `viewer.css`, `viewer/`, and `assets/` are published. No Python server, build, or animation rendering runs on GitHub. After adding or changing exports, run `python3 render.py --catalog-only` locally and commit the updated catalog and assets before deploying. The viewer's relative URLs support repository subpaths without configuration. The preview and downloadable media are public on a public Pages site. If your default branch is not `main`, update the workflow's branch trigger.
 
+### Other token-status loops
+
+Six more token overlays use the same attachment and colorway controls as Burning:
+
+| Effect | Default WebM | Standalone Script macro |
+| --- | --- | --- |
+| Acid burn | `assets/token-acid/acid.webm` | [sequencer-token-acid.js](examples/sequencer-token-acid.js) |
+| Charmed / Dominated | `assets/token-charmed/psychic.webm` | [sequencer-token-charmed.js](examples/sequencer-token-charmed.js) |
+| Electric charge | `assets/token-electric/lightning.webm` | [sequencer-token-electric.js](examples/sequencer-token-electric.js) |
+| Poison bubbles | `assets/token-poison/poison.webm` | [sequencer-token-poison.js](examples/sequencer-token-poison.js) |
+| Frost | `assets/token-frost/cold.webm` | [sequencer-token-frost.js](examples/sequencer-token-frost.js) |
+| Necrotic drain | `assets/token-necrotic/necrotic.webm` | [sequencer-token-necrotic.js](examples/sequencer-token-necrotic.js) |
+
+Copy the desired WebMs into your Foundry Data directory, preserving the `token-…` folders, and set each macro's `BASE` to their parent folder. Each macro is self-contained: no helper macro or additional module beyond Sequencer is required. Select tokens and run the desired macro to open a **Colorway / Apply / Clear** dialog. The appropriate default is already selected: Lightning for Electric, Poison for bubbles, Cold for Frost, Necrotic for drain, Psychic for Charmed / Dominated, and Acid for Acid Burn. **Apply** adds or recolors the effect on all captured tokens; matching colors are not restarted. **Clear** removes that effect type in every color. Opening or dismissing the dialog alone changes nothing. Each type has a separate namespace, so a token can burn, crackle, and bubble simultaneously, and clearing one type leaves the others alone.
+
+Acid Burn is distinct from Poison Bubbles: irregular wet patches cling to the token, pit and boil in place, and spit droplets beneath faint rising chemical fumes. It is visual only—no damage, lasting token-art changes, or light source.
+
+Necrotic Drain reuses the vortex’s layered currents at a smaller size and reduced opacity, with 64 inward-moving motes. Energy spirals toward the token center, with trails pointing back toward the outer rim. There is no opaque central tear or separate light source, and the original Vortex effects are unchanged.
+
+Frost includes a translucent crystalline coating around the token edge, with fine icy veins and an uneven inward fringe. Shard roots fade into this coating rather than ending in hard triangle outlines, while the inward tips remain defined. Its shimmer is baked into the WebM, so no Foundry shader module is needed; the center remains clear beneath the drifting snow.
+
+All six are **640×640, 30 fps, three-second loops** in both export profiles, support all 17 palettes, draw above token art, and follow token movement, visibility, elevation, and grid size. They do not rotate with token facing. There are no automatic lights, damage, or rules/status changes. Choose any of the 17 palettes in the dialog; upload the corresponding WebMs first. `DEFAULT_COLOR` and `SCALE` can be customized in each macro. The same ownership, permission, single-controller, and rollback considerations as Burning apply. The new macros are mock-tested, not live-Foundry-tested.
+
+```sh
+for effect in electric poison frost necrotic charmed acid; do
+  python3 render.py --effect token-$effect --color all
+done
+python3 -m unittest tests.test_token_status
+node --test tests/test_token_burning_macros.js
+```
+
+Browser check: run `tests/viewer_token_status.js` in the previewer's page context. It checks native resolution, moving decoded frames, looping, default palettes, and all downloads for the six status entries.
+
+### Burning-token controls in Foundry
+
+Use [examples/sequencer-token-burning.js](examples/sequencer-token-burning.js) as a **Script** macro with Sequencer enabled. Upload `assets/token-burning/fire.webm` under your Foundry Data directory, then set `BASE` to the folder containing `token-burning` (relative to Data, with no leading slash).
+
+Select one or more tokens and run the macro to open its controls:
+
+- **Colorway** defaults to **Fire**. All 17 palettes are available, including Necrotic fire.
+- **Apply** enables the chosen color on every captured token, replacing other colors of this effect. Matching loops keep running without duplication.
+- **Clear** removes Burning in every color from those tokens, regardless of the dropdown selection.
+- The dialog stays bound to the tokens selected when it opened, even if selection changes. Unselected tokens, other scenes, and unrelated effects are untouched.
+- Closing the dialog leaves effects active. Reopen the macro to manage them again. An already-started Apply continues if you dismiss the controls.
+
+The persistent overlay is attached to the token: it follows movement and elevation, follows visibility, and scales with token grid dimensions, including Huge (3×3) tokens. Flames stay upright rather than rotating with token facing. `SCALE = 1.35` compensates for the transparent canvas padding; this is a token overlay, not an area-of-effect fire. Wide/non-square tokens scale in each dimension. Select another colorway and press **Apply** to recolor an existing loop without a separate Clear step. Upload that palette’s WebM too, or upload the whole `token-burning` folder under `assets/animations`.
+
+The 640×640, 30 fps, two-second WebM has tall, fast translucent flames across the token face and 24 rising embers. It has no smoke sheet, broad glow, light source, or rules/status changes. Flames draw above the token image, but do not fill the entire canvas. Decoded textures still cost memory per active effect, so practical token counts depend on the clients. Both export profiles preserve the native 640×640 resolution for this effect, even when rendering the whole collection:
+
+```sh
+python3 render.py --effect token-burning --color all
+python3 -m unittest tests.test_token_burning
+node --test tests/test_token_burning_macros.js
+```
+
+Sequencer's persisted named effects are the state, so Clear still works after reloading, including effects created by the earlier toggle-only macro. You need ownership of every selected token and Sequencer create/delete permissions. One controlling GM/client is recommended: the local lock prevents double-click duplicates, not simultaneous operations from different clients. Apply preloads the chosen color and creates all needed replacements before removing old colors. If preparation fails, it attempts to remove only that click's new additions, retaining the previous colors, and reports any rollback failure. If removing old colors fails after replacements are ready, the new colors are retained and the error asks you to retry Apply or Clear; leftover duplicates can then be removed. Buttons are disabled while an operation runs. Attachment/scaling APIs were checked against Sequencer documentation and the macro is covered by mocked execution tests; **movement and persistence have not been verified in a live Foundry session**.
+
 ### Celestial Revelation controls in Foundry
 
 Use [examples/sequencer-celestial-revelation.js](examples/sequencer-celestial-revelation.js) as a **Script** macro with Sequencer enabled.
 
 1. Copy `assets/celestial-revelation/` into your Foundry Data directory (only `divine.webm`, `radiant.webm`, and `necrotic.webm` are required).
-2. Set `BASE` in the macro to the folder **containing** `celestial-revelation`, relative to Data, with no leading slash or `Data/` prefix. For example, `worlds/your-world/animations`.
+2. Set `BASE` in the macro to the folder **containing** `celestial-revelation`, relative to Data, with no leading slash or `Data/` prefix. For example, `assets/animations`.
 3. Select exactly one token and run the macro. The dialog stays bound to that token even if selection changes. Choose **Divine**, **Radiant**, or **Necrotic**, then **Activate**.
 4. **Clear** cancels an unfinished reveal and restores the complete lighting configuration saved before activation. Closing the dialog only dismisses the controls; select the same token and rerun the macro to manage it again.
 
@@ -126,7 +191,7 @@ The singleton `rift-edge-anchor` is removed from the registry. Generate both han
 The approved assembly has a standalone **Script** macro: [examples/sequencer-rift-controls.js](examples/sequencer-rift-controls.js).
 
 1. Enable Sequencer. Copy the five complete folders `vortex-opening`, `vortex`, `vortex-closing`, `rift-edge-anchor-left`, and `rift-edge-anchor-right` from `assets/` into your Foundry Data directory. The macro needs the WebMs; PNGs and JSON are optional.
-2. Paste the file into a Foundry macro of type **Script**. Set `BASE` to the folder containing those five folders, relative to Data, e.g. `worlds/your-world/animations`. Do not include `Data/` or a leading slash.
+2. Paste the file into a Foundry macro of type **Script**. Set `BASE` to the folder containing those five folders, relative to Data, e.g. `assets/animations`. Do not include `Data/` or a leading slash.
 3. Set `SIZE` if desired (the full rift canvas width, initially 6 grid squares) and `ANCHOR_PALETTE` (initially `radiant`). Both anchor sizes and offsets scale with the rift.
 4. Run the macro. No token selection is required. Its dialog stays open for repeated table controls; closing the dialog does not close the rift or disable its ambient effects.
 
@@ -184,7 +249,7 @@ These are migration instructions, not a claim that exports have been regenerated
 
 #### Foundry script macro
 
-Copy [examples/sequencer-rays.js](examples/sequencer-rays.js) into a Foundry **Script** macro with Sequencer enabled. Set `BASE` to your uploaded assets directory **relative to Foundry's Data directory**, without a leading slash (for example, `modules/my-animations/assets`). Choose `color` and `beamCount` (1, 2, or 3), select one caster token, and target one or more tokens. The macro uses the target list round-robin. Its per-beam `impactMask` defaults to all hits; set entries to `false` to suppress individual impacts, not their beams.
+Copy [examples/sequencer-rays.js](examples/sequencer-rays.js) into a Foundry **Script** macro with Sequencer enabled. Set `BASE` to your uploaded assets directory **relative to Foundry's Data directory**, without a leading slash (for example, `assets/animations`). Choose `color` and `beamCount` (1, 2, or 3), select one caster token, and target one or more tokens. The macro uses the target list round-robin. Its per-beam `impactMask` defaults to all hits; set entries to `false` to suppress individual impacts, not their beams.
 
 This is a visual preview: make your own rolls and supply the hit results. There is no attack, save, or roll integration, and no automatic token movement.
 
@@ -225,7 +290,7 @@ The viewer starts detonation’s blank frame 0 at arrival, so the first flash fo
 ### Fireball script macros in Foundry/Sequencer
 
 1. Enable Sequencer and upload the four folders `fireball-projectile`, `fireball-detonation`, `fireball-embers`, and `fireball-closing` from `assets/` into your Foundry assets directory. Keep the palette filenames and folder structure.
-2. Copy [examples/sequencer-fireball.js](examples/sequencer-fireball.js) into a **Script** macro. Set `BASE` to that directory relative to Foundry’s Data directory, without a leading slash (for example, `modules/my-animations/assets`). Set `color`, ground `size`, `projectileSize`, and `speed` as needed.
+2. Copy [examples/sequencer-fireball.js](examples/sequencer-fireball.js) into a **Script** macro. Set `BASE` to that directory relative to Foundry’s Data directory, without a leading slash (for example, `assets/animations`). Set `color`, ground `size`, `projectileSize`, and `speed` as needed.
 3. Copy [examples/sequencer-clear-fireballs.js](examples/sequencer-clear-fireballs.js) into a second **Script** macro for Clear. It reads each cast’s stored path, palette, destination, and size; keep the shared namespace unchanged in both macros.
 4. Select exactly one caster token, run the cast macro, and choose the destination with the crosshair. Canceling the crosshair creates nothing. These are visual effects only: no rolls, damage, or token movement.
 
@@ -286,7 +351,7 @@ python3 render.py --catalog-only                  # reindex existing exports; no
 
 ### Export profiles
 
-`--profile vtt` is the default: VP9 CRF 36, higher compression effort, and antialiased downscaling to at most 384×384 (256×256 for anchors). It writes to `assets/`, which the viewer uses. All original frames, frame rates, durations, cue timings, and alpha are retained. Lower resolution reduces texture memory and decoded pixel work as well as download size; small sparks and wisps are softer when enlarged.
+`--profile vtt` is the default: VP9 CRF 36, higher compression effort, and antialiased downscaling normally capped at 384×384 (256×256 for anchors). All seven `token-*` overlays have a per-effect minimum export size of 640×640, overriding that cap so the same asset remains sharp on Huge tokens. It writes to `assets/`, which the viewer uses. All original frames, frame rates, durations, cue timings, and alpha are retained. Lower resolution reduces texture memory and decoded pixel work as well as download size; small sparks and wisps are softer when enlarged.
 
 `--profile high` keeps the original 320–640 pixel dimensions at CRF 22 and writes to `assets-high/` by default. Use this for oversized effects or close-up displays. Both profiles render directly from the procedural source, not from a previously compressed WebM. `--output` overrides either destination. A partial-color export cannot mix profiles or timing in the same effect directory: use a separate output folder or regenerate `--color all`. Neither profile changes the source artwork or root-level snapshots.
 

@@ -4,7 +4,7 @@
 // a2e041c4760cab25eac346d1a025b4ce0ffa3a0d: docs/{crosshair,effect-manager}.md,
 // docs/api/effect.md, src/{sections/effect,sections/section,canvas-effects/canvas-effect}.js,
 // src/modules/{sequencer,sequencer-effect-manager}.js. Not Foundry-tested.
-const BASE = "modules/my-animations/assets";
+const BASE = "assets/animations";
 const color = "fire";
 const size = 6; // Full square clip width in grid units, independent of token size.
 const projectileSize = 2;

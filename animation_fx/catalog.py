@@ -5,7 +5,7 @@ from typing import Protocol
 
 from PIL import Image
 
-from animation_fx.effects import celestial_revelation, fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
+from animation_fx.effects import token_status, token_burning, celestial_revelation, fireball, fireball_stylized, miasma_pool, one_shots, paired_rays, turn_undead, vortex_transitions
 from animation_fx.effects import orb_anchor, rift, rift_edge_anchor, rune_anchor, vortex, vortex_black_hole, vortex_open
 from animation_fx.palettes import PALETTES, colorize
 from animation_fx.recipe import FrameRecipe
@@ -46,6 +46,7 @@ class Effect:
     direction: str | None = None
     mount: AnchorMount | None = None
     anchor_side: str | None = None
+    min_export_size: int = 0  # Native-resolution floor, even for capped delivery profiles.
 
     @property
     def pairing(self):
@@ -76,6 +77,40 @@ class Effect:
 
 
 EFFECTS = {
+    'token-acid': Effect(FrameRecipe(token_status.acid, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='acid', min_export_size=640,
+                            title='Token · Acid burn',
+                            description='Clinging corrosive patches boil and pit, spitting sizzling droplets beneath faint chemical fumes.',
+                            tags=('token', 'acid', 'corrosion', 'status')),
+    'token-charmed': Effect(FrameRecipe(token_status.charmed, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='psychic', min_export_size=640,
+                            title='Token · Charmed / Dominated',
+                            description='A luminous helical strand twirls around the token, carrying small psychic glints along its orbit.',
+                            tags=('token', 'charmed', 'dominated', 'psychic', 'status')),
+    'token-electric': Effect(FrameRecipe(token_status.electric, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='lightning', min_export_size=640,
+                            title='Token · Electric charge',
+                            description='Short aura zaps flash and disappear around the token, with no continuous electrical web.',
+                            tags=('token', 'electric', 'status')),
+    'token-poison': Effect(FrameRecipe(token_status.poison, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='poison', min_export_size=640,
+                            title='Token · Poison bubbles',
+                            description='Toxic bubbles rise across the token, swell, and pop into tiny droplets.',
+                            tags=('token', 'poison', 'status')),
+    'token-frost': Effect(FrameRecipe(token_status.frost, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='cold', min_export_size=640,
+                            title='Token · Frost',
+                            description='Crystalline frost coats the token edges with shimmering icy veins, growing shards, and drifting snow.',
+                            tags=('token', 'frost', 'status')),
+    'token-necrotic': Effect(FrameRecipe(token_status.necrotic, SIZE=640, FPS=30, FRAMES=90),
+                            'purple', default_color='necrotic', min_export_size=640,
+                            title='Token · Necrotic drain',
+                            description='Layered ghostly currents and soul motes spiral inward like a small draining vortex, without a central tear.',
+                            tags=('token', 'necrotic', 'status')),
+    'token-burning': Effect(token_burning, 'purple', default_color='fire',
+                            title='Token · Burning', min_export_size=640,
+                            description='Tall, fast flames lick across the token with racing embers, without an area-of-effect aura.',
+                            tags=('token', 'fire', 'burning', 'status')),
     'celestial-revelation': Effect(celestial_revelation, 'purple', loop=False,
                           cue_frame=celestial_revelation.BLAST_FRAME,
                           poster_frame=celestial_revelation.POSTER_FRAME,

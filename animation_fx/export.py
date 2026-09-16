@@ -44,7 +44,7 @@ def export_effect(effect: Effect, colors: list[str], directory: Path,
             progress(ExportProgress(phase, frame, effect.frames, elapsed, eta))
 
     directory.mkdir(parents=True, exist_ok=True)
-    size = profile.size_for(effect.size)
+    size = max(effect.min_export_size, profile.size_for(effect.size))
     other_colors = {path.stem for path in directory.glob('*.webm')} - set(colors)
     if other_colors:
         metadata_path = directory / 'effect.json'

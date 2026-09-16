@@ -106,6 +106,864 @@
   ],
   "effects": [
     {
+      "id": "token-acid",
+      "title": "Token \u00b7 Acid burn",
+      "description": "Clinging corrosive patches boil and pit, spitting sizzling droplets beneath faint chemical fumes.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "acid",
+        "corrosion",
+        "status"
+      ],
+      "default_color": "acid",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-acid/purple.webm",
+          "poster": "token-acid/purple.png",
+          "bytes": 281626,
+          "version": "1789560026838991586-1789559961637763411"
+        },
+        "gold": {
+          "webm": "token-acid/gold.webm",
+          "poster": "token-acid/gold.png",
+          "bytes": 329474,
+          "version": "1789560027324000722-1789559961685764315"
+        },
+        "red": {
+          "webm": "token-acid/red.webm",
+          "poster": "token-acid/red.png",
+          "bytes": 293925,
+          "version": "1789560027801009707-1789559961731765181"
+        },
+        "orange": {
+          "webm": "token-acid/orange.webm",
+          "poster": "token-acid/orange.png",
+          "bytes": 310847,
+          "version": "1789560028279018711-1789559961779766086"
+        },
+        "acid": {
+          "webm": "token-acid/acid.webm",
+          "poster": "token-acid/acid.png",
+          "bytes": 370201,
+          "version": "1789560028767027904-1789559961824766933"
+        },
+        "cold": {
+          "webm": "token-acid/cold.webm",
+          "poster": "token-acid/cold.png",
+          "bytes": 352280,
+          "version": "1789560029266037303-1789559961871767818"
+        },
+        "fire": {
+          "webm": "token-acid/fire.webm",
+          "poster": "token-acid/fire.png",
+          "bytes": 348306,
+          "version": "1789560029763046328-1789559961918768704"
+        },
+        "force": {
+          "webm": "token-acid/force.webm",
+          "poster": "token-acid/force.png",
+          "bytes": 293925,
+          "version": "1789560030223054655-1789559961964365847"
+        },
+        "lightning": {
+          "webm": "token-acid/lightning.webm",
+          "poster": "token-acid/lightning.png",
+          "bytes": 348602,
+          "version": "1789560030710063472-1789559962010770437"
+        },
+        "melee": {
+          "webm": "token-acid/melee.webm",
+          "poster": "token-acid/melee.png",
+          "bytes": 356401,
+          "version": "1789560031183072035-1789559962054771265"
+        },
+        "necrotic": {
+          "webm": "token-acid/necrotic.webm",
+          "poster": "token-acid/necrotic.png",
+          "bytes": 340839,
+          "version": "1789560031682081069-1789559962102772170"
+        },
+        "poison": {
+          "webm": "token-acid/poison.webm",
+          "poster": "token-acid/poison.png",
+          "bytes": 335841,
+          "version": "1789560032177090030-1789559962149773055"
+        },
+        "psychic": {
+          "webm": "token-acid/psychic.webm",
+          "poster": "token-acid/psychic.png",
+          "bytes": 291188,
+          "version": "1789560032655098683-1789559962195773922"
+        },
+        "radiant": {
+          "webm": "token-acid/radiant.webm",
+          "poster": "token-acid/radiant.png",
+          "bytes": 329474,
+          "version": "1789560033136107391-1789559962238774732"
+        },
+        "thunder": {
+          "webm": "token-acid/thunder.webm",
+          "poster": "token-acid/thunder.png",
+          "bytes": 291668,
+          "version": "1789560033607115918-1789559962286775636"
+        },
+        "eldritch": {
+          "webm": "token-acid/eldritch.webm",
+          "poster": "token-acid/eldritch.png",
+          "bytes": 248052,
+          "version": "1789560034089124644-1789559962342776691"
+        },
+        "divine": {
+          "webm": "token-acid/divine.webm",
+          "poster": "token-acid/divine.png",
+          "bytes": 430188,
+          "version": "1789560034602133931-1789559962394777670"
+        }
+      }
+    },
+    {
+      "id": "token-charmed",
+      "title": "Token \u00b7 Charmed / Dominated",
+      "description": "A luminous helical strand twirls around the token, carrying small psychic glints along its orbit.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "charmed",
+        "dominated",
+        "psychic",
+        "status"
+      ],
+      "default_color": "psychic",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-charmed/purple.webm",
+          "poster": "token-charmed/purple.png",
+          "bytes": 161961,
+          "version": "1789554479707760835-1789554420139454038"
+        },
+        "gold": {
+          "webm": "token-charmed/gold.webm",
+          "poster": "token-charmed/gold.png",
+          "bytes": 183670,
+          "version": "1789554480012766431-1789554420268457296"
+        },
+        "red": {
+          "webm": "token-charmed/red.webm",
+          "poster": "token-charmed/red.png",
+          "bytes": 170970,
+          "version": "1789554480326772192-1789554420311458382"
+        },
+        "orange": {
+          "webm": "token-charmed/orange.webm",
+          "poster": "token-charmed/orange.png",
+          "bytes": 175598,
+          "version": "1789554480629777751-1789554420355459493"
+        },
+        "acid": {
+          "webm": "token-charmed/acid.webm",
+          "poster": "token-charmed/acid.png",
+          "bytes": 230314,
+          "version": "1789554480962783861-1789554420400460629"
+        },
+        "cold": {
+          "webm": "token-charmed/cold.webm",
+          "poster": "token-charmed/cold.png",
+          "bytes": 236979,
+          "version": "1789554481290789878-1789554420446461791"
+        },
+        "fire": {
+          "webm": "token-charmed/fire.webm",
+          "poster": "token-charmed/fire.png",
+          "bytes": 184035,
+          "version": "1789554481618795896-1789554420491462927"
+        },
+        "force": {
+          "webm": "token-charmed/force.webm",
+          "poster": "token-charmed/force.png",
+          "bytes": 170970,
+          "version": "1789554481927801566-1789554420534464013"
+        },
+        "lightning": {
+          "webm": "token-charmed/lightning.webm",
+          "poster": "token-charmed/lightning.png",
+          "bytes": 242538,
+          "version": "1789554482247807437-1789554420580465175"
+        },
+        "melee": {
+          "webm": "token-charmed/melee.webm",
+          "poster": "token-charmed/melee.png",
+          "bytes": 237209,
+          "version": "1789554482570813363-1789554420622466235"
+        },
+        "necrotic": {
+          "webm": "token-charmed/necrotic.webm",
+          "poster": "token-charmed/necrotic.png",
+          "bytes": 189901,
+          "version": "1789554482880819051-1789554420671467473"
+        },
+        "poison": {
+          "webm": "token-charmed/poison.webm",
+          "poster": "token-charmed/poison.png",
+          "bytes": 210005,
+          "version": "1789554483199824903-1789554420720468710"
+        },
+        "psychic": {
+          "webm": "token-charmed/psychic.webm",
+          "poster": "token-charmed/psychic.png",
+          "bytes": 173979,
+          "version": "1789554483502830462-1789554420766469872"
+        },
+        "radiant": {
+          "webm": "token-charmed/radiant.webm",
+          "poster": "token-charmed/radiant.png",
+          "bytes": 183670,
+          "version": "1789554483820836297-1789554420809470958"
+        },
+        "thunder": {
+          "webm": "token-charmed/thunder.webm",
+          "poster": "token-charmed/thunder.png",
+          "bytes": 185044,
+          "version": "1789554484139842150-1789554420857472170"
+        },
+        "eldritch": {
+          "webm": "token-charmed/eldritch.webm",
+          "poster": "token-charmed/eldritch.png",
+          "bytes": 104699,
+          "version": "1789554484394846828-1789554420909473483"
+        },
+        "divine": {
+          "webm": "token-charmed/divine.webm",
+          "poster": "token-charmed/divine.png",
+          "bytes": 269843,
+          "version": "1789554484717852754-1789554420963474847"
+        }
+      }
+    },
+    {
+      "id": "token-electric",
+      "title": "Token \u00b7 Electric charge",
+      "description": "Short aura zaps flash and disappear around the token, with no continuous electrical web.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "electric",
+        "status"
+      ],
+      "default_color": "lightning",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-electric/purple.webm",
+          "poster": "token-electric/purple.png",
+          "bytes": 181822,
+          "version": "1789538976901849598-1789538915532813911"
+        },
+        "gold": {
+          "webm": "token-electric/gold.webm",
+          "poster": "token-electric/gold.png",
+          "bytes": 195678,
+          "version": "1789538977149853783-1789538915576814654"
+        },
+        "red": {
+          "webm": "token-electric/red.webm",
+          "poster": "token-electric/red.png",
+          "bytes": 186318,
+          "version": "1789538977415858273-1789538915619815379"
+        },
+        "orange": {
+          "webm": "token-electric/orange.webm",
+          "poster": "token-electric/orange.png",
+          "bytes": 189138,
+          "version": "1789538977681862762-1789538915660816071"
+        },
+        "acid": {
+          "webm": "token-electric/acid.webm",
+          "poster": "token-electric/acid.png",
+          "bytes": 207251,
+          "version": "1789538977959867453-1789538915707816865"
+        },
+        "cold": {
+          "webm": "token-electric/cold.webm",
+          "poster": "token-electric/cold.png",
+          "bytes": 198625,
+          "version": "1789538978232872061-1789538915752817624"
+        },
+        "fire": {
+          "webm": "token-electric/fire.webm",
+          "poster": "token-electric/fire.png",
+          "bytes": 193712,
+          "version": "1789538978505876668-1789538915797818383"
+        },
+        "force": {
+          "webm": "token-electric/force.webm",
+          "poster": "token-electric/force.png",
+          "bytes": 186318,
+          "version": "1789538978758880938-1789538915839819092"
+        },
+        "lightning": {
+          "webm": "token-electric/lightning.webm",
+          "poster": "token-electric/lightning.png",
+          "bytes": 198024,
+          "version": "1789538979004885090-1789538915887819902"
+        },
+        "melee": {
+          "webm": "token-electric/melee.webm",
+          "poster": "token-electric/melee.png",
+          "bytes": 205032,
+          "version": "1789538979250889241-1789538915928820594"
+        },
+        "necrotic": {
+          "webm": "token-electric/necrotic.webm",
+          "poster": "token-electric/necrotic.png",
+          "bytes": 196689,
+          "version": "1789538979492893325-1789538915972821337"
+        },
+        "poison": {
+          "webm": "token-electric/poison.webm",
+          "poster": "token-electric/poison.png",
+          "bytes": 197529,
+          "version": "1789538979742897545-1789538916017822096"
+        },
+        "psychic": {
+          "webm": "token-electric/psychic.webm",
+          "poster": "token-electric/psychic.png",
+          "bytes": 183578,
+          "version": "1789538979986901662-1789538916069822974"
+        },
+        "radiant": {
+          "webm": "token-electric/radiant.webm",
+          "poster": "token-electric/radiant.png",
+          "bytes": 195678,
+          "version": "1789538980245906033-1789538916113823716"
+        },
+        "thunder": {
+          "webm": "token-electric/thunder.webm",
+          "poster": "token-electric/thunder.png",
+          "bytes": 184133,
+          "version": "1789538980493910219-1789538916158824476"
+        },
+        "eldritch": {
+          "webm": "token-electric/eldritch.webm",
+          "poster": "token-electric/eldritch.png",
+          "bytes": 152433,
+          "version": "1789538980721914067-1789538916209825336"
+        },
+        "divine": {
+          "webm": "token-electric/divine.webm",
+          "poster": "token-electric/divine.png",
+          "bytes": 202283,
+          "version": "1789538980977918387-1789538916264826265"
+        }
+      }
+    },
+    {
+      "id": "token-poison",
+      "title": "Token \u00b7 Poison bubbles",
+      "description": "Toxic bubbles rise across the token, swell, and pop into tiny droplets.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "poison",
+        "status"
+      ],
+      "default_color": "poison",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-poison/purple.webm",
+          "poster": "token-poison/purple.png",
+          "bytes": 241173,
+          "version": "1789538815267121790-1789538754046088604"
+        },
+        "gold": {
+          "webm": "token-poison/gold.webm",
+          "poster": "token-poison/gold.png",
+          "bytes": 296197,
+          "version": "1789538815626127848-1789538754087089296"
+        },
+        "red": {
+          "webm": "token-poison/red.webm",
+          "poster": "token-poison/red.png",
+          "bytes": 250337,
+          "version": "1789538815993134042-1789538754128089988"
+        },
+        "orange": {
+          "webm": "token-poison/orange.webm",
+          "poster": "token-poison/orange.png",
+          "bytes": 271686,
+          "version": "1789538816379140555-1789538754170090697"
+        },
+        "acid": {
+          "webm": "token-poison/acid.webm",
+          "poster": "token-poison/acid.png",
+          "bytes": 362589,
+          "version": "1789538816767147103-1789538754218091507"
+        },
+        "cold": {
+          "webm": "token-poison/cold.webm",
+          "poster": "token-poison/cold.png",
+          "bytes": 353962,
+          "version": "1789538817148578607-1789538754266092317"
+        },
+        "fire": {
+          "webm": "token-poison/fire.webm",
+          "poster": "token-poison/fire.png",
+          "bytes": 304366,
+          "version": "1789538817516159744-1789538754308093026"
+        },
+        "force": {
+          "webm": "token-poison/force.webm",
+          "poster": "token-poison/force.png",
+          "bytes": 250337,
+          "version": "1789538817844165280-1789538754348093701"
+        },
+        "lightning": {
+          "webm": "token-poison/lightning.webm",
+          "poster": "token-poison/lightning.png",
+          "bytes": 355883,
+          "version": "1789538818233171845-1789538754391094426"
+        },
+        "melee": {
+          "webm": "token-poison/melee.webm",
+          "poster": "token-poison/melee.png",
+          "bytes": 370240,
+          "version": "1789538818652178916-1789538754429095068"
+        },
+        "necrotic": {
+          "webm": "token-poison/necrotic.webm",
+          "poster": "token-poison/necrotic.png",
+          "bytes": 309918,
+          "version": "1789538819022185161-1789538754470095760"
+        },
+        "poison": {
+          "webm": "token-poison/poison.webm",
+          "poster": "token-poison/poison.png",
+          "bytes": 315925,
+          "version": "1789538819383191253-1789538754511531243"
+        },
+        "psychic": {
+          "webm": "token-poison/psychic.webm",
+          "poster": "token-poison/psychic.png",
+          "bytes": 254719,
+          "version": "1789538819716196873-1789538754552097143"
+        },
+        "radiant": {
+          "webm": "token-poison/radiant.webm",
+          "poster": "token-poison/radiant.png",
+          "bytes": 296197,
+          "version": "1789538820051109120-1789538754590097785"
+        },
+        "thunder": {
+          "webm": "token-poison/thunder.webm",
+          "poster": "token-poison/thunder.png",
+          "bytes": 257131,
+          "version": "1789538820398208383-1789538754633098511"
+        },
+        "eldritch": {
+          "webm": "token-poison/eldritch.webm",
+          "poster": "token-poison/eldritch.png",
+          "bytes": 225142,
+          "version": "1789538820720213817-1789538754681099321"
+        },
+        "divine": {
+          "webm": "token-poison/divine.webm",
+          "poster": "token-poison/divine.png",
+          "bytes": 385435,
+          "version": "1789538821148221040-1789538754728100114"
+        }
+      }
+    },
+    {
+      "id": "token-frost",
+      "title": "Token \u00b7 Frost",
+      "description": "Crystalline frost coats the token edges with shimmering icy veins, growing shards, and drifting snow.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "frost",
+        "status"
+      ],
+      "default_color": "cold",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-frost/purple.webm",
+          "poster": "token-frost/purple.png",
+          "bytes": 502796,
+          "version": "1789555153554413313-1789555087532164852"
+        },
+        "gold": {
+          "webm": "token-frost/gold.webm",
+          "poster": "token-frost/gold.png",
+          "bytes": 485095,
+          "version": "1789555154345428271-1789555087591165968"
+        },
+        "red": {
+          "webm": "token-frost/red.webm",
+          "poster": "token-frost/red.png",
+          "bytes": 509430,
+          "version": "1789555155159443664-1789555087649167065"
+        },
+        "orange": {
+          "webm": "token-frost/orange.webm",
+          "poster": "token-frost/orange.png",
+          "bytes": 502155,
+          "version": "1789555155988459340-1789555087705168124"
+        },
+        "acid": {
+          "webm": "token-frost/acid.webm",
+          "poster": "token-frost/acid.png",
+          "bytes": 462543,
+          "version": "1789555156759473920-1789555087763169220"
+        },
+        "cold": {
+          "webm": "token-frost/cold.webm",
+          "poster": "token-frost/cold.png",
+          "bytes": 469489,
+          "version": "1789555157556488991-1789555087820170298"
+        },
+        "fire": {
+          "webm": "token-frost/fire.webm",
+          "poster": "token-frost/fire.png",
+          "bytes": 474390,
+          "version": "1789555158333503684-1789555087879171414"
+        },
+        "force": {
+          "webm": "token-frost/force.webm",
+          "poster": "token-frost/force.png",
+          "bytes": 509430,
+          "version": "1789555159155519229-1789555087935172473"
+        },
+        "lightning": {
+          "webm": "token-frost/lightning.webm",
+          "poster": "token-frost/lightning.png",
+          "bytes": 453611,
+          "version": "1789555159963534508-1789555087992173551"
+        },
+        "melee": {
+          "webm": "token-frost/melee.webm",
+          "poster": "token-frost/melee.png",
+          "bytes": 399287,
+          "version": "1789555160695548350-1789555088050174647"
+        },
+        "necrotic": {
+          "webm": "token-frost/necrotic.webm",
+          "poster": "token-frost/necrotic.png",
+          "bytes": 490085,
+          "version": "1789555161486563308-1789555088108175744"
+        },
+        "poison": {
+          "webm": "token-frost/poison.webm",
+          "poster": "token-frost/poison.png",
+          "bytes": 494609,
+          "version": "1789555162259577925-1789555088165176822"
+        },
+        "psychic": {
+          "webm": "token-frost/psychic.webm",
+          "poster": "token-frost/psychic.png",
+          "bytes": 490649,
+          "version": "1789555163062593110-1789555088221177881"
+        },
+        "radiant": {
+          "webm": "token-frost/radiant.webm",
+          "poster": "token-frost/radiant.png",
+          "bytes": 485095,
+          "version": "1789555163856608125-1789555088278178959"
+        },
+        "thunder": {
+          "webm": "token-frost/thunder.webm",
+          "poster": "token-frost/thunder.png",
+          "bytes": 499143,
+          "version": "1789555164626622686-1789555088337180075"
+        },
+        "eldritch": {
+          "webm": "token-frost/eldritch.webm",
+          "poster": "token-frost/eldritch.png",
+          "bytes": 281354,
+          "version": "1789555165097631592-1789555088404181342"
+        },
+        "divine": {
+          "webm": "token-frost/divine.webm",
+          "poster": "token-frost/divine.png",
+          "bytes": 392767,
+          "version": "1789555165602641142-1789555088468182552"
+        }
+      }
+    },
+    {
+      "id": "token-necrotic",
+      "title": "Token \u00b7 Necrotic drain",
+      "description": "Layered ghostly currents and soul motes spiral inward like a small draining vortex, without a central tear.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "necrotic",
+        "status"
+      ],
+      "default_color": "necrotic",
+      "duration": 3.0,
+      "fps": 30,
+      "frames": 90,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-necrotic/purple.webm",
+          "poster": "token-necrotic/purple.png",
+          "bytes": 461344,
+          "version": "1789555714149013980-1789555652533848857"
+        },
+        "gold": {
+          "webm": "token-necrotic/gold.webm",
+          "poster": "token-necrotic/gold.png",
+          "bytes": 587370,
+          "version": "1789555714870027614-1789555652607850256"
+        },
+        "red": {
+          "webm": "token-necrotic/red.webm",
+          "poster": "token-necrotic/red.png",
+          "bytes": 492730,
+          "version": "1789555715573040908-1789555652666851371"
+        },
+        "orange": {
+          "webm": "token-necrotic/orange.webm",
+          "poster": "token-necrotic/orange.png",
+          "bytes": 556239,
+          "version": "1789555716308054807-1789555652720852393"
+        },
+        "acid": {
+          "webm": "token-necrotic/acid.webm",
+          "poster": "token-necrotic/acid.png",
+          "bytes": 663824,
+          "version": "1789555717077069348-1789555652775853433"
+        },
+        "cold": {
+          "webm": "token-necrotic/cold.webm",
+          "poster": "token-necrotic/cold.png",
+          "bytes": 623293,
+          "version": "1789555717837083720-1789555652831854492"
+        },
+        "fire": {
+          "webm": "token-necrotic/fire.webm",
+          "poster": "token-necrotic/fire.png",
+          "bytes": 605108,
+          "version": "1789555718580097770-1789555652887855551"
+        },
+        "force": {
+          "webm": "token-necrotic/force.webm",
+          "poster": "token-necrotic/force.png",
+          "bytes": 492730,
+          "version": "1789555719277110950-1789555652946856666"
+        },
+        "lightning": {
+          "webm": "token-necrotic/lightning.webm",
+          "poster": "token-necrotic/lightning.png",
+          "bytes": 605880,
+          "version": "1789555719995124528-1789555653002857725"
+        },
+        "melee": {
+          "webm": "token-necrotic/melee.webm",
+          "poster": "token-necrotic/melee.png",
+          "bytes": 638267,
+          "version": "1789555720728138387-1789555653056858746"
+        },
+        "necrotic": {
+          "webm": "token-necrotic/necrotic.webm",
+          "poster": "token-necrotic/necrotic.png",
+          "bytes": 566854,
+          "version": "1789555721459152210-1789555653112859805"
+        },
+        "poison": {
+          "webm": "token-necrotic/poison.webm",
+          "poster": "token-necrotic/poison.png",
+          "bytes": 548730,
+          "version": "1789555722182165882-1789555653169860883"
+        },
+        "psychic": {
+          "webm": "token-necrotic/psychic.webm",
+          "poster": "token-necrotic/psychic.png",
+          "bytes": 464999,
+          "version": "1789555722880179081-1789555653224861923"
+        },
+        "radiant": {
+          "webm": "token-necrotic/radiant.webm",
+          "poster": "token-necrotic/radiant.png",
+          "bytes": 587370,
+          "version": "1789555723608192848-1789555653278862944"
+        },
+        "thunder": {
+          "webm": "token-necrotic/thunder.webm",
+          "poster": "token-necrotic/thunder.png",
+          "bytes": 446587,
+          "version": "1789555724306206047-1789555653336864041"
+        },
+        "eldritch": {
+          "webm": "token-necrotic/eldritch.webm",
+          "poster": "token-necrotic/eldritch.png",
+          "bytes": 450723,
+          "version": "1789555725062220343-1789555653403865308"
+        },
+        "divine": {
+          "webm": "token-necrotic/divine.webm",
+          "poster": "token-necrotic/divine.png",
+          "bytes": 607785,
+          "version": "1789555725835234960-1789555653466866499"
+        }
+      }
+    },
+    {
+      "id": "token-burning",
+      "title": "Token \u00b7 Burning",
+      "description": "Tall, fast flames lick across the token with racing embers, without an area-of-effect aura.",
+      "kind": "loop",
+      "role": "effect",
+      "tags": [
+        "token",
+        "fire",
+        "burning",
+        "status"
+      ],
+      "default_color": "fire",
+      "duration": 2.0,
+      "fps": 30,
+      "frames": 60,
+      "size": 640,
+      "cue_time": null,
+      "variants": {
+        "purple": {
+          "webm": "token-burning/purple.webm",
+          "poster": "token-burning/purple.png",
+          "bytes": 175761,
+          "version": "1789538279136073842-1789538236226349682"
+        },
+        "gold": {
+          "webm": "token-burning/gold.webm",
+          "poster": "token-burning/gold.png",
+          "bytes": 206974,
+          "version": "1789538279769084525-1789538236275350509"
+        },
+        "red": {
+          "webm": "token-burning/red.webm",
+          "poster": "token-burning/red.png",
+          "bytes": 180196,
+          "version": "1789538280442095883-1789538236326751730"
+        },
+        "orange": {
+          "webm": "token-burning/orange.webm",
+          "poster": "token-burning/orange.png",
+          "bytes": 195582,
+          "version": "1789538281095106904-1789538236376352213"
+        },
+        "acid": {
+          "webm": "token-burning/acid.webm",
+          "poster": "token-burning/acid.png",
+          "bytes": 214479,
+          "version": "1789538281767118245-1789538236429353108"
+        },
+        "cold": {
+          "webm": "token-burning/cold.webm",
+          "poster": "token-burning/cold.png",
+          "bytes": 203866,
+          "version": "1789538282356128187-1789538236483354019"
+        },
+        "fire": {
+          "webm": "token-burning/fire.webm",
+          "poster": "token-burning/fire.png",
+          "bytes": 206411,
+          "version": "1789538283001139072-1789538236536354913"
+        },
+        "force": {
+          "webm": "token-burning/force.webm",
+          "poster": "token-burning/force.png",
+          "bytes": 180196,
+          "version": "1789538283648149991-1789538236584355724"
+        },
+        "lightning": {
+          "webm": "token-burning/lightning.webm",
+          "poster": "token-burning/lightning.png",
+          "bytes": 200570,
+          "version": "1789538284195159223-1789538236636356601"
+        },
+        "melee": {
+          "webm": "token-burning/melee.webm",
+          "poster": "token-burning/melee.png",
+          "bytes": 206233,
+          "version": "1789538284740168421-1789538236684357412"
+        },
+        "necrotic": {
+          "webm": "token-burning/necrotic.webm",
+          "poster": "token-burning/necrotic.png",
+          "bytes": 205628,
+          "version": "1789538285277177484-1789538236735358272"
+        },
+        "poison": {
+          "webm": "token-burning/poison.webm",
+          "poster": "token-burning/poison.png",
+          "bytes": 202018,
+          "version": "1789538285874187559-1789538236787359150"
+        },
+        "psychic": {
+          "webm": "token-burning/psychic.webm",
+          "poster": "token-burning/psychic.png",
+          "bytes": 182536,
+          "version": "1789538286413196655-1789538236840360044"
+        },
+        "radiant": {
+          "webm": "token-burning/radiant.webm",
+          "poster": "token-burning/radiant.png",
+          "bytes": 206974,
+          "version": "1789538286952110156-1789538236889360871"
+        },
+        "thunder": {
+          "webm": "token-burning/thunder.webm",
+          "poster": "token-burning/thunder.png",
+          "bytes": 167266,
+          "version": "1789538287494214899-1789538236940361732"
+        },
+        "eldritch": {
+          "webm": "token-burning/eldritch.webm",
+          "poster": "token-burning/eldritch.png",
+          "bytes": 155797,
+          "version": "1789538288076224721-1789538237002362778"
+        },
+        "divine": {
+          "webm": "token-burning/divine.webm",
+          "poster": "token-burning/divine.png",
+          "bytes": 221098,
+          "version": "1789538288665234662-1789538237063363807"
+        }
+      }
+    },
+    {
       "id": "celestial-revelation",
       "title": "Celestial Revelation",
       "description": "Light pools around the caster, spirals into a brilliant core, and explodes into a feathered corona.",

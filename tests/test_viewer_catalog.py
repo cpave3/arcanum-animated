@@ -83,8 +83,9 @@ class ViewerCatalogTests(unittest.TestCase):
         entries = {entry['id']: entry for entry in self.build()['effects']}
         self.assertNotIn('rift-edge-anchor', EFFECTS)
         self.assertNotIn('rift-edge-anchor', entries)
-        self.assertEqual(len(entries), 32)
-        self.assertEqual(sum(entry['kind'] == 'loop' for entry in entries.values()), 11)
+        self.assertEqual(set(entries), set(EFFECTS))
+        self.assertEqual(sum(entry['kind'] == 'loop' for entry in entries.values()),
+                         sum(effect.loop for effect in EFFECTS.values()))
         self.assertIs(EFFECTS[names[0]].mount, EFFECTS[names[1]].mount)
         for side, name in zip(('left', 'right'), names):
             with self.subTest(side=side):

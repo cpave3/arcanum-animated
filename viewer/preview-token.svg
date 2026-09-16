@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+  <defs>
+    <radialGradient id="backdrop"><stop stop-color="#455864"/><stop offset="1" stop-color="#17232c"/></radialGradient>
+    <linearGradient id="steel" x2=".8" y2="1"><stop stop-color="#cad8db"/><stop offset=".5" stop-color="#879da7"/><stop offset="1" stop-color="#435e6d"/></linearGradient>
+    <clipPath id="portrait"><circle cx="120" cy="120" r="111"/></clipPath>
+  </defs>
+  <circle cx="120" cy="120" r="117" fill="#131b23" stroke="#a49474" stroke-width="5"/>
+  <g clip-path="url(#portrait)">
+    <circle cx="120" cy="120" r="111" fill="url(#backdrop)"/>
+    <path d="M30 240L43 179Q65 149 101 151H139Q176 150 198 179L211 240" fill="#4a3848" stroke="#1b202b" stroke-width="5"/>
+    <path d="M55 183L100 162H140L185 183L167 240H74Z" fill="url(#steel)" stroke="#304957" stroke-width="4"/>
+    <path d="M105 140H135L142 166L120 184L98 166Z" fill="#b98d75" stroke="#74534b" stroke-width="3"/>
+    <path d="M85 72Q120 43 155 72L151 127Q146 153 120 160Q94 150 89 127Z" fill="#c5a18a" stroke="#725b53" stroke-width="3"/>
+    <path d="M78 91Q70 39 120 29Q169 37 164 91L149 117L143 77L120 88L97 77L93 117Z" fill="url(#steel)" stroke="#314a59" stroke-width="4"/>
+    <path d="M120 31V89L128 121L120 129L112 121L120 89" fill="#d1dcda" stroke="#536b77" stroke-width="3"/>
+    <path d="M98 102L111 105M129 105L142 102" stroke="#263740" stroke-width="5" stroke-linecap="round"/>
+    <path d="M105 140Q120 146 135 140" fill="none" stroke="#73564f" stroke-width="3"/>
+    <path d="M82 177L120 199L158 177M120 200V238" fill="none" stroke="#c5d1d0" stroke-width="3"/>
+    <path d="M42 184L70 171L87 195L73 223L35 215ZM198 184L170 171L153 195L167 223L205 215Z" fill="#738c99" stroke="#314a59" stroke-width="4"/>
+  </g>
+  <circle cx="120" cy="120" r="111" fill="none" stroke="#d6c8a1" stroke-opacity=".4" stroke-width="2"/>
+</svg>
